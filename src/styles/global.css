@@ -1,0 +1,196 @@
+:root {
+  --font-primary: 'Oxanium', sans-serif;
+  --font-secondary: 'Rajdhani', sans-serif;
+  --font-accent: '"Press Start 2P"', monospace;
+
+  --bg-midnight: #080512;
+  --bg-dark: #0e081f;
+  --bg-card: #140d2b;
+  --purple-deep: #2e1065;
+  --purple-electric: #8b5cf6;
+  --purple-glow: #a855f7;
+  --pink-neon: #ec4899;
+  --pink-glow: #f472b6;
+  --yellow-arcade: #fbbf24;
+  --green-neon: #10b981;
+  --cyan-cyber: #06b6d4;
+  --text-white: #ffffff;
+  --text-muted: #94a3b8;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bg-midnight);
+  color: var(--text-white);
+  font-family: var(--font-secondary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography Utility Classes */
+.font-display,
+.font-gaming,
+.font-heading {
+  font-family: var(--font-primary);
+  letter-spacing: 0.05em;
+}
+
+.font-body,
+.font-tech {
+  font-family: var(--font-secondary);
+  letter-spacing: 0.02em;
+}
+
+.font-pixel {
+  font-family: var(--font-accent);
+  letter-spacing: -0.5px;
+}
+
+/* Responsive Headings using clamp() */
+.heading-hero {
+  font-family: var(--font-primary);
+  font-size: clamp(2rem, 5vw, 4.5rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  text-shadow: 0 0 24px rgba(168, 85, 247, 0.5), 0 4px 12px rgba(0, 0, 0, 0.9);
+}
+
+.heading-section {
+  font-family: var(--font-primary);
+  font-size: clamp(1.5rem, 3.5vw, 2.75rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #ffffff;
+}
+
+.heading-card {
+  font-family: var(--font-primary);
+  font-size: clamp(1.1rem, 2vw, 1.6rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #ffffff;
+}
+
+/* Sharp Geometric Card Containers */
+.reverie-card {
+  background: #110926;
+  border: 2px solid #a855f7;
+  position: relative;
+  clip-path: polygon(
+    0 12px, 12px 0, 
+    calc(100% - 12px) 0, 100% 12px, 
+    100% calc(100% - 12px), calc(100% - 12px) 100%, 
+    12px 100%, 0 calc(100% - 12px)
+  );
+}
+
+/* CRT Scanline Filter */
+.crt-overlay {
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.22) 50%
+  ), linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.03),
+    rgba(0, 255, 0, 0.01),
+    rgba(0, 0, 255, 0.03)
+  );
+  background-size: 100% 3px, 6px 100%;
+  pointer-events: none;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #080512;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #8b5cf6;
+  border-radius: 2px;
+  border: 1px solid #c084fc;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a855f7;
+}
+
+/* Action Buttons */
+.pixel-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-primary);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  transition: all 0.15s ease;
+  border: none;
+  outline: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.pixel-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.15);
+}
+
+.pixel-btn:active {
+  transform: translateY(2px);
+}
+
+.pixel-btn-gold {
+  background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+  color: #080512;
+  border: 2px solid #fef08a;
+  box-shadow: 0 4px 0 #92400e, 0 8px 18px rgba(251, 191, 36, 0.45);
+}
+
+.pixel-btn-pink {
+  background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+  color: #ffffff;
+  border: 2px solid #fbcfe8;
+  box-shadow: 0 4px 0 #831843, 0 8px 20px rgba(236, 72, 153, 0.45);
+}
+
+.pixel-btn-purple {
+  background: linear-gradient(135deg, #a855f7 0%, #6d28d9 100%);
+  color: #ffffff;
+  border: 2px solid #e9d5ff;
+  box-shadow: 0 4px 0 #4c1d95, 0 8px 20px rgba(168, 85, 247, 0.45);
+}
+
+.pixel-btn-cyan {
+  background: linear-gradient(135deg, #06b6d4 0%, #0e7490 100%);
+  color: #ffffff;
+  border: 2px solid #a5f3fc;
+  box-shadow: 0 4px 0 #155e75, 0 8px 20px rgba(6, 182, 212, 0.45);
+}
+
+.pixel-btn-dark {
+  background: #191036;
+  color: #e2e8f0;
+  border: 2px solid #8b5cf6;
+  box-shadow: 0 4px 0 #0f0a21, 0 6px 14px rgba(139, 92, 246, 0.25);
+}

@@ -1,0 +1,201 @@
+import { eventBus } from '../EventBus';
+import { soundEngine } from './SoundEngine';
+import { achievementsList } from '../../data/achievements';
+
+const STORAGE_KEY = 'reverie_2k27_achievements_v2';
+
+class AchievementSystem {
+  constructor() {
+    this.state = this.loadState();
+  }
+
+  loadState() {
+    const defaultState = {
+      visitedZones: ['StartingKingdomScene'],
+      viewedEvents: [],
+      coinsCollected: 0,
+      viewedPages: [],
+      secretFound: false,
+      unlockedIds: [],
+      claimedIds: []
+    };
+
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return {
+          ...defaultState,
+          ...parsed,
+          visitedZones: Array.isArray(parsed?.visitedZones) && parsed.visitedZones.length > 0 ? parsed.visitedZones : ['StartingKingdomScene'],
+          viewedEvents: Array.isArray(parsed?.viewedEvents) ? parsed.viewedEvents : [],
+          unlockedIds: Array.isArray(parsed?.unlockedIds) ? parsed.unlockedIds : [],
+          claimedIds: Array.isArray(parsed?.claimedIds) ? parsed.claimedIds : [],
+          viewedPages: Array.isArray(parsed?.viewedPages) ? parsed.viewedPages : [],
+          coinsCollected: typeof parsed?.coinsCollected === 'number' ? parsed.coinsCollected : 0
+        };
+      }
+    } catch (e) {
+      console.warn('Could not read achievements from localStorage', e);
+    }
+
+    return defaultState;
+  }
+
+  saveState() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
+    } catch (e) {
+      console.warn('Could not save achievements to localStorage', e);
+    }
+  }
+
+  checkAchievements() {
+    achievementsList.forEach(ach => {
+      if (this.state.unlockedIds.includes(ach.id)) return;
+
+      let current = 0;
+      let target = ach.target;
+
+      switch (ach.id) {
+        case 'explorer':
+        case 'kingdom_master':
+          current = this.state.visitedZones.length;
+          break;
+        case 'event_hunter':
+          current = this.state.viewedEvents.length;
+          break;
+        case 'coin_collector':
+          current = this.state.coinsCollected;
+          break;
+        case 'festival_explorer':
+          current = this.state.viewedPages.length;
+          break;
+        case 'secret_finder':
+          current = this.state.secretFound ? 1 : 0;
+          break;
+        default:
+          break;
+      }
+
+      if (current >= target) {
+        this.unlock(ach);
+      }
+    });
+  }
+
+  unlock(achievement) {
+    if (this.state.unlockedIds.includes(achievement.id)) return;
+    this.state.unlockedIds.push(achievement.id);
+    this.saveState();
+
+    soundEngine.playFanfare();
+    eventBus.emit('achievement-unlocked', achievement);
+  }
+
+  recordZone(zoneKey) {
+    if (!this.state.visitedZones.includes(zoneKey)) {
+      this.state.visitedZones.push(zoneKey);
+      this.saveState();
+      this.checkAchievements();
+    }
+  }
+
+  recordEvent(eventId) {
+    if (!this.state.viewedEvents.includes(eventId)) {
+      this.state.viewedEvents.push(eventId);
+      this.saveState();
+      this.checkAchievements();
+    }
+  }
+
+  recordCoin() {
+    this.state.coinsCollected += 1;
+    this.saveState();
+    this.checkAchievements();
+  }
+
+  recordPage(pageId) {
+    if (!this.state.viewedPages.includes(pageId)) {
+      this.state.viewedPages.push(pageId);
+      this.saveState();
+      this.checkAchievements();
+    }
+  }
+
+  recordFestivalInfo(id = 'plaza') {
+    this.recordPage(id);
+  }
+
+  claimReward(questId) {
+    if (!this.state.claimedIds) this.state.claimedIds = [];
+    if (!this.state.claimedIds.includes(questId)) {
+      this.state.claimedIds.push(questId);
+      this.saveState();
+      soundEngine.playAchievement();
+      return true;
+    }
+    return false;
+  }
+
+  isClaimed(questId) {
+    if (!this.state.claimedIds) return false;
+    return this.state.claimedIds.includes(questId);
+  }
+
+  recordSecret() {
+    if (!this.state.secretFound) {
+      this.state.secretFound = true;
+      this.saveState();
+      this.checkAchievements();
+    }
+  }
+
+  isUnlocked(id) {
+    if (!this.state || !Array.isArray(this.state.unlockedIds)) return false;
+    return this.state.unlockedIds.includes(id);
+  }
+
+  getProgress(id) {
+    const ach = achievementsList.find(a => a.id === id);
+    if (!ach) return { current: 0, target: 1, percent: 0, unlocked: false };
+
+    let current = 0;
+    switch (id) {
+      case 'explorer':
+      case 'kingdom_master':
+        current = Math.min(this.state.visitedZones.length, ach.target);
+        break;
+      case 'event_hunter':
+        current = Math.min(this.state.viewedEvents.length, ach.target);
+        break;
+      case 'coin_collector':
+        current = Math.min(this.state.coinsCollected, ach.target);
+        break;
+      case 'festival_explorer':
+        current = Math.min(this.state.viewedPages.length, ach.target);
+        break;
+      case 'secret_finder':
+        current = this.state.secretFound ? 1 : 0;
+        break;
+      default:
+        break;
+    }
+
+    const percent = Math.min(100, Math.round((current / ach.target) * 100));
+    return {
+      current,
+      target: ach.target,
+      percent,
+      unlocked: this.isUnlocked(id)
+    };
+  }
+
+  getUnlockedCount() {
+    if (!this.state || !Array.isArray(this.state.unlockedIds)) return 0;
+    return this.state.unlockedIds.length;
+  }
+}
+
+export const achievementSystem = new AchievementSystem();
+
