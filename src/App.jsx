@@ -15,6 +15,8 @@ import { SkinsModal } from './components/Modals/SkinsModal';
 import { AchievementsModal } from './components/Modals/AchievementsModal';
 import { KotaBotModal } from './components/Modals/KotaBotModal';
 import { ReverieLiveModal } from './components/Modals/ReverieLiveModal';
+import { MiniGameArcade } from './components/Arcade/MiniGameArcade';
+import { RewardsShopModal } from './components/Modals/RewardsShopModal';
 import { AchievementToast } from './components/Achievements/AchievementToast';
 import { eventBus } from './game/EventBus';
 import { soundEngine } from './game/systems/SoundEngine';
@@ -40,6 +42,8 @@ export function App() {
   const [skinsOpen, setSkinsOpen] = useState(false);
   const [achievementsOpen, setAchievementsOpen] = useState(false);
   const [liveOpen, setLiveOpen] = useState(false);
+  const [arcadeOpen, setArcadeOpen] = useState(false);
+  const [rewardsOpen, setRewardsOpen] = useState(false);
   const [kotaBotState, setKotaBotState] = useState({ open: false, zone: 'StartingKingdomScene', sceneName: 'Starting Kingdom' });
 
   // Proximity flags for mobile action button
@@ -134,16 +138,42 @@ export function App() {
       setIsNpcNear(data.near);
     });
 
+    const unbindCoinBalance = eventBus.on('coin-balance-updated', (newBal) => {
+      setCoinCount(newBal);
+    });
+
+    // Global ESC Key Close Handler for all modals
+    const handleGlobalKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setActiveEvent(null);
+        setStatsOpen(false);
+        setGalleryOpen(false);
+        setSponsorsOpen(false);
+        setContactsOpen(false);
+        setMapOpen(false);
+        setDirectoryOpen(false);
+        setSkinsOpen(false);
+        setAchievementsOpen(false);
+        setLiveOpen(false);
+        setArcadeOpen(false);
+        setRewardsOpen(false);
+        setKotaBotState(prev => ({ ...prev, open: false }));
+      }
+    };
+    window.addEventListener('keydown', handleGlobalKeyDown);
+
     return () => {
       unbindZone();
       unbindSwitchZone();
       unbindCoin();
+      unbindCoinBalance();
       unbindEventModal();
       unbindKotaBot();
       unbindAchievements();
       unbindPipeNear();
       unbindPortalNear();
       unbindNpcNear();
+      window.removeEventListener('keydown', handleGlobalKeyDown);
     };
   }, [currentZone, currentZoneKey]);
 
@@ -157,6 +187,8 @@ export function App() {
         onOpenMap={() => setMapOpen(true)}
         onOpenDirectory={() => handleOpenDirectory('all')}
         onOpenLive={() => setLiveOpen(true)}
+        onOpenArcade={() => setArcadeOpen(true)}
+        onOpenRewards={() => setRewardsOpen(true)}
         onOpenSkins={() => setSkinsOpen(true)}
         onOpenBot={() => setKotaBotState({ open: true, zone: currentZoneKey, sceneName: currentZone })}
         onOpenAchievements={() => setAchievementsOpen(true)}
@@ -346,6 +378,32 @@ export function App() {
           onSelectEvent={(ev) => {
             setLiveOpen(false);
             setActiveEvent(ev);
+          }}
+        />
+      )}
+
+      {/* 12. RETRO MINI-GAME ARCADE HUB */}
+      {arcadeOpen && (
+        <MiniGameArcade
+          onClose={() => setArcadeOpen(false)}
+          onOpenRewards={() => {
+            setArcadeOpen(false);
+            setRewardsOpen(true);
+          }}
+          onSkipToSponsors={() => {
+            setArcadeOpen(false);
+            setSponsorsOpen(true);
+          }}
+        />
+      )}
+
+      {/* 13. FESTIVAL REWARDS SHOP & VOUCHERS */}
+      {rewardsOpen && (
+        <RewardsShopModal
+          onClose={() => setRewardsOpen(false)}
+          onOpenWardrobe={() => {
+            setRewardsOpen(false);
+            setSkinsOpen(true);
           }}
         />
       )}

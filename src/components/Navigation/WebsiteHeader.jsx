@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { 
   Volume2, VolumeX, Maximize2, Minimize2, Map, List, 
   Trophy, Sparkles, Image as ImageIcon, HeartHandshake, Phone, Shirt,
-  Menu, X, Bot, Radio
+  Menu, X, Bot, Radio, Gamepad2, Gift
 } from 'lucide-react';
 import { soundEngine } from '../../game/systems/SoundEngine';
 
@@ -10,6 +10,8 @@ export function WebsiteHeader({
   onOpenMap, 
   onOpenDirectory, 
   onOpenLive,
+  onOpenArcade,
+  onOpenRewards,
   onOpenSkins,
   onOpenBot,
   onOpenAchievements,
@@ -93,6 +95,22 @@ export function WebsiteHeader({
         >
           <List size={16} className="text-pink-400" />
           <span>EVENTS (18)</span>
+        </button>
+
+        <button
+          onClick={() => handleNavClick(onOpenArcade)}
+          className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-pink-950 to-purple-950 hover:from-pink-900 hover:to-purple-900 border border-pink-500/80 text-pink-200 hover:text-white font-display text-xs font-black uppercase tracking-wider flex items-center gap-1.5 transition-all hover:scale-105 cursor-pointer shadow-md shadow-pink-500/20"
+        >
+          <Gamepad2 size={16} className="text-pink-400 animate-pulse" />
+          <span>ARCADE</span>
+        </button>
+
+        <button
+          onClick={() => handleNavClick(onOpenRewards)}
+          className="px-3 py-1.5 rounded-xl bg-amber-950/80 hover:bg-amber-900 border border-yellow-500/80 text-yellow-300 hover:text-white font-display text-xs font-black uppercase tracking-wider flex items-center gap-1.5 transition-all hover:scale-105 cursor-pointer shadow-md shadow-yellow-500/20"
+        >
+          <Gift size={16} className="text-yellow-400 animate-bounce" />
+          <span>REWARDS</span>
         </button>
 
         <button
@@ -183,6 +201,20 @@ export function WebsiteHeader({
             EVENTS
           </button>
           <button
+            onClick={() => handleNavClick(onOpenArcade)}
+            className="px-2.5 py-1.5 rounded-xl bg-pink-950/80 border border-pink-500/70 text-pink-300 font-display text-xs font-black flex items-center gap-1"
+          >
+            <Gamepad2 size={13} className="text-pink-400" />
+            ARCADE
+          </button>
+          <button
+            onClick={() => handleNavClick(onOpenRewards)}
+            className="px-2.5 py-1.5 rounded-xl bg-amber-950/80 border border-yellow-500/70 text-yellow-300 font-display text-xs font-black flex items-center gap-1"
+          >
+            <Gift size={13} className="text-yellow-400" />
+            REWARDS
+          </button>
+          <button
             onClick={() => handleNavClick(onOpenLive)}
             className="px-2.5 py-1.5 rounded-xl bg-rose-950/80 border border-rose-500/70 text-rose-300 font-display text-xs font-black flex items-center gap-1"
           >
@@ -241,6 +273,22 @@ export function WebsiteHeader({
           </div>
 
           <div className="grid grid-cols-2 gap-2.5">
+            <button
+              onClick={() => handleNavClick(onOpenArcade)}
+              className="p-3 rounded-xl bg-gradient-to-r from-pink-950 to-purple-950 border border-pink-500/70 text-pink-200 font-display text-xs font-black uppercase flex items-center gap-2.5 shadow-md shadow-pink-500/20"
+            >
+              <Gamepad2 size={18} className="text-pink-400 animate-pulse" />
+              <span>ARCADE GAMES</span>
+            </button>
+
+            <button
+              onClick={() => handleNavClick(onOpenRewards)}
+              className="p-3 rounded-xl bg-amber-950/80 border border-yellow-500/70 text-yellow-300 font-display text-xs font-black uppercase flex items-center gap-2.5 shadow-md shadow-yellow-500/20"
+            >
+              <Gift size={18} className="text-yellow-400 animate-bounce" />
+              <span>REWARDS SHOP</span>
+            </button>
+
             <button
               onClick={() => handleNavClick(onOpenMap)}
               className="p-3 rounded-xl bg-amber-950/80 border border-amber-500/60 text-amber-200 font-display text-xs font-bold uppercase flex items-center gap-2.5"

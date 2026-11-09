@@ -194,3 +194,28 @@ html, body {
   border: 2px solid #8b5cf6;
   box-shadow: 0 4px 0 #0f0a21, 0 6px 14px rgba(139, 92, 246, 0.25);
 }
+
+/* Retro Arcade CRT Scanlines Simulation */
+.crt-scanlines {
+  position: relative;
+}
+
+.crt-scanlines::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.04));
+  z-index: 40;
+  background-size: 100% 3px, 4px 100%;
+  pointer-events: none;
+}
+
+@keyframes scaleUp {
+  0% { transform: scale(0.92); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-scaleUp {
+  animation: scaleUp 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

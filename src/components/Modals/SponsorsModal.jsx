@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { X, HeartHandshake, Megaphone, Zap, Users2, Globe } from 'lucide-react';
+import { X, HeartHandshake, Megaphone, Zap, Users2, Globe, Rocket, Shield, ExternalLink } from 'lucide-react';
 import { whySponsorUs, pastSponsors } from '../../data/sponsors';
 import { sponsorshipPerksData } from '../../data/sponsorshipPerks';
 import { soundEngine } from '../../game/systems/SoundEngine';
+import { SponsorGalaxy } from '../Arcade/SponsorGalaxy';
 
-export function SponsorsModal({ onClose }) {
-  const [activeTab, setActiveTab] = useState('perks');
+export function SponsorsModal({ onClose, initialTab = 'galaxy' }) {
+  const [activeTab, setActiveTab] = useState(initialTab || 'galaxy');
 
   const getPillarIcon = (icon) => {
     switch (icon) {
@@ -44,13 +45,27 @@ export function SponsorsModal({ onClose }) {
         </div>
 
         {/* Tab Navigation */}
-        <div className="px-5 py-3 bg-[#100722] border-b border-purple-900/40 flex items-center gap-2.5">
+        <div className="px-5 py-3 bg-[#100722] border-b border-purple-900/40 flex items-center gap-2 overflow-x-auto">
+          <button
+            onClick={() => {
+              soundEngine.playBlip();
+              setActiveTab('galaxy');
+            }}
+            className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-display font-black tracking-wider transition-all flex items-center gap-1.5 shrink-0 ${
+              activeTab === 'galaxy' 
+                ? 'bg-gradient-to-r from-pink-600 to-purple-600 text-white shadow-lg shadow-pink-600/40 ring-1 ring-white/40' 
+                : 'bg-purple-950/70 text-pink-300 hover:bg-purple-900 hover:text-white border border-pink-500/30'
+            }`}
+          >
+            <Rocket size={16} className="text-pink-300 animate-pulse" />
+            <span>SPONSOR GALAXY (90s GAME)</span>
+          </button>
           <button
             onClick={() => {
               soundEngine.playBlip();
               setActiveTab('perks');
             }}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-display font-bold transition-all ${
+            className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-display font-bold transition-all shrink-0 ${
               activeTab === 'perks' 
                 ? 'bg-emerald-500 text-slate-950 font-black shadow-lg shadow-emerald-500/40' 
                 : 'bg-purple-950/60 text-slate-300 hover:bg-purple-900 hover:text-white'
@@ -63,20 +78,20 @@ export function SponsorsModal({ onClose }) {
               soundEngine.playBlip();
               setActiveTab('sponsors');
             }}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-display font-bold transition-all ${
+            className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-display font-bold transition-all shrink-0 ${
               activeTab === 'sponsors' 
                 ? 'bg-emerald-500 text-slate-950 font-black shadow-lg shadow-emerald-500/40' 
                 : 'bg-purple-950/60 text-slate-300 hover:bg-purple-900 hover:text-white'
             }`}
           >
-            PAST SPONSORS
+            PAST SPONSORS ({pastSponsors.length})
           </button>
           <button
             onClick={() => {
               soundEngine.playBlip();
               setActiveTab('why');
             }}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-display font-bold transition-all ${
+            className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-display font-bold transition-all shrink-0 ${
               activeTab === 'why' 
                 ? 'bg-emerald-500 text-slate-950 font-black shadow-lg shadow-emerald-500/40' 
                 : 'bg-purple-950/60 text-slate-300 hover:bg-purple-900 hover:text-white'
@@ -87,7 +102,15 @@ export function SponsorsModal({ onClose }) {
         </div>
 
         {/* Content Body */}
-        <div className="flex-1 overflow-y-auto p-5 sm:p-8 space-y-6">
+        {activeTab === 'galaxy' ? (
+          <div className="flex-1 overflow-hidden flex flex-col">
+            <SponsorGalaxy 
+              onSkipToDirectory={() => setActiveTab('sponsors')} 
+              onSelectSponsor={() => {}}
+            />
+          </div>
+        ) : (
+          <div className="flex-1 overflow-y-auto p-5 sm:p-8 space-y-6">
           {/* TAB 1: PERKS MATRIX */}
           {activeTab === 'perks' && (
             <div className="space-y-4">
@@ -238,6 +261,7 @@ export function SponsorsModal({ onClose }) {
             </div>
           )}
         </div>
+        )}
 
         {/* Footer */}
         <div className="p-4 sm:p-5 border-t border-purple-900/60 bg-[#100722] flex flex-col sm:flex-row items-center justify-between gap-3">

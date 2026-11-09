@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { X, Search, Trophy, MapPin, Users, ArrowRight, ExternalLink } from 'lucide-react';
+import { X, Search, Trophy, MapPin, Users, ArrowRight, ExternalLink, Swords, LayoutGrid } from 'lucide-react';
 import { eventsData } from '../../data/events';
 import { soundEngine } from '../../game/systems/SoundEngine';
+import { EventArena } from '../Arcade/EventArena';
 
 export function EventDirectoryModal({ onSelectEvent, onClose, initialCategory = 'all' }) {
+  const [viewMode, setViewMode] = useState('arena'); // 'arena' | 'grid'
   const [activeCategory, setActiveCategory] = useState(initialCategory || 'all');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -40,19 +42,56 @@ export function EventDirectoryModal({ onSelectEvent, onClose, initialCategory = 
               18 OFFICIAL COMPETITIONS & FESTIVAL EXPERIENCES • IIIT KOTA
             </p>
           </div>
-          <button
-            onClick={() => {
-              soundEngine.playBlip();
-              onClose();
-            }}
-            className="p-2.5 rounded-xl bg-slate-900 hover:bg-rose-900 text-slate-300 hover:text-white transition-colors"
-          >
-            <X size={22} />
-          </button>
+          <div className="flex items-center gap-2.5">
+            {/* View Mode Switcher */}
+            <div className="p-1 rounded-xl bg-purple-950/80 border border-purple-600/60 flex items-center gap-1">
+              <button
+                onClick={() => { soundEngine.playBlip(); setViewMode('arena'); }}
+                className={`px-3 py-1.5 rounded-lg font-display text-xs font-black uppercase flex items-center gap-1.5 transition-all cursor-pointer ${
+                  viewMode === 'arena'
+                    ? 'bg-yellow-400 text-black shadow-md scale-105'
+                    : 'text-purple-300 hover:text-white'
+                }`}
+                title="Arcade Fighter Select View"
+              >
+                <Swords size={14} />
+                <span>ARENA</span>
+              </button>
+              <button
+                onClick={() => { soundEngine.playBlip(); setViewMode('grid'); }}
+                className={`px-3 py-1.5 rounded-lg font-display text-xs font-black uppercase flex items-center gap-1.5 transition-all cursor-pointer ${
+                  viewMode === 'grid'
+                    ? 'bg-purple-600 text-white shadow-md scale-105'
+                    : 'text-purple-300 hover:text-white'
+                }`}
+                title="Complete Directory Grid View"
+              >
+                <LayoutGrid size={14} />
+                <span>GRID</span>
+              </button>
+            </div>
+
+            <button
+              onClick={() => {
+                soundEngine.playBlip();
+                onClose();
+              }}
+              className="p-2.5 rounded-xl bg-slate-900 hover:bg-rose-900 text-slate-300 hover:text-white transition-colors cursor-pointer"
+            >
+              <X size={22} />
+            </button>
+          </div>
         </div>
 
-        {/* Filter & Search Bar */}
-        <div className="p-4 sm:p-5 bg-[#100722] border-b border-purple-900/40 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3.5">
+        {/* View Mode Content */}
+        {viewMode === 'arena' ? (
+          <div className="flex-1 overflow-hidden flex flex-col">
+            <EventArena onSelectEvent={onSelectEvent} />
+          </div>
+        ) : (
+          <>
+            {/* Filter & Search Bar */}
+            <div className="p-4 sm:p-5 bg-[#100722] border-b border-purple-900/40 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3.5 shrink-0">
           {/* Category Tabs */}
           <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
             {[
@@ -149,6 +188,8 @@ export function EventDirectoryModal({ onSelectEvent, onClose, initialCategory = 
             </div>
           )}
         </div>
+        </>
+        )}
 
         {/* Footer */}
         <div className="p-4 sm:p-5 border-t border-purple-900/60 bg-[#100722] flex flex-col sm:flex-row items-center justify-between gap-3">

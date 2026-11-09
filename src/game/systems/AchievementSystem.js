@@ -17,7 +17,9 @@ class AchievementSystem {
       viewedPages: [],
       secretFound: false,
       unlockedIds: [],
-      claimedIds: []
+      claimedIds: [],
+      coinsSpent: 0,
+      redeemedRewards: []
     };
 
     try {
@@ -32,7 +34,9 @@ class AchievementSystem {
           unlockedIds: Array.isArray(parsed?.unlockedIds) ? parsed.unlockedIds : [],
           claimedIds: Array.isArray(parsed?.claimedIds) ? parsed.claimedIds : [],
           viewedPages: Array.isArray(parsed?.viewedPages) ? parsed.viewedPages : [],
-          coinsCollected: typeof parsed?.coinsCollected === 'number' ? parsed.coinsCollected : 0
+          coinsCollected: typeof parsed?.coinsCollected === 'number' ? parsed.coinsCollected : 0,
+          coinsSpent: typeof parsed?.coinsSpent === 'number' ? parsed.coinsSpent : 0,
+          redeemedRewards: Array.isArray(parsed?.redeemedRewards) ? parsed.redeemedRewards : []
         };
       }
     } catch (e) {
@@ -113,6 +117,75 @@ class AchievementSystem {
     this.state.coinsCollected += 1;
     this.saveState();
     this.checkAchievements();
+    eventBus.emit('coin-balance-updated', this.getBalance());
+  }
+
+  addBonusCoins(amount = 10) {
+    if (typeof amount !== 'number' || amount <= 0) return;
+    this.state.coinsCollected = (this.state.coinsCollected || 0) + Math.floor(amount);
+    this.saveState();
+    this.checkAchievements();
+    eventBus.emit('coin-balance-updated', this.getBalance());
+  }
+
+  getBalance() {
+    const collected = typeof this.state.coinsCollected === 'number' ? this.state.coinsCollected : 0;
+    const spent = typeof this.state.coinsSpent === 'number' ? this.state.coinsSpent : 0;
+    return Math.max(0, collected - spent);
+  }
+
+  getTotalEarned() {
+    return typeof this.state.coinsCollected === 'number' ? this.state.coinsCollected : 0;
+  }
+
+  canAfford(cost) {
+    return this.getBalance() >= cost;
+  }
+
+  redeemShopReward(reward) {
+    if (!reward || typeof reward.cost !== 'number') return { success: false, reason: 'Invalid reward item' };
+    if (!this.canAfford(reward.cost)) {
+      return { success: false, reason: 'Insufficient coin balance' };
+    }
+
+    if (!Array.isArray(this.state.redeemedRewards)) {
+      this.state.redeemedRewards = [];
+    }
+
+    // Check if single-claim limit applies
+    if (reward.singleClaim && this.isRewardRedeemed(reward.id)) {
+      return { success: false, reason: 'Reward already claimed' };
+    }
+
+    const redemptionCode = `REV27-${reward.tier || 'CLAIM'}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const record = {
+      id: reward.id,
+      title: reward.title,
+      tier: reward.tier,
+      cost: reward.cost,
+      code: redemptionCode,
+      claimedAt: new Date().toISOString(),
+      disclaimer: reward.disclaimer || 'Present student ID at Festival Helpdesk / Honor Pavilion for organizer verification.'
+    };
+
+    this.state.coinsSpent = (this.state.coinsSpent || 0) + reward.cost;
+    this.state.redeemedRewards.push(record);
+    this.saveState();
+
+    soundEngine.playFanfare();
+    eventBus.emit('coin-balance-updated', this.getBalance());
+    eventBus.emit('reward-redeemed', record);
+
+    return { success: true, record };
+  }
+
+  isRewardRedeemed(rewardId) {
+    if (!Array.isArray(this.state.redeemedRewards)) return false;
+    return this.state.redeemedRewards.some(r => r.id === rewardId);
+  }
+
+  getRedeemedRewards() {
+    return Array.isArray(this.state.redeemedRewards) ? [...this.state.redeemedRewards] : [];
   }
 
   recordPage(pageId) {
