@@ -93,8 +93,19 @@ export class FestivalPlazaScene extends BaseKingdomScene {
     // Monumental REVERIE 2K27 Stone Archway behind the fountain
     this.createGrandPlazaArch(1140, this.groundY);
 
+    // Interactive High Score Boulevard Leaderboard Kiosk beside fountain
+    const leaderboardData = {
+      id: 'plaza-leaderboard',
+      title: 'HIGH SCORES',
+      category: 'flagship',
+      tagline: 'HIGH SCORE BOULEVARD • TOP FESTIVAL CHAMPIONS',
+      shortDesc: 'Inspect campus rankings, top coin collectors, quest champions and mini-game records.',
+      description: 'Inspect campus rankings, top coin collectors, quest champions and mini-game records.',
+      customModal: 'leaderboard'
+    };
+    this.addEventPortal(980, this.groundY, leaderboardData);
+
     // Decorative Golden Lamp Posts flanking fountain
-    this.createLampPost(980, this.groundY);
     this.createLampPost(1300, this.groundY);
 
     // =========================================================================

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { X, Calendar, Clock, MapPin, Radio, Bell, ArrowRight, ExternalLink, Sparkles, Filter } from 'lucide-react';
+import { X, Calendar, Clock, MapPin, Radio, Bell, ArrowRight, ExternalLink, Sparkles, Filter, Flag, LayoutList } from 'lucide-react';
 import { festivalAnnouncements, festivalSchedule } from '../../data/schedule';
 import { eventsData } from '../../data/events';
 import { soundEngine } from '../../game/systems/SoundEngine';
 import { eventBus } from '../../game/EventBus';
+import { ScheduleCircuit } from '../Arcade/ScheduleCircuit';
 
 export function ReverieLiveModal({ onClose, onSelectEvent }) {
+  const [viewMode, setViewMode] = useState('circuit'); // 'circuit' | 'timeline'
   const [selectedDay, setSelectedDay] = useState('all'); // 'all', 1, 2, 3
   const [selectedCat, setSelectedCat] = useState('all'); // 'all', 'technical', 'cultural', 'flagship'
 
@@ -60,19 +62,56 @@ export function ReverieLiveModal({ onClose, onSelectEvent }) {
             </div>
           </div>
 
-          <button
-            onClick={() => {
-              soundEngine.playBlip();
-              onClose();
-            }}
-            className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-slate-900 hover:bg-rose-950 text-slate-300 hover:text-white border border-slate-700 hover:border-rose-500 transition-all cursor-pointer flex items-center gap-1.5 font-display text-xs font-bold"
-          >
-            <span className="hidden sm:inline">CLOSE [ESC]</span>
-            <X size={18} />
-          </button>
+          <div className="flex items-center gap-2">
+            {/* View Mode Switcher */}
+            <div className="p-1 rounded-xl bg-purple-950/80 border border-purple-600/60 flex items-center gap-1">
+              <button
+                onClick={() => { soundEngine.playBlip(); setViewMode('circuit'); }}
+                className={`px-3 py-1.5 rounded-lg font-display text-xs font-black uppercase flex items-center gap-1.5 transition-all cursor-pointer ${
+                  viewMode === 'circuit'
+                    ? 'bg-emerald-500 text-black shadow-md scale-105'
+                    : 'text-purple-300 hover:text-white'
+                }`}
+                title="Grand Prix Racing Circuit View"
+              >
+                <Flag size={14} />
+                <span>CIRCUIT</span>
+              </button>
+              <button
+                onClick={() => { soundEngine.playBlip(); setViewMode('timeline'); }}
+                className={`px-3 py-1.5 rounded-lg font-display text-xs font-black uppercase flex items-center gap-1.5 transition-all cursor-pointer ${
+                  viewMode === 'timeline'
+                    ? 'bg-rose-600 text-white shadow-md scale-105'
+                    : 'text-purple-300 hover:text-white'
+                }`}
+                title="Full Chronological Timeline View"
+              >
+                <LayoutList size={14} />
+                <span>TIMELINE</span>
+              </button>
+            </div>
+
+            <button
+              onClick={() => {
+                soundEngine.playBlip();
+                onClose();
+              }}
+              className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-slate-900 hover:bg-rose-950 text-slate-300 hover:text-white border border-slate-700 hover:border-rose-500 transition-all cursor-pointer flex items-center gap-1.5 font-display text-xs font-bold"
+            >
+              <span className="hidden sm:inline">CLOSE [ESC]</span>
+              <X size={18} />
+            </button>
+          </div>
         </div>
 
-        {/* Live Announcements Ticker */}
+        {/* View Mode Content */}
+        {viewMode === 'circuit' ? (
+          <div className="flex-1 overflow-hidden flex flex-col">
+            <ScheduleCircuit onSelectEvent={onSelectEvent} />
+          </div>
+        ) : (
+          <>
+            {/* Live Announcements Ticker */}
         <div className="bg-[#150a2e] border-b border-purple-900/60 p-3 sm:px-6">
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-950 border border-rose-500/60 text-rose-300 font-display text-[11px] font-black shrink-0 uppercase tracking-wider">
@@ -231,6 +270,8 @@ export function ReverieLiveModal({ onClose, onSelectEvent }) {
             })
           )}
         </div>
+        </>
+        )}
 
         {/* Footer */}
         <div className="p-4 border-t border-purple-900/60 bg-[#0c061e] flex flex-col sm:flex-row items-center justify-between gap-3">

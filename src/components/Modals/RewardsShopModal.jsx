@@ -359,16 +359,33 @@ export function RewardsShopModal({ onClose, onOpenWardrobe }) {
                           {rec.title}
                         </h4>
 
-                        <div className="p-3 my-3 rounded-xl bg-black/60 border border-purple-800 flex items-center justify-between">
-                          <div>
-                            <span className="text-[10px] font-mono text-slate-400 block">VOUCHER CLAIM CODE</span>
-                            <span className="font-mono text-base font-black text-yellow-300 tracking-wider">
+                        <div className="flex items-center gap-3.5 p-3.5 my-3 rounded-2xl bg-black/80 border-2 border-purple-800/80">
+                          {/* Visual QR Code Scanner Representation */}
+                          <div className="w-16 h-16 bg-white p-1 rounded-lg flex flex-col justify-between shrink-0 shadow-lg">
+                            <div className="flex justify-between">
+                              <div className="w-4 h-4 bg-black p-0.5"><div className="w-full h-full bg-white p-0.5"><div className="w-full h-full bg-black" /></div></div>
+                              <div className="w-4 h-4 bg-black p-0.5"><div className="w-full h-full bg-white p-0.5"><div className="w-full h-full bg-black" /></div></div>
+                            </div>
+                            <div className="flex justify-center items-center my-auto"><div className="w-2.5 h-2.5 bg-black" /></div>
+                            <div className="flex justify-between">
+                              <div className="w-4 h-4 bg-black p-0.5"><div className="w-full h-full bg-white p-0.5"><div className="w-full h-full bg-black" /></div></div>
+                              <div className="w-3 h-3 bg-black rounded-xs" />
+                            </div>
+                          </div>
+
+                          <div className="flex-1 min-w-0">
+                            <span className="text-[10px] font-mono text-slate-400 block uppercase">FESTIVAL VALIDATION PASS</span>
+                            <span className="font-mono text-base font-black text-yellow-300 tracking-wider truncate block">
                               {rec.code}
                             </span>
+                            <span className="text-[10px] font-mono text-emerald-400 font-bold block mt-0.5">
+                              ✓ VERIFIED CAMPUS TOKEN
+                            </span>
                           </div>
+
                           <button
                             onClick={() => copyCode(rec.code)}
-                            className="p-2 rounded-lg bg-purple-950 hover:bg-purple-800 text-slate-300 hover:text-white transition-all cursor-pointer"
+                            className="p-2.5 rounded-xl bg-purple-950 hover:bg-purple-800 border border-purple-700 text-slate-300 hover:text-white transition-all cursor-pointer shrink-0"
                             title="Copy code"
                           >
                             <Copy size={16} />
@@ -426,11 +443,23 @@ export function RewardsShopModal({ onClose, onOpenWardrobe }) {
               {claimedDialog.title}
             </p>
 
-            <div className="p-4 rounded-2xl bg-black/70 border-2 border-yellow-500/60 my-4 text-center">
-              <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest block mb-1">
-                YOUR UNIQUE VOUCHER TOKEN
+            <div className="p-4 rounded-2xl bg-black/80 border-2 border-yellow-500/70 my-4 flex flex-col items-center gap-2">
+              <div className="w-20 h-20 bg-white p-1.5 rounded-xl flex flex-col justify-between shadow-xl">
+                <div className="flex justify-between">
+                  <div className="w-5 h-5 bg-black p-0.5"><div className="w-full h-full bg-white p-0.5"><div className="w-full h-full bg-black" /></div></div>
+                  <div className="w-5 h-5 bg-black p-0.5"><div className="w-full h-full bg-white p-0.5"><div className="w-full h-full bg-black" /></div></div>
+                </div>
+                <div className="flex justify-center items-center my-auto"><div className="w-3 h-3 bg-black" /></div>
+                <div className="flex justify-between">
+                  <div className="w-5 h-5 bg-black p-0.5"><div className="w-full h-full bg-white p-0.5"><div className="w-full h-full bg-black" /></div></div>
+                  <div className="w-4 h-4 bg-black rounded-xs" />
+                </div>
+              </div>
+
+              <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest block">
+                FESTIVAL DIGITAL PASS CODE
               </span>
-              <span className="font-mono text-2xl font-black text-yellow-300 tracking-widest">
+              <span className="font-mono text-xl sm:text-2xl font-black text-yellow-300 tracking-widest">
                 {claimedDialog.code}
               </span>
             </div>

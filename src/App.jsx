@@ -17,6 +17,7 @@ import { KotaBotModal } from './components/Modals/KotaBotModal';
 import { ReverieLiveModal } from './components/Modals/ReverieLiveModal';
 import { MiniGameArcade } from './components/Arcade/MiniGameArcade';
 import { RewardsShopModal } from './components/Modals/RewardsShopModal';
+import { LeaderboardModal } from './components/Modals/LeaderboardModal';
 import { AchievementToast } from './components/Achievements/AchievementToast';
 import { eventBus } from './game/EventBus';
 import { soundEngine } from './game/systems/SoundEngine';
@@ -44,6 +45,7 @@ export function App() {
   const [liveOpen, setLiveOpen] = useState(false);
   const [arcadeOpen, setArcadeOpen] = useState(false);
   const [rewardsOpen, setRewardsOpen] = useState(false);
+  const [leaderboardOpen, setLeaderboardOpen] = useState(false);
   const [kotaBotState, setKotaBotState] = useState({ open: false, zone: 'StartingKingdomScene', sceneName: 'Starting Kingdom' });
 
   // Proximity flags for mobile action button
@@ -106,6 +108,12 @@ export function App() {
         setContactsOpen(true);
       } else if (eventData.customModal === 'skins') {
         setSkinsOpen(true);
+      } else if (eventData.customModal === 'arcade') {
+        setArcadeOpen(true);
+      } else if (eventData.customModal === 'leaderboard') {
+        setLeaderboardOpen(true);
+      } else if (eventData.customModal === 'rewards') {
+        setRewardsOpen(true);
       } else {
         setActiveEvent(eventData);
       }
@@ -157,6 +165,7 @@ export function App() {
         setLiveOpen(false);
         setArcadeOpen(false);
         setRewardsOpen(false);
+        setLeaderboardOpen(false);
         setKotaBotState(prev => ({ ...prev, open: false }));
       }
     };
@@ -189,6 +198,7 @@ export function App() {
         onOpenLive={() => setLiveOpen(true)}
         onOpenArcade={() => setArcadeOpen(true)}
         onOpenRewards={() => setRewardsOpen(true)}
+        onOpenLeaderboard={() => setLeaderboardOpen(true)}
         onOpenSkins={() => setSkinsOpen(true)}
         onOpenBot={() => setKotaBotState({ open: true, zone: currentZoneKey, sceneName: currentZone })}
         onOpenAchievements={() => setAchievementsOpen(true)}
@@ -405,6 +415,14 @@ export function App() {
             setRewardsOpen(false);
             setSkinsOpen(true);
           }}
+        />
+      )}
+
+      {/* 14. HIGH SCORE BOULEVARD LEADERBOARD */}
+      {leaderboardOpen && (
+        <LeaderboardModal
+          onClose={() => setLeaderboardOpen(false)}
+          currentSkin={currentSkin}
         />
       )}
     </div>

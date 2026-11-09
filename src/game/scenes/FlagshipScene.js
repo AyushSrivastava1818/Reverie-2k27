@@ -175,6 +175,18 @@ export class FlagshipScene extends BaseKingdomScene {
 
     this.addNPC(260, this.groundY, 'CHAMP BOT', 'Welcome to Flagship Kingdom! Step up to HackTheChain, Carnival, ProNite and Faculty Fumble!');
 
+    // Interactive In-World Retro Arcade Cabinet in Carnival Entrance
+    const arcadeKioskData = {
+      id: 'carnival-arcade',
+      title: 'ARCADE CABINET',
+      category: 'flagship',
+      tagline: '5 RETRO MINI-GAMES • SPONSOR SHOOTER • RUNNER • SNAKE',
+      shortDesc: 'Step up to the retro arcade machine to play 90s classics, set high scores, and earn coins for the Rewards Shop.',
+      description: 'Step up to the retro arcade machine to play 90s classics, set high scores, and earn coins for the Rewards Shop.',
+      customModal: 'arcade'
+    };
+    this.addEventPortal(450, this.groundY, arcadeKioskData);
+
     const flagEvents = eventsData.filter(e => e.category === 'flagship');
 
     // -------------------------------------------------------------------------

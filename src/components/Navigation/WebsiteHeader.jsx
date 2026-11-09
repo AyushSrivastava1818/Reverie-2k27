@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { 
   Volume2, VolumeX, Maximize2, Minimize2, Map, List, 
   Trophy, Sparkles, Image as ImageIcon, HeartHandshake, Phone, Shirt,
-  Menu, X, Bot, Radio, Gamepad2, Gift
+  Menu, X, Bot, Radio, Gamepad2, Gift, Flame
 } from 'lucide-react';
 import { soundEngine } from '../../game/systems/SoundEngine';
 
@@ -12,6 +12,7 @@ export function WebsiteHeader({
   onOpenLive,
   onOpenArcade,
   onOpenRewards,
+  onOpenLeaderboard,
   onOpenSkins,
   onOpenBot,
   onOpenAchievements,
@@ -155,6 +156,14 @@ export function WebsiteHeader({
         >
           <Trophy size={16} className="text-yellow-400" />
           <span>STATS</span>
+        </button>
+
+        <button
+          onClick={() => handleNavClick(onOpenLeaderboard)}
+          className="px-3 py-1.5 rounded-xl bg-[#180b33] hover:bg-purple-900 border border-yellow-400/60 text-yellow-300 hover:text-white font-display text-xs font-black uppercase tracking-wider flex items-center gap-1.5 transition-all hover:scale-105 cursor-pointer shadow-md shadow-yellow-500/10"
+        >
+          <Flame size={16} className="text-amber-400 animate-pulse" />
+          <span>SCORES</span>
         </button>
 
         <button
@@ -343,6 +352,14 @@ export function WebsiteHeader({
             >
               <Trophy size={18} className="text-yellow-400" />
               <span>IMPACT STATS</span>
+            </button>
+
+            <button
+              onClick={() => handleNavClick(onOpenLeaderboard)}
+              className="p-3 rounded-xl bg-[#180b33] border border-yellow-400/60 text-yellow-300 font-display text-xs font-bold uppercase flex items-center gap-2.5"
+            >
+              <Flame size={18} className="text-amber-400 animate-pulse" />
+              <span>HIGH SCORES</span>
             </button>
 
             <button

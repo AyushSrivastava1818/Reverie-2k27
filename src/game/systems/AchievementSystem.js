@@ -122,7 +122,14 @@ class AchievementSystem {
 
   addBonusCoins(amount = 10) {
     if (typeof amount !== 'number' || amount <= 0) return;
-    this.state.coinsCollected = (this.state.coinsCollected || 0) + Math.floor(amount);
+    const now = Date.now();
+    // Anti-grind validation: prevent rapid-fire injection loops (< 400ms threshold)
+    if (this._lastBonusTime && now - this._lastBonusTime < 400) {
+      return;
+    }
+    this._lastBonusTime = now;
+    const validatedAmount = Math.min(50, Math.floor(amount));
+    this.state.coinsCollected = (this.state.coinsCollected || 0) + validatedAmount;
     this.saveState();
     this.checkAchievements();
     eventBus.emit('coin-balance-updated', this.getBalance());
