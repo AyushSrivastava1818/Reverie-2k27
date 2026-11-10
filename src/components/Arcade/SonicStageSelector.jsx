@@ -3,10 +3,10 @@ import { soundEngine } from '../../game/systems/SoundEngine';
 import { SonicGenesisSprite } from './ArcadePixelSprites';
 
 export const STAGES = [
-  { id: 1, name: 'STAGE 1: EVENTS', short: 'EVENTS', stageLabel: 'CHOOSE EVENT!' },
-  { id: 2, name: 'STAGE 2: SPONSORS', short: 'SPONSORS', stageLabel: 'STAGE 2: SPONSORS' },
-  { id: 3, name: 'STAGE 3: FAQS', short: 'FAQS', stageLabel: 'STAGE 3: FAQS' },
-  { id: 4, name: 'STAGE 4: REGISTER', short: 'REGISTER', stageLabel: 'STAGE 4: REGISTER' }
+  { id: 1, name: 'STAGE 1: PAC-MAN SCHEDULE', short: 'PAC-MAN', stageLabel: 'STAGE 1: PAC-MAN SCHEDULE' },
+  { id: 2, name: 'STAGE 2: SPONSOR GALAXY', short: 'SPONSORS', stageLabel: 'STAGE 2: SPONSOR GALAXY' },
+  { id: 3, name: 'STAGE 3: FAQ SANCTUARY', short: 'FAQS', stageLabel: 'STAGE 3: FAQ SANCTUARY' },
+  { id: 4, name: 'STAGE 4: CASTLE & REGISTER', short: 'REGISTER', stageLabel: 'STAGE 4: CASTLE & REGISTER' }
 ];
 
 export function SonicStageSelector({
@@ -178,14 +178,14 @@ export function SonicStageSelector({
             {/* Floating Arrow Cursor if active */}
             {currentStage === 1 && (
               <div className="text-yellow-300 text-xs font-black animate-bounce mb-1 flex items-center gap-1 bg-black/70 px-2 py-0.5 rounded-full border border-yellow-400">
-                <span>CHOOSE EVENT!</span>
+                <span>PAC-MAN SCHEDULE!</span>
                 <span>➔</span>
               </div>
             )}
             
             {/* Wooden Signboard */}
             <div className="px-2.5 py-1 rounded bg-[#451a03] border-2 border-yellow-400 text-yellow-300 text-[8px] font-black tracking-wider shadow mb-1">
-              STAGE 1: EVENTS
+              STAGE 1: PAC-MAN EVENTS
             </div>
 
             {/* Sonic Sprite standing on Island 1 (ONLY when Stage 1 is selected) */}

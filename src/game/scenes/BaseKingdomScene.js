@@ -218,52 +218,396 @@ export class BaseKingdomScene extends Phaser.Scene {
   }
 
   createParallaxBackgrounds(theme) {
-    // 1. Stars (Fixed, slow scroll)
+    // -------------------------------------------------------------------------
+    // 1. FULL-SCREEN PROCEDURAL SKY GRADIENT (Distinct atmospheric color per realm!)
+    // -------------------------------------------------------------------------
+    const skyG = this.add.graphics();
+    skyG.setDepth(-20);
+    skyG.setScrollFactor(0);
+
+    const camH = 720;
+    const camW = 1280;
+
+    const skyThemes = {
+      grass: { top: 0x090317, bot: 0x2e1065 },     // Twilight Violet Fantasy
+      tech: { top: 0x020617, bot: 0x082f49 },      // Electric Cyber Navy to Teal
+      culture: { top: 0x15021e, bot: 0x58085c },   // Hot Magenta & Concert Velvet
+      flagship: { top: 0x180521, bot: 0x831843 },  // Synthwave Sunset Horizon
+      plaza: { top: 0x090d21, bot: 0x251e56 }      // Grand Expo Night Sky
+    };
+    const currentSky = skyThemes[theme] || skyThemes.grass;
+    skyG.fillGradientStyle(currentSky.top, currentSky.top, currentSky.bot, currentSky.bot, 1);
+    skyG.fillRect(0, 0, camW * 1.5, camH * 1.5);
+
+    // -------------------------------------------------------------------------
+    // 2. THEME-SPECIFIC DISTINCT SKY & HORIZON VISUAL ELEMENTS
+    // -------------------------------------------------------------------------
+    if (theme === 'tech') {
+      // ═══════════════════════════════════════════════════════════════════════
+      // TECH REALM: TRON MATRIX GRID + TOWERING SKYSCRAPERS + CODE RAIN
+      // ═══════════════════════════════════════════════════════════════════════
+      
+      // Cyber Perspective Grid on the Horizon
+      const gridG = this.add.graphics();
+      gridG.setDepth(-16);
+      gridG.setScrollFactor(0.12, 0);
+      gridG.lineStyle(1.5, 0x06b6d4, 0.45);
+      for (let gy = 360; gy <= this.groundY; gy += 18) {
+        gridG.lineBetween(0, gy, this.worldWidth, gy);
+      }
+      for (let gx = 0; gx < this.worldWidth; gx += 50) {
+        gridG.lineBetween(gx, 360, gx, this.groundY);
+      }
+
+      // Parallax Skyscraper Silhouettes with Lit Windows
+      const cityG = this.add.graphics();
+      cityG.setDepth(-14);
+      cityG.setScrollFactor(0.18, 0.08);
+
+      const buildingColors = [0x071526, 0x0c2138, 0x051b2e];
+      const windowColors = [0x38bdf8, 0x22d3ee, 0xf43f5e, 0xfacc15, 0x10b981];
+
+      for (let bx = 0; bx < this.worldWidth; bx += Phaser.Math.Between(70, 130)) {
+        const bWidth = Phaser.Math.Between(55, 110);
+        const bHeight = Phaser.Math.Between(260, 480);
+        const bY = this.groundY - bHeight;
+
+        // Building Body
+        cityG.fillStyle(Phaser.Utils.Array.GetRandom(buildingColors), 0.95);
+        cityG.fillRect(bx, bY, bWidth, bHeight);
+
+        // Neon Rooftop Accent Line
+        cityG.lineStyle(2, 0x06b6d4, 0.8);
+        cityG.lineBetween(bx, bY, bx + bWidth, bY);
+
+        // Antenna with blinking beacon
+        if (bx % 3 === 0) {
+          cityG.lineStyle(1.5, 0x38bdf8, 0.7);
+          cityG.lineBetween(bx + bWidth / 2, bY, bx + bWidth / 2, bY - 35);
+          cityG.fillStyle(0xef4444, 1);
+          cityG.fillCircle(bx + bWidth / 2, bY - 35, 2.5);
+        }
+
+        // Glowing Windows Grid
+        for (let wy = bY + 20; wy < this.groundY - 30; wy += 22) {
+          for (let wx = bx + 8; wx < bx + bWidth - 8; wx += 16) {
+            if (Math.random() > 0.35) {
+              const winCol = Phaser.Utils.Array.GetRandom(windowColors);
+              cityG.fillStyle(winCol, Math.random() > 0.5 ? 0.9 : 0.45);
+              cityG.fillRect(wx, wy, 8, 12);
+            }
+          }
+        }
+      }
+
+      // Animated Falling Matrix Code Rain / Data Streams
+      for (let i = 0; i < 28; i++) {
+        const streamX = Phaser.Math.Between(50, this.worldWidth - 50);
+        const stream = this.add.graphics();
+        stream.setDepth(-10);
+        stream.setScrollFactor(0.25, 0);
+
+        const col = i % 2 === 0 ? 0x06b6d4 : 0x10b981;
+        stream.fillStyle(col, 0.75);
+        const len = Phaser.Math.Between(25, 70);
+        stream.fillRect(streamX, -100, 2, len);
+
+        this.tweens.add({
+          targets: stream,
+          y: this.groundY + 200,
+          duration: Phaser.Math.Between(2200, 4500),
+          repeat: -1,
+          delay: Phaser.Math.Between(0, 3000)
+        });
+      }
+
+      // Neon Cyber Signboards floating on horizon
+      for (let sx = 400; sx < this.worldWidth; sx += 700) {
+        const signText = Phaser.Utils.Array.GetRandom([
+          '⚡ TECH REALM // IIIT KOTA',
+          '◈ CYBER MATRIX TERMINAL',
+          '★ HACKTHECHAIN 24H',
+          '▲ AI & ROBOTICS LAB'
+        ]);
+        const sign = this.add.text(sx, 220, signText, {
+          fontFamily: '"Press Start 2P", monospace',
+          fontSize: '9px',
+          color: '#38bdf8'
+        }).setOrigin(0.5).setDepth(-12).setScrollFactor(0.18, 0.08);
+
+        this.tweens.add({
+          targets: sign,
+          alpha: { from: 0.9, to: 0.35 },
+          duration: 900,
+          yoyo: true,
+          repeat: -1,
+          ease: 'Sine.easeInOut'
+        });
+      }
+
+    } else if (theme === 'culture') {
+      // ═══════════════════════════════════════════════════════════════════════
+      // CULTURE REALM: EDM CONCERT SEARCHLIGHTS + TRUSS RIG + LASER BEAMS
+      // ═══════════════════════════════════════════════════════════════════════
+      
+      // Sweeping Dynamic Concert Searchlights cutting through the night
+      const spotlightColors = [0xec4899, 0xa855f7, 0x06b6d4, 0xfacc15];
+      for (let i = 0; i < 6; i++) {
+        const lx = 300 + i * 500;
+        const beam = this.add.graphics();
+        beam.setDepth(-15);
+        beam.setScrollFactor(0.12, 0);
+
+        const bColor = spotlightColors[i % spotlightColors.length];
+        beam.fillGradientStyle(bColor, bColor, 0x000000, 0x000000, 0.45);
+        // Cone beam from ground to sky
+        beam.fillTriangle(lx, this.groundY, lx - 70, 40, lx + 70, 40);
+
+        // Sweep animation
+        this.tweens.add({
+          targets: beam,
+          angle: { from: -24, to: 24 },
+          duration: 3200 + i * 400,
+          yoyo: true,
+          repeat: -1,
+          ease: 'Sine.easeInOut'
+        });
+      }
+
+      // Stadium Concert Truss Rigging Overhead
+      const trussG = this.add.graphics();
+      trussG.setDepth(-8);
+      trussG.setScrollFactor(0.15, 0);
+      trussG.lineStyle(3, 0x334155, 0.9);
+      trussG.lineBetween(0, 95, this.worldWidth, 95);
+      trussG.lineBetween(0, 115, this.worldWidth, 115);
+
+      // Truss cross bracing & colored PAR can stage lights
+      const parColors = [0xef4444, 0x3b82f6, 0xfacc15, 0x10b981, 0xec4899];
+      for (let tx = 30; tx < this.worldWidth; tx += 40) {
+        trussG.lineStyle(1.5, 0x475569, 0.75);
+        trussG.lineBetween(tx, 95, tx + 20, 115);
+        trussG.lineBetween(tx + 20, 95, tx, 115);
+
+        // Hanging PAR can light
+        const parCol = Phaser.Utils.Array.GetRandom(parColors);
+        const par = this.add.circle(tx + 10, 122, 5, parCol, 0.95);
+        par.setDepth(-7).setScrollFactor(0.15, 0);
+
+        this.tweens.add({
+          targets: par,
+          alpha: { from: 1, to: 0.2 },
+          duration: Phaser.Math.Between(300, 800),
+          yoyo: true,
+          repeat: -1
+        });
+      }
+
+      // Huge Stadium Sound Towers on Horizon
+      for (let spx = 220; spx < this.worldWidth; spx += 520) {
+        const spG = this.add.graphics();
+        spG.setDepth(-12);
+        spG.setScrollFactor(0.2, 0.05);
+
+        // Speaker Cabinet
+        spG.fillStyle(0x0f172a, 0.95);
+        spG.fillRect(spx, this.groundY - 240, 60, 240);
+        spG.lineStyle(2, 0xa855f7, 0.6);
+        spG.strokeRect(spx, this.groundY - 240, 60, 240);
+
+        // Speaker Cones with glowing rings
+        for (let scy = this.groundY - 210; scy < this.groundY - 20; scy += 50) {
+          spG.fillStyle(0x1e1b4b, 1);
+          spG.fillCircle(spx + 30, scy, 18);
+          spG.lineStyle(2, 0xec4899, 0.8);
+          spG.strokeCircle(spx + 30, scy, 18);
+          spG.fillStyle(0xf472b6, 0.9);
+          spG.fillCircle(spx + 30, scy, 6);
+        }
+      }
+
+      // Floating Concert Confetti / Glitter
+      for (let c = 0; c < 50; c++) {
+        const cx = Phaser.Math.Between(0, this.worldWidth);
+        const cy = Phaser.Math.Between(100, this.groundY);
+        const col = Phaser.Utils.Array.GetRandom([0xec4899, 0xfacc15, 0x06b6d4, 0xffffff, 0xa855f7]);
+        const rect = this.add.rectangle(cx, cy, 4, 3, col, 0.85);
+        rect.setDepth(-5);
+
+        this.tweens.add({
+          targets: rect,
+          y: cy + Phaser.Math.Between(40, 100),
+          x: cx + Phaser.Math.Between(-40, 40),
+          angle: Phaser.Math.Between(0, 360),
+          duration: Phaser.Math.Between(2500, 5000),
+          yoyo: true,
+          repeat: -1
+        });
+      }
+
+    } else if (theme === 'flagship') {
+      // ═══════════════════════════════════════════════════════════════════════
+      // FLAGSHIP REALM: SYNTHWAVE SUN + RETRO WIREFRAME HORIZON + CARNIVAL
+      // ═══════════════════════════════════════════════════════════════════════
+      
+      // Giant Synthwave Glowing Sun on Horizon
+      for (let sx = 600; sx < this.worldWidth; sx += 1400) {
+        const sun = this.add.graphics();
+        sun.setDepth(-18);
+        sun.setScrollFactor(0.04, 0);
+
+        // Glowing outer aura
+        sun.fillStyle(0xfb7185, 0.35);
+        sun.fillCircle(sx, 220, 105);
+
+        // Sun disc with horizontal raster stripes
+        sun.fillGradientStyle(0xfacc15, 0xfacc15, 0xe11d48, 0xe11d48, 1);
+        sun.fillCircle(sx, 220, 85);
+
+        // Raster gap lines across lower sun half
+        sun.fillStyle(0x180521, 1);
+        for (let ry = 220; ry <= 295; ry += 12) {
+          const thickness = 2 + (ry - 220) * 0.08;
+          sun.fillRect(sx - 90, ry, 180, thickness);
+        }
+      }
+
+      // Retro 3D Perspective Synthwave Horizon Grid
+      const synthGrid = this.add.graphics();
+      synthGrid.setDepth(-15);
+      synthGrid.setScrollFactor(0.1, 0);
+      synthGrid.lineStyle(1.5, 0xec4899, 0.5);
+      for (let sy = 340; sy <= this.groundY; sy += 20) {
+        synthGrid.lineBetween(0, sy, this.worldWidth, sy);
+      }
+      for (let sx = 0; sx < this.worldWidth; sx += 60) {
+        synthGrid.lineBetween(sx, 340, sx, this.groundY);
+      }
+
+      // Neon Synthwave Mountain Peaks
+      const mtnG = this.add.graphics();
+      mtnG.setDepth(-16);
+      mtnG.setScrollFactor(0.08, 0);
+      mtnG.fillStyle(0x2e0854, 0.9);
+      for (let mx = 0; mx < this.worldWidth; mx += 340) {
+        mtnG.beginPath();
+        mtnG.moveTo(mx, this.groundY);
+        mtnG.lineTo(mx + 170, 240);
+        mtnG.lineTo(mx + 340, this.groundY);
+        mtnG.closePath();
+        mtnG.fillPath();
+
+        // Neon Mountain Ridge Line
+        mtnG.lineStyle(2, 0xf43f5e, 0.85);
+        mtnG.lineBetween(mx, this.groundY, mx + 170, 240);
+        mtnG.lineBetween(mx + 170, 240, mx + 340, this.groundY);
+      }
+
+    } else if (theme === 'plaza') {
+      // ═══════════════════════════════════════════════════════════════════════
+      // FESTIVAL PLAZA: FESTIVE FIREWORKS + CAMPUS PAVILIONS + EXPO BANNERS
+      // ═══════════════════════════════════════════════════════════════════════
+      
+      // Campus Expo Pavilion Domes in Background
+      const pavG = this.add.graphics();
+      pavG.setDepth(-15);
+      pavG.setScrollFactor(0.12, 0);
+      pavG.fillStyle(0x131a38, 0.95);
+      for (let px = 200; px < this.worldWidth; px += 650) {
+        // Pavilion Grand Dome
+        pavG.fillCircle(px + 120, this.groundY - 140, 110);
+        pavG.fillRect(px, this.groundY - 140, 240, 140);
+        pavG.lineStyle(2.5, 0x38bdf8, 0.7);
+        pavG.strokeRect(px, this.groundY - 140, 240, 140);
+      }
+
+      // Recurring Celebratory Fireworks Launcher
+      this.time.addEvent({
+        delay: 2400,
+        callback: () => {
+          if (!this.cameras?.main) return;
+          const camX = this.cameras.main.scrollX;
+          const fxX = camX + Phaser.Math.Between(80, 1000);
+          const fxY = Phaser.Math.Between(90, 240);
+
+          const fireworkCols = [0xfacc15, 0xec4899, 0x06b6d4, 0x10b981, 0xf97316, 0xffffff];
+          const chosenCol = Phaser.Utils.Array.GetRandom(fireworkCols);
+
+          for (let p = 0; p < 24; p++) {
+            const angle = (p / 24) * Math.PI * 2;
+            const spd = Phaser.Math.Between(40, 110);
+            const spark = this.add.circle(fxX, fxY, 2.5, chosenCol, 1);
+            spark.setDepth(-12);
+
+            this.tweens.add({
+              targets: spark,
+              x: fxX + Math.cos(angle) * spd,
+              y: fxY + Math.sin(angle) * spd + 20,
+              alpha: 0,
+              scale: 0.2,
+              duration: Phaser.Math.Between(600, 1000),
+              ease: 'Quad.easeOut',
+              onComplete: () => spark.destroy()
+            });
+          }
+        },
+        loop: true
+      });
+
+    } else {
+      // ═══════════════════════════════════════════════════════════════════════
+      // GRASS / STARTING KINGDOM: TWILIGHT MARIO MOON + ROLLING HILLS
+      // ═══════════════════════════════════════════════════════════════════════
+      
+      // Giant Glowing Moon
+      for (let mx = 400; mx < this.worldWidth; mx += 1600) {
+        const moonG = this.add.graphics();
+        moonG.setDepth(-18);
+        moonG.setScrollFactor(0.03, 0);
+
+        moonG.fillStyle(0xfde047, 0.25);
+        moonG.fillCircle(mx, 120, 65);
+        moonG.fillStyle(0xfef08a, 0.95);
+        moonG.fillCircle(mx, 120, 48);
+
+        // Moon craters
+        moonG.fillStyle(0xfacc15, 0.8);
+        moonG.fillCircle(mx - 12, 110, 8);
+        moonG.fillCircle(mx + 14, 130, 12);
+        moonG.fillCircle(mx + 6, 104, 6);
+      }
+
+      // Rolling Fantasy Mario Hills (2 Layers)
+      const hillG = this.add.graphics();
+      hillG.setDepth(-15);
+      hillG.setScrollFactor(0.12, 0);
+      hillG.fillStyle(0x1a0d33, 0.95);
+      for (let hx = 0; hx < this.worldWidth; hx += 380) {
+        hillG.fillCircle(hx + 190, this.groundY - 40, 220);
+      }
+
+      const nearHillG = this.add.graphics();
+      nearHillG.setDepth(-13);
+      nearHillG.setScrollFactor(0.2, 0);
+      nearHillG.fillStyle(0x271249, 0.95);
+      for (let nhx = 80; nhx < this.worldWidth; nhx += 320) {
+        nearHillG.fillCircle(nhx + 160, this.groundY - 10, 170);
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // 3. Ambient Cosmic Starfield (Shared subtle stars)
+    // -------------------------------------------------------------------------
     for (let x = 0; x < this.worldWidth; x += 800) {
       const stars = this.add.image(x, 0, 'bg_stars').setOrigin(0, 0);
       stars.setScrollFactor(0.04, 0.04);
-      stars.setDepth(-12);
+      stars.setDepth(-19);
+      stars.setAlpha(0.65);
     }
 
-    // 2. Theme-Specific Distinct Backgrounds (Full visual world distinction!)
-    if (theme === 'grass') {
-      // Classic UniMaker / Mario Purple Fantasy Kingdom
-      for (let x = 0; x < this.worldWidth; x += 800) {
-        const hills = this.add.image(x, 80, 'bg_mario_hills').setOrigin(0, 0);
-        hills.setScrollFactor(0.18, 0.18);
-        hills.setDepth(-6);
-      }
-    } else if (theme === 'tech') {
-      // Cyberpunk Neon Metropolis (Towering skyscrapers with glowing windows)
-      for (let x = 0; x < this.worldWidth; x += 800) {
-        const city = this.add.image(x, 80, 'bg_cyber_city').setOrigin(0, 0);
-        city.setScrollFactor(0.24, 0.24);
-        city.setDepth(-6);
-      }
-    } else if (theme === 'culture') {
-      // Concert Stage & Beams
-      for (let x = 0; x < this.worldWidth; x += 800) {
-        const stage = this.add.image(x, 80, 'bg_culture').setOrigin(0, 0);
-        stage.setScrollFactor(0.22, 0.22);
-        stage.setDepth(-6);
-      }
-    } else if (theme === 'flagship') {
-      // Neon Retro Arcade Hall
-      for (let x = 0; x < this.worldWidth; x += 800) {
-        const arcade = this.add.image(x, 80, 'bg_arcade_hall').setOrigin(0, 0);
-        arcade.setScrollFactor(0.20, 0.20);
-        arcade.setDepth(-6);
-      }
-    } else if (theme === 'plaza') {
-      // Festival Plaza with campus silhouette & fireworks
-      for (let x = 0; x < this.worldWidth; x += 800) {
-        const plaza = this.add.image(x, 80, 'bg_festival_plaza').setOrigin(0, 0);
-        plaza.setScrollFactor(0.18, 0.18);
-        plaza.setDepth(-6);
-      }
-    }
-
-    // 3. Drifting Living Pixel Clouds
+    // -------------------------------------------------------------------------
+    // 4. Drifting Living Pixel Clouds
+    // -------------------------------------------------------------------------
     this.clouds = [];
     for (let i = 0; i < 8; i++) {
       const cx = (i * 420) + Phaser.Math.Between(0, 80);

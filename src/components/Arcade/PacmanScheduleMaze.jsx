@@ -3,7 +3,7 @@ import { soundEngine } from '../../game/systems/SoundEngine';
 import { festivalSchedule } from '../../data/schedule';
 import { ExternalLink, Volume2, VolumeX, Sparkles, Trophy, ArrowRight, Play, Pause, MapPin, Clock, Calendar, Zap, Award } from 'lucide-react';
 
-export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
+export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap, onSelectEvent, onOpenFullDirectory }) {
   const canvasRef = useRef(null);
   const [score, setScore] = useState(3800);
   const [highScore, setHighScore] = useState(9990);
@@ -171,7 +171,7 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
       }
       ctx.restore();
 
-      // 2. ALL 3 DAYS NEON CORRIDORS IN ONE FRAME
+      // 2. ALL 3 DAYS NEON CORRIDORS & VISIBLE MOVING TRACKS
       ctx.save();
       ctx.shadowColor = '#2563eb';
       ctx.shadowBlur = 20;
@@ -200,6 +200,84 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
       ctx.roundRect(110, 290, 340, 40, 12);
       ctx.roundRect(550, 290, 340, 40, 12);
       ctx.stroke();
+
+      // VISIBLE DUAL ARCADE TRACKS & SLEEPER TIES ALONG WHICH PAC-MAN TRAVELS
+      const trackConfigs = [
+        { y: 85, color: '#f59e0b', glow: '#fbbf24' },   // Day 1 Gold Track
+        { y: 235, color: '#06b6d4', glow: '#22d3ee' },  // Day 2 Cyan Cyber Track
+        { y: 385, color: '#ec4899', glow: '#f472b6' }   // Day 3 Hot Magenta Track
+      ];
+
+      trackConfigs.forEach(tc => {
+        ctx.save();
+        ctx.shadowColor = tc.glow;
+        ctx.shadowBlur = 10;
+
+        // Railway cross-ties (sleepers) across the track
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
+        ctx.lineWidth = 2.5;
+        for (let rx = 70; rx <= 930; rx += 18) {
+          ctx.beginPath();
+          ctx.moveTo(rx, tc.y - 12);
+          ctx.lineTo(rx, tc.y + 12);
+          ctx.stroke();
+        }
+
+        // Dual upper and lower glowing steel rails
+        ctx.strokeStyle = tc.color;
+        ctx.lineWidth = 2.5;
+        
+        // Upper rail
+        ctx.beginPath();
+        ctx.moveTo(60, tc.y - 12);
+        ctx.lineTo(940, tc.y - 12);
+        ctx.stroke();
+
+        // Lower rail
+        ctx.beginPath();
+        ctx.moveTo(60, tc.y + 12);
+        ctx.lineTo(940, tc.y + 12);
+        ctx.stroke();
+
+        // Animated neon energy pulses traveling along the rails
+        const pulseOffset = (frameCount * 3) % 180;
+        ctx.fillStyle = '#ffffff';
+        for (let px = 70 + pulseOffset; px < 930; px += 180) {
+          ctx.fillRect(px, tc.y - 13, 6, 2);
+          ctx.fillRect(px, tc.y + 11, 6, 2);
+        }
+
+        ctx.restore();
+      });
+
+      // Connecting Vertical Track Shafts (Left at x=70, Right at x=930)
+      [70, 930].forEach(tx => {
+        ctx.save();
+        ctx.shadowColor = '#38bdf8';
+        ctx.shadowBlur = 8;
+        
+        // Cross-ties
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.lineWidth = 2;
+        for (let ry = 85; ry <= 385; ry += 16) {
+          ctx.beginPath();
+          ctx.moveTo(tx - 12, ry);
+          ctx.lineTo(tx + 12, ry);
+          ctx.stroke();
+        }
+
+        // Left & right vertical rails
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(tx - 12, 85);
+        ctx.lineTo(tx - 12, 385);
+        ctx.moveTo(tx + 12, 85);
+        ctx.lineTo(tx + 12, 385);
+        ctx.stroke();
+
+        ctx.restore();
+      });
 
       // ALL 3 DAYS HEADERS PROMINENTLY LABELED RIGHT IN THE MAZE
       ctx.font = 'bold 10px "Press Start 2P", monospace';
@@ -555,7 +633,27 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
           ref={canvasRef}
           width={1000}
           height={470}
-          className="w-full h-full max-h-[480px] object-contain drop-shadow-[0_0_25px_rgba(59,130,246,0.4)]"
+          onClick={(e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const scaleX = 1000 / rect.width;
+            const scaleY = 470 / rect.height;
+            const clickX = (e.clientX - rect.left) * scaleX;
+            const clickY = (e.clientY - rect.top) * scaleY;
+            
+            const g = gameRef.current;
+            const clickedStation = g.eventStations.find(st => Math.hypot(st.x - clickX, st.y - clickY) < 45);
+            if (clickedStation) {
+              soundEngine.playCoin();
+              setActiveEvent(clickedStation);
+              clickedStation.eaten = true;
+              setEatenEventIds(prev => new Set([...prev, clickedStation.id]));
+              // Direct Pac-Man towards clicked event
+              g.pacman.x = clickedStation.x - 30;
+              g.pacman.y = clickedStation.y;
+              g.pacman.direction = 0;
+            }
+          }}
+          className="w-full h-full max-h-[480px] object-contain drop-shadow-[0_0_25px_rgba(59,130,246,0.4)] cursor-pointer"
         />
 
         {/* Mobile touch steering */}
@@ -622,7 +720,15 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
             </div>
 
             {/* Right: Register CTA */}
-            <div className="flex items-center gap-3 w-full md:w-auto justify-end">
+            <div className="flex items-center gap-2.5 w-full md:w-auto justify-end flex-wrap">
+              {onSelectEvent && (
+                <button
+                  onClick={() => onSelectEvent(activeEvent)}
+                  className="px-3 py-2 rounded-xl bg-[#2e1055] hover:bg-[#43147a] border border-purple-400 text-yellow-300 font-['Press_Start_2P'] text-[7.5px] font-bold transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                >
+                  DETAILS / RULES
+                </button>
+              )}
               {activeEvent.registrationLink && (
                 <a
                   href={activeEvent.registrationLink}

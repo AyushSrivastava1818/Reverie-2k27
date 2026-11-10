@@ -235,78 +235,84 @@ export function StartScreen({
           }}
         />
 
-        {/* 3D FLOATING HOTSPOT FOR MARIO & KOTA BOT */}
+        {/* 3D FLOATING HOTSPOT FOR MARIO & KOTA BOT (CLEAR, ZERO OBSTRUCTION) */}
         <div 
           onClick={handlePressStart}
           onMouseEnter={() => soundEngine.playBlip()}
           title="Click Mario or Kota Bot to Start!"
-          className="absolute cursor-pointer transition-transform hover:scale-110 active:scale-95 group z-30"
-          style={{ left: '44.5%', top: '54.5%', width: '11.0%', height: '11.0%' }}
+          className="absolute cursor-pointer transition-transform hover:scale-105 active:scale-95 group z-30"
+          style={{ left: '43.0%', top: '50.0%', width: '14.0%', height: '16.0%' }}
         >
-          <div className="w-full h-full rounded-2xl opacity-0 group-hover:opacity-100 bg-pink-500/15 border border-pink-400/40 shadow-[0_0_25px_rgba(236,72,153,0.5)] transition-all flex items-center justify-center">
-            <span className="font-display text-[9px] font-black tracking-widest text-white uppercase bg-black/80 px-2 py-0.5 rounded border border-pink-400/60 shadow">
-              PRESS START
+          {/* Subtle glowing ground ring indicator, zero face obstruction */}
+          <div className="w-full h-full rounded-2xl opacity-0 group-hover:opacity-100 border border-pink-400/30 transition-all flex items-end justify-center pb-0 relative">
+            <span className="absolute -bottom-5 font-display text-[8px] font-black tracking-widest text-pink-300 uppercase bg-black/90 px-2 py-0.5 rounded-full border border-pink-400/60 shadow-lg pointer-events-none">
+              ENTER WORLD
             </span>
           </div>
         </div>
 
-        {/* PRIMARY 3D BUTTON 0: ARCADE QUEST (5 STAGES) */}
+        {/* ===================================================================== */}
+        {/* PRIMARY 3D ACTION BAR (Generous breathing room BELOW Mario & Kota)     */}
+        {/* Zero obstruction of characters — Clean, Flagship, 3D Push Buttons!    */}
+        {/* ===================================================================== */}
+        
+        {/* BUTTON 1: PRESS START (Left) */}
+        <button
+          onClick={handlePressStart}
+          onMouseEnter={() => soundEngine.playBlip()}
+          className="absolute z-40 rounded-full font-display font-black tracking-widest uppercase text-white flex items-center justify-center gap-2 transition-all cursor-pointer bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 border-2 border-pink-200 shadow-[0_5px_0_#831843,0_10px_20px_rgba(244,63,94,0.6)] hover:shadow-[0_8px_0_#831843,0_14px_28px_rgba(244,63,94,0.9)] hover:-translate-y-1 hover:scale-[1.02] active:translate-y-1.5 active:shadow-[0_2px_0_#831843,0_4px_10px_rgba(244,63,94,0.5)] active:scale-[0.98]"
+          style={{
+            left: '17.2%',
+            top: '69.0%',
+            width: '21.0%',
+            height: '7.8%',
+            fontSize: 'clamp(10px, 1.0vw, 14px)',
+            cursor: 'pointer'
+          }}
+        >
+          <Play size={16} fill="white" className="shrink-0 drop-shadow" />
+          <span className="drop-shadow">PRESS START</span>
+        </button>
+
+        {/* BUTTON 2: PLAY ARCADE QUEST (Center - Glorious Retro Gold & Purple!) */}
         <button
           onClick={() => {
             soundEngine.playFanfare();
             onOpenArcade?.();
           }}
           onMouseEnter={() => soundEngine.playBlip()}
-          className="absolute z-40 rounded-full font-display font-black tracking-widest uppercase text-yellow-300 hover:text-white flex items-center justify-center gap-2 transition-all cursor-pointer bg-gradient-to-r from-purple-950 via-indigo-950 to-purple-950 hover:bg-[#250d4a] border-2 border-yellow-400 hover:border-yellow-200 shadow-[0_4px_0_#78350f,0_0_20px_rgba(250,204,21,0.6)] hover:shadow-[0_6px_0_#78350f,0_0_30px_rgba(250,204,21,0.9)] hover:-translate-y-0.5 active:translate-y-1 active:shadow-none"
+          className="absolute z-40 rounded-full font-display font-black tracking-widest uppercase text-yellow-300 hover:text-white flex items-center justify-center gap-2 transition-all cursor-pointer bg-gradient-to-r from-[#2a1052] via-[#3b1275] to-[#2a1052] hover:from-[#3c1775] hover:to-[#4e199c] border-2 border-yellow-400 hover:border-yellow-200 shadow-[0_5px_0_#78350f,0_10px_20px_rgba(250,204,21,0.6)] hover:shadow-[0_8px_0_#78350f,0_14px_28px_rgba(250,204,21,0.9)] hover:-translate-y-1 hover:scale-[1.02] active:translate-y-1.5 active:shadow-[0_2px_0_#78350f,0_4px_10px_rgba(250,204,21,0.5)] active:scale-[0.98]"
           style={{
-            left: '30.0%',
-            top: '60.5%',
-            width: '40.0%',
-            height: '6.4%',
-            fontSize: 'clamp(9px, 0.95vw, 13px)',
+            left: '40.2%',
+            top: '69.0%',
+            width: '24.6%',
+            height: '7.8%',
+            fontSize: 'clamp(9px, 0.9vw, 13px)',
             cursor: 'pointer'
           }}
         >
           <Gamepad2 size={16} className="text-yellow-400 shrink-0 animate-pulse" />
-          <span className="drop-shadow">PLAY ARCADE QUEST (5 STAGES)</span>
+          <span className="drop-shadow">PLAY ARCADE QUEST</span>
         </button>
 
-        {/* PRIMARY 3D BUTTON 1: PRESS START */}
-        <button
-          onClick={handlePressStart}
-          onMouseEnter={() => soundEngine.playBlip()}
-          className="absolute z-40 rounded-full font-display font-black tracking-widest uppercase text-white flex items-center justify-center gap-2 transition-all cursor-pointer bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 border-2 border-pink-200 shadow-[0_5px_0_#831843,0_10px_25px_rgba(244,63,94,0.65)] hover:shadow-[0_8px_0_#831843,0_14px_35px_rgba(244,63,94,0.95)] hover:-translate-y-1 hover:scale-[1.02] active:translate-y-1.5 active:shadow-[0_2px_0_#831843,0_4px_10px_rgba(244,63,94,0.5)] active:scale-[0.98]"
-          style={{
-            left: '23.8%',
-            top: '68.0%',
-            width: '24.2%',
-            height: '8.8%',
-            fontSize: 'clamp(11px, 1.25vw, 16px)',
-            cursor: 'pointer'
-          }}
-        >
-          <Play size={18} fill="white" className="shrink-0 drop-shadow" />
-          <span className="drop-shadow">PRESS START</span>
-        </button>
-
-        {/* PRIMARY 3D BUTTON 2: EVENT DIRECTORY */}
+        {/* BUTTON 3: EVENT DIRECTORY (Right) */}
         <button
           onClick={() => {
             soundEngine.playBlip();
             onOpenDirectory();
           }}
           onMouseEnter={() => soundEngine.playBlip()}
-          className="absolute z-40 rounded-full font-display font-black tracking-widest uppercase text-cyan-200 hover:text-white flex items-center justify-center gap-2 transition-all cursor-pointer bg-[#130a30]/98 hover:bg-[#1f104d] border-2 border-cyan-400 hover:border-cyan-300 shadow-[0_5px_0_#0e7490,0_10px_25px_rgba(6,182,212,0.5)] hover:shadow-[0_8px_0_#0e7490,0_14px_35px_rgba(6,182,212,0.85)] hover:-translate-y-1 hover:scale-[1.02] active:translate-y-1.5 active:shadow-[0_2px_0_#0e7490,0_4px_10px_rgba(6,182,212,0.4)] active:scale-[0.98]"
+          className="absolute z-40 rounded-full font-display font-black tracking-widest uppercase text-cyan-200 hover:text-white flex items-center justify-center gap-2 transition-all cursor-pointer bg-[#130a30]/98 hover:bg-[#1f104d] border-2 border-cyan-400 hover:border-cyan-300 shadow-[0_5px_0_#0e7490,0_10px_20px_rgba(6,182,212,0.5)] hover:shadow-[0_8px_0_#0e7490,0_14px_28px_rgba(6,182,212,0.85)] hover:-translate-y-1 hover:scale-[1.02] active:translate-y-1.5 active:shadow-[0_2px_0_#0e7490,0_4px_10px_rgba(6,182,212,0.4)] active:scale-[0.98]"
           style={{
-            left: '52.0%',
-            top: '68.0%',
-            width: '24.2%',
-            height: '8.8%',
-            fontSize: 'clamp(11px, 1.25vw, 16px)',
+            left: '66.8%',
+            top: '69.0%',
+            width: '21.0%',
+            height: '7.8%',
+            fontSize: 'clamp(10px, 1.0vw, 14px)',
             cursor: 'pointer'
           }}
         >
-          <Compass size={18} className="text-cyan-400 shrink-0" />
+          <Compass size={16} className="text-cyan-400 shrink-0" />
           <span className="drop-shadow">EVENT DIRECTORY</span>
         </button>
 
@@ -322,7 +328,7 @@ export function StartScreen({
               className={`absolute z-40 rounded-xl border-2 ${k.borderClass} ${k.hoverStyle} flex items-center justify-center gap-1.5 px-1.5 transition-all cursor-pointer backdrop-blur-md hover:-translate-y-1 hover:scale-[1.03] active:translate-y-1 active:scale-[0.97]`}
               style={{
                 left: k.left,
-                top: '80.8%',
+                top: '80.6%',
                 width: k.width,
                 height: '8.4%',
                 ...k.style,

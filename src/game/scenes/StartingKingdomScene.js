@@ -14,9 +14,9 @@ export class StartingKingdomScene extends BaseKingdomScene {
     this.createBaseWorld('grass', 'STARTING KINGDOM');
 
     // -------------------------------------------------------------------------
-    // 1. MASCOT GUIDE NPC NEAR SPAWN (x = 110)
+    // 1. MASCOT GUIDE NPC NEAR SPAWN (x = 75, giving spawn at 140 clear space)
     // -------------------------------------------------------------------------
-    this.addNPC(110, this.groundY, 'KOTA BOT', 'Welcome to REVERIE 2K27! Run through the Grand Entrance Arch ahead, collect coins, and enter warp pipes to explore the festival!');
+    this.addNPC(75, this.groundY, 'KOTA BOT', 'Welcome to REVERIE 2K27! Run through the Grand Entrance Arch ahead, collect coins, and enter warp pipes to explore the festival!');
 
     // -------------------------------------------------------------------------
     // 2. AVATAR SKINS WARDROBE KIOSK & ARCADE FACADE (x = 240)

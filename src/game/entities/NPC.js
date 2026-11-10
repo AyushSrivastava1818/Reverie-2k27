@@ -27,9 +27,9 @@ export class NPC extends Phaser.GameObjects.Container {
     }).setOrigin(0.5);
     this.add([this.tagBg, this.tagText]);
 
-    // Floating Interaction Prompt Badge [E] TALK
-    this.promptContainer = scene.add.container(0, -60);
-    this.promptBg = scene.add.rectangle(0, 0, 110, 20, 0xec4899, 0.95);
+    // Floating Interaction Prompt Badge [E] TALK - Elevated well above sprite
+    this.promptContainer = scene.add.container(0, -78);
+    this.promptBg = scene.add.rectangle(0, 0, 106, 18, 0xec4899, 0.95);
     this.promptBg.setStrokeStyle(1.5, 0xffffff);
     this.promptText = scene.add.text(0, 0, '⚡ [E] TALK', {
       fontFamily: '"Press Start 2P", monospace',
@@ -40,18 +40,24 @@ export class NPC extends Phaser.GameObjects.Container {
     this.promptContainer.setAlpha(0);
     this.add(this.promptContainer);
 
-    // Speech bubble container
-    this.bubbleContainer = scene.add.container(0, -88);
-    this.bubbleBg = scene.add.rectangle(0, 0, 170, 38, 0x0f172a, 0.95);
+    // Speech bubble container - Elevated to y: -118 so it NEVER obstructs player or Mario's face!
+    this.bubbleContainer = scene.add.container(0, -118);
+    this.bubbleBg = scene.add.rectangle(0, 0, 156, 44, 0x0f172a, 0.96);
     this.bubbleBg.setStrokeStyle(1.5, 0x38bdf8);
+    
+    // Sleek speech bubble pointer tail pointing down to NPC
+    const pointerTail = scene.add.triangle(0, 24, -6, 0, 6, 0, 0, 7, 0x0f172a);
+    pointerTail.setStrokeStyle(1.5, 0x38bdf8);
+
     this.bubbleText = scene.add.text(0, 0, this.dialogue, {
       fontFamily: 'system-ui, sans-serif',
-      fontSize: '11px',
+      fontSize: '10.5px',
+      fontWeight: '600',
       color: '#f8fafc',
-      wordWrap: { width: 155 },
+      wordWrap: { width: 144 },
       align: 'center'
     }).setOrigin(0.5);
-    this.bubbleContainer.add([this.bubbleBg, this.bubbleText]);
+    this.bubbleContainer.add([this.bubbleBg, pointerTail, this.bubbleText]);
     this.bubbleContainer.setAlpha(0);
     this.add(this.bubbleContainer);
 

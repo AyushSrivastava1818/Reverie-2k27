@@ -13,6 +13,7 @@ export function GameCanvas() {
     const config = createGameConfig(container);
     const game = new Phaser.Game(config);
     gameRef.current = game;
+    window.__PHASER_GAME__ = game;
 
     // Use ResizeObserver for accurate container dimensions
     let resizeObserver = null;

@@ -103,43 +103,103 @@ export function VictoryStageClear({ onRestartQuest, onEnterWorld, onOpenDirector
             </span>
           </div>
 
-          {/* Castle with Sponsor Flags & Speech Bubble */}
+          {/* Authentic 16-Bit Pixel Castle Fortress with Turrets & Sponsor Banners */}
           <div className="relative my-3 flex items-center justify-center">
-            {/* Pixel Castle Fortress */}
-            <div className="w-72 sm:w-96 h-44 sm:h-52 bg-[#94a3b8] border-3 border-zinc-700 rounded-t-xl flex flex-col justify-between p-3 relative shadow-2xl">
-              {/* Flags flying on towers with Sponsor Badges */}
-              <div className="absolute -top-8 left-4 right-4 flex items-center justify-between">
-                <div className="flex items-center gap-1">
-                  <span className="text-lg animate-pulse">🚩</span>
-                  <span className="px-1.5 py-0.5 rounded bg-white text-black text-[7px] font-bold border shadow">GOOGLE</span>
+            
+            {/* The Grand Retro Fortress Structure */}
+            <div className="relative w-full max-w-md h-52 sm:h-60 flex items-end justify-center">
+              
+              {/* LEFT TOWER */}
+              <div className="w-16 sm:w-20 h-44 sm:h-52 bg-gradient-to-r from-[#64748b] via-[#94a3b8] to-[#475569] border-2 border-zinc-900 rounded-t-sm relative flex flex-col justify-between shadow-2xl z-10">
+                {/* Conical Red Tiled Roof */}
+                <div className="absolute -top-10 -left-1 -right-1 h-10 bg-gradient-to-b from-rose-600 to-red-700 border-2 border-zinc-900 [clip-path:polygon(50%_0%,0%_100%,100%_100%)] shadow-md">
+                  <div className="w-full h-full opacity-30 bg-[repeating-linear-gradient(45deg,#000_0px,#000_2px,transparent_2px,transparent_6px)]" />
                 </div>
-                <div className="flex items-center gap-1">
-                  <span className="text-lg animate-pulse">🚩</span>
-                  <span className="px-1.5 py-0.5 rounded bg-white text-black text-[7px] font-bold border shadow">REPLIT</span>
+                {/* Turret Flag */}
+                <div className="absolute -top-16 left-1/2 -translate-x-1/2 flex items-center gap-1">
+                  <span className="text-base animate-pulse">🚩</span>
+                  <span className="px-1 py-0.5 rounded bg-white text-black text-[6.5px] font-bold border shadow">GOOGLE</span>
                 </div>
-                <div className="flex items-center gap-1">
+                {/* Battlements / Crenellations */}
+                <div className="flex justify-between px-1 -mt-2">
+                  <div className="w-3 h-3 bg-zinc-700 border border-zinc-900" />
+                  <div className="w-3 h-3 bg-zinc-700 border border-zinc-900" />
+                </div>
+                {/* Arrow Slit Window */}
+                <div className="self-center my-auto w-2.5 h-7 bg-zinc-950 rounded-sm border border-zinc-700 shadow-inner" />
+                {/* Stone Brick Lines */}
+                <div className="w-full h-full absolute inset-0 pointer-events-none opacity-20 bg-[repeating-linear-gradient(0deg,#000_0px,#000_2px,transparent_2px,transparent_14px)]" />
+              </div>
+
+              {/* CENTER KEEP (MAIN CASTLE HALL) */}
+              <div className="flex-1 h-36 sm:h-44 bg-gradient-to-r from-[#475569] via-[#64748b] to-[#475569] border-2 border-zinc-900 relative flex flex-col justify-between items-center p-2 z-20 shadow-2xl">
+                {/* Battlements across top */}
+                <div className="absolute -top-3 inset-x-0 flex justify-between px-2">
+                  <div className="w-4 h-3 bg-zinc-700 border border-zinc-900" />
+                  <div className="w-4 h-3 bg-zinc-700 border border-zinc-900" />
+                  <div className="w-4 h-3 bg-zinc-700 border border-zinc-900" />
+                  <div className="w-4 h-3 bg-zinc-700 border border-zinc-900" />
+                  <div className="w-4 h-3 bg-zinc-700 border border-zinc-900" />
+                </div>
+
+                {/* Main Keep Center Flag */}
+                <div className="absolute -top-11 left-1/2 -translate-x-1/2 flex items-center gap-1 z-30">
                   <span className="text-lg animate-pulse">🚩</span>
-                  <span className="px-1.5 py-0.5 rounded bg-white text-black text-[7px] font-bold border shadow">SOLANA</span>
+                  <span className="px-1.5 py-0.5 rounded bg-yellow-400 text-black text-[7px] font-black border border-yellow-200 shadow">REPLIT</span>
+                </div>
+
+                {/* Stained Glass Rose Window */}
+                <div className="mt-1 w-9 h-9 rounded-full bg-gradient-to-br from-amber-300 via-rose-400 to-indigo-600 border-2 border-yellow-300 shadow-[0_0_12px_rgba(250,204,21,0.8)] flex items-center justify-center animate-pulse">
+                  <span className="text-[9px]">🌟</span>
+                </div>
+
+                {/* Title Sponsor Plaque */}
+                <div className="px-3 py-1 bg-black/90 rounded-md border border-yellow-400 text-yellow-300 text-[8.5px] sm:text-[9.5px] font-pixel font-black shadow-md flex items-center gap-1.5">
+                  <span>★</span>
+                  <span>REVERIE 2K27 CASTLE</span>
+                  <span>★</span>
+                </div>
+
+                {/* Arched Portcullis Grand Entrance */}
+                <div className="w-20 sm:w-24 h-16 sm:h-20 bg-gradient-to-b from-[#2a1306] to-[#120802] border-t-3 border-x-3 border-zinc-950 rounded-t-full shadow-[inset_0_4px_12px_rgba(0,0,0,0.9)] flex items-center justify-center relative overflow-hidden">
+                  {/* Iron portcullis grating */}
+                  <div className="absolute inset-0 bg-[repeating-linear-gradient(0deg,rgba(0,0,0,0.7)_0px,rgba(0,0,0,0.7)_4px,transparent_4px,transparent_12px)] pointer-events-none" />
+                  <div className="absolute inset-0 bg-[repeating-linear-gradient(90deg,rgba(0,0,0,0.7)_0px,rgba(0,0,0,0.7)_4px,transparent_4px,transparent_12px)] pointer-events-none" />
+                  <div className="w-4 h-4 rounded-full bg-amber-400/80 blur-sm animate-ping" />
+                  <span className="text-xs relative z-10">✨</span>
                 </div>
               </div>
 
-              {/* Title Sponsor Plaque on Castle Front */}
-              <div className="self-center mt-2 px-5 py-1.5 bg-white rounded-lg border-2 border-black text-black text-xs font-pixel font-black shadow-md">
-                ★ REVERIE 2K27 CASTLE ★
+              {/* RIGHT TOWER */}
+              <div className="w-16 sm:w-20 h-44 sm:h-52 bg-gradient-to-r from-[#475569] via-[#94a3b8] to-[#64748b] border-2 border-zinc-900 rounded-t-sm relative flex flex-col justify-between shadow-2xl z-10">
+                {/* Conical Red Tiled Roof */}
+                <div className="absolute -top-10 -left-1 -right-1 h-10 bg-gradient-to-b from-rose-600 to-red-700 border-2 border-zinc-900 [clip-path:polygon(50%_0%,0%_100%,100%_100%)] shadow-md">
+                  <div className="w-full h-full opacity-30 bg-[repeating-linear-gradient(45deg,#000_0px,#000_2px,transparent_2px,transparent_6px)]" />
+                </div>
+                {/* Turret Flag */}
+                <div className="absolute -top-16 left-1/2 -translate-x-1/2 flex items-center gap-1">
+                  <span className="text-base animate-pulse">🚩</span>
+                  <span className="px-1 py-0.5 rounded bg-white text-black text-[6.5px] font-bold border shadow">SOLANA</span>
+                </div>
+                {/* Battlements / Crenellations */}
+                <div className="flex justify-between px-1 -mt-2">
+                  <div className="w-3 h-3 bg-zinc-700 border border-zinc-900" />
+                  <div className="w-3 h-3 bg-zinc-700 border border-zinc-900" />
+                </div>
+                {/* Arrow Slit Window */}
+                <div className="self-center my-auto w-2.5 h-7 bg-zinc-950 rounded-sm border border-zinc-700 shadow-inner" />
+                {/* Stone Brick Lines */}
+                <div className="w-full h-full absolute inset-0 pointer-events-none opacity-20 bg-[repeating-linear-gradient(0deg,#000_0px,#000_2px,transparent_2px,transparent_14px)]" />
               </div>
 
-              {/* Castle Wooden Portcullis Gate */}
-              <div className="self-center w-20 h-22 bg-[#451a03] border-t-3 border-x-3 border-zinc-900 rounded-t-full shadow-inner flex items-center justify-center">
-                <span className="text-xs">🚪</span>
-              </div>
             </div>
 
             {/* Authentic Pixel Toad / Mascot on the Right with Speech Bubble */}
-            <div className="absolute right-2 bottom-1 flex flex-col items-center">
-              <div className="px-3 py-1 bg-white text-black text-[8px] sm:text-[9px] font-pixel font-black rounded-lg shadow-lg mb-1 border border-zinc-300">
+            <div className="absolute right-0 bottom-0 flex flex-col items-center z-30">
+              <div className="px-2.5 py-1 bg-white text-black text-[7.5px] sm:text-[8.5px] font-pixel font-black rounded-lg shadow-lg mb-1 border border-zinc-300">
                 THANK YOU, SPONSORS!
               </div>
-              <svg width="40" height="46" viewBox="0 0 24 28" className="filter drop-shadow animate-bounce">
+              <svg width="42" height="48" viewBox="0 0 24 28" className="filter drop-shadow animate-bounce">
                 <ellipse cx="12" cy="9" rx="11" ry="8" fill="#ffffff" stroke="#e2e8f0" strokeWidth="1" />
                 <circle cx="12" cy="7" r="3.5" fill="#dc2626" />
                 <circle cx="4" cy="10" r="2.5" fill="#dc2626" />

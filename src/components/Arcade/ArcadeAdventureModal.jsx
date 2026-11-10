@@ -104,7 +104,7 @@ export function ArcadeAdventureModal({
         {/* 3. MAIN ARCADE MONITOR DISPLAY */}
         <div className="relative flex-1 min-h-0 overflow-hidden flex flex-col">
           
-          {/* VIEW 1: SONIC FLOATING ISLANDS WORLD STAGE SELECTOR (Ref: 22.11.17(1)) */}
+          {/* VIEW 1: SONIC FLOATING ISLANDS WORLD STAGE SELECTOR */}
           {currentView === 'world-map' && (
             <SonicStageSelector
               currentStage={selectedMapStage}
@@ -118,17 +118,18 @@ export function ArcadeAdventureModal({
             />
           )}
 
-          {/* VIEW 2: STAGE 1 — MARIO 7 QUESTION BLOCKS (Ref: 22.11.17(2)) */}
+          {/* VIEW 2: STAGE 1 — PAC-MAN 18-EVENT SCHEDULE & EVENTS MAZE (Replaced 7 cards with Pac-Man on tracks!) */}
           {currentView === 'stage-1' && (
-            <MarioEventBlocks
-              onSelectEvent={onSelectEvent}
-              onOpenFullDirectory={onOpenFullDirectory}
+            <PacmanScheduleMaze
+              onAdvanceStage={() => setCurrentView('stage-2')}
               onClose={() => setCurrentView('world-map')}
               onBackToMap={() => setCurrentView('world-map')}
+              onSelectEvent={onSelectEvent}
+              onOpenFullDirectory={onOpenFullDirectory}
             />
           )}
 
-          {/* VIEW 3: STAGE 2 — SPONSOR GALAXY (PLAYABLE 90s SPACE SHOOTER) */}
+          {/* VIEW 3: STAGE 2 — SPONSOR GALAXY (PLAYABLE SPACE SHOOTER) */}
           {currentView === 'stage-2' && (
             <SponsorGalaxy
               onAdvanceStage={() => setCurrentView('stage-3')}
@@ -137,26 +138,17 @@ export function ArcadeAdventureModal({
             />
           )}
 
-          {/* VIEW 4: STAGE 3 — ALL 18-EVENT PAC-MAN LABYRINTH (Ref: 22.11.17) */}
+          {/* VIEW 4: STAGE 3 — RPG FAQ SAGE SANCTUARY (Clicking FAQs actually opens FAQs!) */}
           {currentView === 'stage-3' && (
-            <PacmanScheduleMaze
+            <RpgFaqSanctuary
               onAdvanceStage={() => setCurrentView('stage-4')}
               onClose={() => setCurrentView('world-map')}
               onBackToMap={() => setCurrentView('world-map')}
             />
           )}
 
-          {/* VIEW 5: STAGE 4 — RPG FAQ SAGE SANCTUARY (Ref: 22.11.18) */}
+          {/* VIEW 5: STAGE 4 — STAGES CLEARED! FLAGPOLE & CASTLE VICTORY CELEBRATION */}
           {currentView === 'stage-4' && (
-            <RpgFaqSanctuary
-              onAdvanceStage={() => setCurrentView('stage-5')}
-              onClose={() => setCurrentView('world-map')}
-              onBackToMap={() => setCurrentView('world-map')}
-            />
-          )}
-
-          {/* VIEW 6: STAGE 5 — STAGES CLEARED! FLAGPOLE VICTORY (Ref: 22.11.16) */}
-          {currentView === 'stage-5' && (
             <VictoryStageClear
               onRestartQuest={() => setCurrentView('world-map')}
               onEnterWorld={onClose}
