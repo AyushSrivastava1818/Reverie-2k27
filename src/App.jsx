@@ -66,6 +66,12 @@ export function App() {
   };
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.__openArcadeStage = handleOpenArcadeAdventure;
+    }
+  }, []);
+
+  useEffect(() => {
     // 1. Zone change listener
     const unbindZone = eventBus.on('zone-entered', (data) => {
       const zName = data.zoneName || 'Starting Kingdom';

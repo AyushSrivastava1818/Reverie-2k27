@@ -190,47 +190,62 @@ export function PixelCulturalIcon({ size = 48, className = '' }) {
 // =========================================================================
 
 /**
- * Authentic 16-bit Super Mario World Sprite
+ * Authentic 16-bit Super Mario World Hero Sprite
  */
-export function SuperMarioSprite({ size = 48, isJumping = false }) {
+export function SuperMarioSprite({ size = 80, isJumping = false }) {
   return (
-    <svg width={size} height={size * 1.2} viewBox="0 0 24 30" className="filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.7)]">
-      {/* Red Cap */}
-      <rect x="6" y="2" width="12" height="3.5" fill="#dc2626" />
-      <rect x="4" y="4" width="16" height="3" fill="#dc2626" />
-      <rect x="10" y="3" width="4" height="2" fill="#ffffff" /> {/* M badge */}
+    <svg width={size} height={size * 1.25} viewBox="0 0 24 30" className="filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.8)]">
+      {/* Red Cap with 3D Brim */}
+      <rect x="5" y="2" width="13" height="4" rx="1" fill="#dc2626" />
+      <rect x="4" y="4" width="16" height="3" fill="#ef4444" />
+      <rect x="3" y="6" width="18" height="2" fill="#b91c1c" />
+      {/* White 'M' Emblem */}
+      <circle cx="11.5" cy="4" r="2.2" fill="#ffffff" />
+      <path d="M 10.3 5 L 10.3 3.2 L 11.5 4.3 L 12.7 3.2 L 12.7 5" fill="none" stroke="#dc2626" strokeWidth="0.8" strokeLinecap="round" strokeLinejoin="round" />
+      
       {/* Hair & Sideburns */}
-      <rect x="4" y="7" width="4" height="4" fill="#582c03" />
-      <rect x="6" y="9" width="3" height="3" fill="#582c03" />
-      {/* Face & Big Nose */}
-      <rect x="8" y="7" width="9" height="5" fill="#fde047" />
-      <rect x="15" y="8" width="4" height="3" fill="#fde047" />
-      <rect x="13" y="7.5" width="2" height="2.5" fill="#000000" /> {/* Eye */}
-      {/* Iconic Moustache */}
-      <rect x="10" y="10" width="8" height="2" fill="#582c03" />
-      <rect x="8" y="11" width="3" height="1.5" fill="#582c03" />
-      {/* Red Shirt */}
+      <rect x="4" y="7" width="4" height="4.5" fill="#451a03" />
+      <rect x="6" y="9.5" width="3" height="3" fill="#451a03" />
+      
+      {/* Face & Big Nose with warm 16-bit tone */}
+      <rect x="8" y="7" width="9" height="5.5" fill="#fed7aa" />
+      <rect x="15" y="8" width="4.5" height="3.5" rx="1" fill="#fdba74" />
+      {/* Piercing Eye */}
+      <rect x="13" y="7.5" width="2" height="2.5" fill="#0f172a" />
+      <rect x="13.2" y="7.7" width="0.8" height="1" fill="#ffffff" />
+      
+      {/* Iconic Bushy Moustache */}
+      <rect x="9" y="10" width="9.5" height="2.2" rx="0.5" fill="#451a03" />
+      <rect x="8" y="11" width="3" height="1.8" fill="#451a03" />
+      
+      {/* Red Shirt Sleeves & Collar */}
       <rect x="6" y="12" width="12" height="5" fill="#dc2626" />
+      <rect x="5" y="13" width="3" height="4" fill="#ef4444" />
+      <rect x="16" y="13" width="3" height="4" fill="#b91c1c" />
+      
       {/* Denim Blue Overalls */}
-      <rect x="8" y="15" width="8" height="8" fill="#2563eb" />
+      <rect x="8" y="15" width="8" height="8.5" fill="#1d4ed8" />
       <rect x="6" y="16" width="2.5" height="4" fill="#2563eb" />
-      <rect x="15.5" y="16" width="2.5" height="4" fill="#2563eb" />
-      {/* Brass Buttons */}
-      <circle cx="9.5" cy="16.5" r="1.2" fill="#facc15" />
-      <circle cx="14.5" cy="16.5" r="1.2" fill="#facc15" />
+      <rect x="15.5" y="16" width="2.5" height="4" fill="#1e40af" />
+      
+      {/* Polished Brass Buttons */}
+      <circle cx="9.5" cy="16.5" r="1.3" fill="#facc15" stroke="#78350f" strokeWidth="0.4" />
+      <circle cx="14.5" cy="16.5" r="1.3" fill="#facc15" stroke="#78350f" strokeWidth="0.4" />
+      
       {/* White Gloves */}
-      <circle cx="5" cy="18" r="2.8" fill="#ffffff" stroke="#cbd5e1" strokeWidth="0.5" />
-      <circle cx="19" cy="18" r="2.8" fill="#ffffff" stroke="#cbd5e1" strokeWidth="0.5" />
-      {/* Brown Work Boots */}
+      <circle cx="4.8" cy="18" r="3" fill="#ffffff" stroke="#cbd5e1" strokeWidth="0.6" />
+      <circle cx="19.2" cy="18" r="3" fill="#ffffff" stroke="#cbd5e1" strokeWidth="0.6" />
+      
+      {/* Heavy Work Boots */}
       {isJumping ? (
         <>
-          <rect x="3" y="21" width="6" height="4" rx="1.5" fill="#582c03" />
-          <rect x="15" y="23" width="6" height="4" rx="1.5" fill="#582c03" />
+          <rect x="2.5" y="21" width="6.5" height="4.5" rx="2" fill="#78350f" stroke="#451a03" strokeWidth="0.6" />
+          <rect x="15" y="23" width="6.5" height="4.5" rx="2" fill="#78350f" stroke="#451a03" strokeWidth="0.6" />
         </>
       ) : (
         <>
-          <rect x="5.5" y="23" width="5.5" height="4.5" rx="1.5" fill="#582c03" />
-          <rect x="13" y="23" width="5.5" height="4.5" rx="1.5" fill="#582c03" />
+          <rect x="5" y="23.5" width="6" height="4.5" rx="2" fill="#78350f" stroke="#451a03" strokeWidth="0.6" />
+          <rect x="13" y="23.5" width="6" height="4.5" rx="2" fill="#78350f" stroke="#451a03" strokeWidth="0.6" />
         </>
       )}
     </svg>

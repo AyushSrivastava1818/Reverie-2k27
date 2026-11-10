@@ -162,9 +162,14 @@ export function SonicStageSelector({
 
           {/* ISLAND 1: STAGE 1 EVENTS (Lower Left) */}
           <div 
+            data-island="1"
             onClick={() => {
-              soundEngine.playJump();
-              onSelectStage(1);
+              if (currentStage === 1 && onEnterActiveStage) {
+                onEnterActiveStage();
+              } else {
+                soundEngine.playJump();
+                onSelectStage(1);
+              }
             }}
             className={`absolute left-[4%] bottom-[22%] w-44 flex flex-col items-center cursor-pointer transition-transform ${
               currentStage === 1 ? 'scale-105 filter drop-shadow-[0_0_15px_rgba(250,204,21,0.9)]' : 'hover:scale-102 opacity-95'
@@ -183,9 +188,9 @@ export function SonicStageSelector({
               STAGE 1: EVENTS
             </div>
 
-            {/* Sonic Sprite standing on Island 1 */}
-            <div className="relative w-full flex items-end justify-center gap-1 mb-0.5">
-              <SonicGenesisSprite size={32} active={currentStage === 1} />
+            {/* Sonic Sprite standing on Island 1 (ONLY when Stage 1 is selected) */}
+            <div className="relative w-full flex items-end justify-center gap-1.5 mb-0.5">
+              {currentStage === 1 && <SonicGenesisSprite size={38} active={true} />}
               <PixelPalmTree />
             </div>
 
@@ -195,9 +200,14 @@ export function SonicStageSelector({
 
           {/* ISLAND 2: STAGE 2 SPONSORS (Middle Right) */}
           <div 
+            data-island="2"
             onClick={() => {
-              soundEngine.playJump();
-              onSelectStage(2);
+              if (currentStage === 2 && onEnterActiveStage) {
+                onEnterActiveStage();
+              } else {
+                soundEngine.playJump();
+                onSelectStage(2);
+              }
             }}
             className={`absolute right-[4%] bottom-[40%] w-44 flex flex-col items-center cursor-pointer transition-transform ${
               currentStage === 2 ? 'scale-105 filter drop-shadow-[0_0_15px_rgba(250,204,21,0.9)]' : 'hover:scale-102 opacity-95'
@@ -219,7 +229,7 @@ export function SonicStageSelector({
             <div className="flex items-center gap-2 mb-0.5">
               <span className="text-xs">🔴</span>
               <PixelPalmTree />
-              {currentStage === 2 && <SonicGenesisSprite size={32} active={true} />}
+              {currentStage === 2 && <SonicGenesisSprite size={38} active={true} />}
             </div>
 
             <GreenHillIsland width={155} height={55} hasWaterfall={true} />
@@ -227,9 +237,14 @@ export function SonicStageSelector({
 
           {/* ISLAND 3: STAGE 3 FAQS (Upper Left) */}
           <div 
+            data-island="3"
             onClick={() => {
-              soundEngine.playJump();
-              onSelectStage(3);
+              if (currentStage === 3 && onEnterActiveStage) {
+                onEnterActiveStage();
+              } else {
+                soundEngine.playJump();
+                onSelectStage(3);
+              }
             }}
             className={`absolute left-[6%] top-[22%] w-44 flex flex-col items-center cursor-pointer transition-transform ${
               currentStage === 3 ? 'scale-105 filter drop-shadow-[0_0_15px_rgba(250,204,21,0.9)]' : 'hover:scale-102 opacity-95'
@@ -249,7 +264,7 @@ export function SonicStageSelector({
             <div className="flex items-center gap-2 mb-0.5">
               <span className="text-xs">🧙‍♂️</span>
               <span className="text-xs">❓</span>
-              {currentStage === 3 && <SonicGenesisSprite size={32} active={true} />}
+              {currentStage === 3 && <SonicGenesisSprite size={38} active={true} />}
             </div>
 
             <GreenHillIsland width={150} height={52} hasWaterfall={true} />
@@ -257,9 +272,14 @@ export function SonicStageSelector({
 
           {/* ISLAND 4: STAGE 4 REGISTER (Upper Right) */}
           <div 
+            data-island="4"
             onClick={() => {
-              soundEngine.playJump();
-              onSelectStage(4);
+              if (currentStage === 4 && onEnterActiveStage) {
+                onEnterActiveStage();
+              } else {
+                soundEngine.playJump();
+                onSelectStage(4);
+              }
             }}
             className={`absolute right-[6%] top-[6%] w-44 flex flex-col items-center cursor-pointer transition-transform ${
               currentStage === 4 ? 'scale-105 filter drop-shadow-[0_0_15px_rgba(250,204,21,0.9)]' : 'hover:scale-102 opacity-95'
@@ -280,7 +300,7 @@ export function SonicStageSelector({
             <div className="flex items-center gap-1.5 mb-0.5">
               <SonicLoopDeLoop />
               <PixelPalmTree />
-              {currentStage === 4 && <SonicGenesisSprite size={32} active={true} />}
+              {currentStage === 4 && <SonicGenesisSprite size={38} active={true} />}
             </div>
 
             <GreenHillIsland width={145} height={50} hasWaterfall={true} />

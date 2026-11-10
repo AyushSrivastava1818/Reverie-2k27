@@ -26,7 +26,7 @@ export function SponsorGalaxy({ onSkipToDirectory, onOpenRewards, onSelectSponso
 
   // Mutable game physics & entity state
   const stateRef = useRef({
-    player: { x: 380, y: 460, width: 48, height: 40, speed: 8 },
+    player: { x: 380, y: 440, width: 72, height: 60, speed: 9 },
     keys: { left: false, right: false, fire: false },
     lasers: [],
     targets: [],
@@ -94,9 +94,9 @@ export function SponsorGalaxy({ onSkipToDirectory, onOpenRewards, onSelectSponso
         canvasRef.current.height = h;
         stateRef.current.canvasWidth = w;
         stateRef.current.canvasHeight = h;
-        stateRef.current.player.y = h - 60;
-        if (stateRef.current.player.x > w - 60) {
-          stateRef.current.player.x = w / 2 - 24;
+        stateRef.current.player.y = h - 75;
+        if (stateRef.current.player.x > w - 80) {
+          stateRef.current.player.x = w / 2 - 36;
         }
       }
     };
@@ -113,8 +113,8 @@ export function SponsorGalaxy({ onSkipToDirectory, onOpenRewards, onSelectSponso
     const w = st.canvasWidth || 800;
     const h = st.canvasHeight || 520;
 
-    st.player.x = w / 2 - 24;
-    st.player.y = h - 60;
+    st.player.x = w / 2 - 36;
+    st.player.y = h - 75;
     st.lasers = [];
     st.targets = [];
     st.powerups = [];
@@ -148,14 +148,14 @@ export function SponsorGalaxy({ onSkipToDirectory, onOpenRewards, onSelectSponso
 
     if (isTriple) {
       st.lasers.push(
-        { x: st.player.x + 8, y: st.player.y - 6, vx: -1.8, vy: -11, color: '#ec4899', width: 4, height: 16 },
-        { x: st.player.x + 22, y: st.player.y - 12, vx: 0, vy: -12, color: '#38bdf8', width: 5, height: 18 },
-        { x: st.player.x + 36, y: st.player.y - 6, vx: 1.8, vy: -11, color: '#ec4899', width: 4, height: 16 }
+        { x: st.player.x + 8, y: st.player.y - 6, vx: -2.0, vy: -12, color: '#ec4899', width: 6, height: 22 },
+        { x: st.player.x + 33, y: st.player.y - 14, vx: 0, vy: -14, color: '#38bdf8', width: 7, height: 24 },
+        { x: st.player.x + 58, y: st.player.y - 6, vx: 2.0, vy: -12, color: '#ec4899', width: 6, height: 22 }
       );
     } else {
       st.lasers.push(
-        { x: st.player.x + 10, y: st.player.y - 10, vx: 0, vy: -11, color: '#38bdf8', width: 4, height: 16 },
-        { x: st.player.x + 34, y: st.player.y - 10, vx: 0, vy: -11, color: '#38bdf8', width: 4, height: 16 }
+        { x: st.player.x + 10, y: st.player.y - 10, vx: 0, vy: -13, color: '#38bdf8', width: 6, height: 22 },
+        { x: st.player.x + 56, y: st.player.y - 10, vx: 0, vy: -13, color: '#38bdf8', width: 6, height: 22 }
       );
     }
   };
@@ -202,7 +202,7 @@ export function SponsorGalaxy({ onSkipToDirectory, onOpenRewards, onSelectSponso
       if (st.keys.right) st.player.x += st.player.speed;
       st.player.x = Math.max(8, Math.min(cw - st.player.width - 8, st.player.x));
 
-      // 3. SPAWN SPONSOR TARGETS
+      // 3. SPAWN SPONSOR TARGETS (Large, visible alien carrier ships!)
       if (now - st.lastSpawn > (st.spawnInterval - (st.level - 1) * 250) && st.targets.length < 5) {
         st.lastSpawn = now;
         const availableSponsors = pastSponsors;
@@ -212,11 +212,11 @@ export function SponsorGalaxy({ onSkipToDirectory, onOpenRewards, onSelectSponso
         st.targets.push({
           id: Math.random().toString(),
           sponsor: chosen,
-          x: 40 + Math.random() * (cw - 160),
-          y: -70,
-          width: 96,
-          height: 56,
-          speed: 1.1 + (st.level * 0.35) + Math.random() * 0.4,
+          x: 30 + Math.random() * (cw - 200),
+          y: -80,
+          width: 154,
+          height: 68,
+          speed: 1.0 + (st.level * 0.28) + Math.random() * 0.3,
           hp: 2,
           maxHp: 2,
           bobOffset: Math.random() * Math.PI * 2,
@@ -509,92 +509,102 @@ export function SponsorGalaxy({ onSkipToDirectory, onOpenRewards, onSelectSponso
         ctx.save();
         ctx.fillStyle = l.color;
         ctx.shadowColor = l.color;
-        ctx.shadowBlur = 10;
+        ctx.shadowBlur = 14;
         ctx.fillRect(l.x, l.y, l.width, l.height);
-        // Bright core
+        // Bright White Plasma Core
         ctx.fillStyle = '#ffffff';
-        ctx.fillRect(l.x + 1, l.y + 2, l.width - 2, l.height - 4);
+        ctx.fillRect(l.x + 1.5, l.y + 2, l.width - 3, l.height - 4);
         ctx.restore();
       });
 
-      // Draw Sponsor Carrier Craft (Targets)
+      // Draw Sponsor Carrier Craft (Targets - Scaled Up & Crystal Clear!)
       st.targets.forEach(t => {
         ctx.save();
         const flash = t.hitFlash > 0;
 
-        // Spacecraft Outer Hull
-        ctx.fillStyle = flash ? '#ffffff' : '#140c2b';
-        ctx.strokeStyle = flash ? '#ef4444' : t.hp < t.maxHp ? '#f59e0b' : '#38bdf8';
-        ctx.lineWidth = 2;
-
-        // Chamfered craft chassis
         const rx = t.x;
         const ry = t.y;
         const rw = t.width;
         const rh = t.height;
 
+        // Spacecraft Outer Hull - Heavy Cybernetic Cruiser Armor
+        ctx.fillStyle = flash ? '#ffffff' : '#0e0822';
+        ctx.strokeStyle = flash ? '#ef4444' : t.hp < t.maxHp ? '#f59e0b' : '#06b6d4';
+        ctx.lineWidth = 2.5;
+
         ctx.beginPath();
-        ctx.moveTo(rx + 8, ry);
-        ctx.lineTo(rx + rw - 8, ry);
-        ctx.lineTo(rx + rw, ry + 10);
-        ctx.lineTo(rx + rw, ry + rh - 8);
-        ctx.lineTo(rx + rw - 10, ry + rh);
-        ctx.lineTo(rx + 10, ry + rh);
-        ctx.lineTo(rx, ry + rh - 8);
-        ctx.lineTo(rx, ry + 10);
+        ctx.moveTo(rx + 12, ry);
+        ctx.lineTo(rx + rw - 12, ry);
+        ctx.lineTo(rx + rw, ry + 14);
+        ctx.lineTo(rx + rw, ry + rh - 12);
+        ctx.lineTo(rx + rw - 14, ry + rh);
+        ctx.lineTo(rx + 14, ry + rh);
+        ctx.lineTo(rx, ry + rh - 12);
+        ctx.lineTo(rx, ry + 14);
         ctx.closePath();
         ctx.fill();
         ctx.stroke();
 
-        // Sponsor Logo Display Badge - Crisp rounded white plate for 100% logo clarity
+        // Neon Glow accents on ship corners
+        ctx.strokeStyle = '#a855f7';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(rx + 4, ry + 16);
+        ctx.lineTo(rx + 4, ry + rh - 14);
+        ctx.stroke();
+
+        // Sponsor Logo Display Badge - Large 52px Crisp Rounded White Plate
         const img = sponsorImagesRef.current[t.sponsor.name];
-        const logoSize = 36;
-        const logoX = rx + 6;
+        const logoSize = 52;
+        const logoX = rx + 8;
         const logoY = ry + (rh - logoSize) / 2;
 
-        // Bright white rounded badge plate
         ctx.save();
         ctx.fillStyle = '#ffffff';
-        ctx.shadowColor = 'rgba(255, 255, 255, 0.5)';
-        ctx.shadowBlur = 8;
+        ctx.shadowColor = 'rgba(255, 255, 255, 0.6)';
+        ctx.shadowBlur = 10;
         ctx.beginPath();
-        ctx.roundRect(logoX, logoY, logoSize, logoSize, 6);
+        ctx.roundRect(logoX, logoY, logoSize, logoSize, 8);
         ctx.fill();
         ctx.shadowBlur = 0;
-        ctx.strokeStyle = t.hp < t.maxHp ? '#ef4444' : '#38bdf8';
-        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = t.hp < t.maxHp ? '#ef4444' : '#06b6d4';
+        ctx.lineWidth = 2;
         ctx.stroke();
 
         if (img && img.complete && img.naturalWidth > 0) {
           try {
-            ctx.drawImage(img, logoX + 3, logoY + 3, logoSize - 6, logoSize - 6);
+            ctx.drawImage(img, logoX + 4, logoY + 4, logoSize - 8, logoSize - 8);
           } catch(e) {}
         } else {
           // Fallback initial
           ctx.fillStyle = '#0f172a';
-          ctx.font = 'bold 15px sans-serif';
+          ctx.font = 'bold 20px sans-serif';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.fillText(t.sponsor.name.slice(0, 2), logoX + logoSize / 2, logoY + logoSize / 2);
         }
         ctx.restore();
 
-        // Sponsor Name Tag
+        // Sponsor Name Tag (Bold & High Contrast)
         ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 11px monospace';
+        ctx.font = 'bold 12px monospace';
         ctx.textAlign = 'left';
-        ctx.fillText(t.sponsor.name.slice(0, 9), rx + 48, ry + 20);
+        ctx.fillText(t.sponsor.name.slice(0, 10), rx + 66, ry + 24);
 
         // Tier Tag
         ctx.fillStyle = '#fbbf24';
-        ctx.font = '8px monospace';
-        ctx.fillText(t.sponsor.tier.slice(0, 11), rx + 48, ry + 32);
+        ctx.font = 'bold 9px monospace';
+        ctx.fillText(t.sponsor.tier.slice(0, 12), rx + 66, ry + 38);
 
-        // Mini HP Bar
+        // Heavy Armor HP Bar
+        const barW = rw - 74;
         ctx.fillStyle = '#1e1b4b';
-        ctx.fillRect(rx + 48, ry + 38, rw - 54, 4);
+        ctx.fillRect(rx + 66, ry + 46, barW, 6);
         ctx.fillStyle = t.hp === 2 ? '#10b981' : '#f59e0b';
-        ctx.fillRect(rx + 48, ry + 38, (rw - 54) * (t.hp / t.maxHp), 4);
+        ctx.fillRect(rx + 66, ry + 46, barW * (t.hp / t.maxHp), 6);
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(rx + 66, ry + 46, barW, 6);
 
         ctx.restore();
       });
@@ -605,10 +615,10 @@ export function SponsorGalaxy({ onSkipToDirectory, onOpenRewards, onSelectSponso
         ctx.translate(p.x, p.y);
         ctx.fillStyle = p.type === 'triple' ? '#ec4899' : p.type === 'heal' ? '#10b981' : '#fbbf24';
         ctx.shadowColor = ctx.fillStyle;
-        ctx.shadowBlur = 8;
-        ctx.fillRect(-9, -9, 18, 18);
+        ctx.shadowBlur = 10;
+        ctx.fillRect(-11, -11, 22, 22);
         ctx.fillStyle = '#000000';
-        ctx.font = 'bold 10px monospace';
+        ctx.font = 'bold 11px monospace';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(p.type === 'triple' ? '3X' : p.type === 'heal' ? '+HP' : '$$', 0, 0);
@@ -618,55 +628,74 @@ export function SponsorGalaxy({ onSkipToDirectory, onOpenRewards, onSelectSponso
       // Draw Explosions / Particles
       st.particles.forEach(pt => {
         ctx.fillStyle = pt.color;
-        ctx.fillRect(pt.x, pt.y, 3, 3);
+        ctx.fillRect(pt.x, pt.y, 3.5, 3.5);
       });
 
-      // Draw Player Interceptor Fighter
+      // Draw Player Interceptor Fighter (HERO-SIZED RETRO STARFIGHTER!)
       const px = st.player.x;
       const py = st.player.y;
       const isTriple = now < st.tripleShotUntil;
 
-      // Dual Plasma Exhaust Trails
+      // Dual Plasma Exhaust Trails (High-Energy Pulse)
       ctx.fillStyle = isTriple ? '#ec4899' : '#06b6d4';
       ctx.shadowColor = ctx.fillStyle;
-      ctx.shadowBlur = 12;
-      const flameH = 8 + Math.random() * 10;
-      ctx.fillRect(px + 14, py + 34, 6, flameH);
-      ctx.fillRect(px + 28, py + 34, 6, flameH);
+      ctx.shadowBlur = 16;
+      const flameH = 14 + Math.random() * 14;
+      ctx.fillRect(px + 20, py + 50, 8, flameH);
+      ctx.fillRect(px + 44, py + 50, 8, flameH);
+      // Inner white flame core
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(px + 22, py + 50, 4, flameH * 0.6);
+      ctx.fillRect(px + 46, py + 50, 4, flameH * 0.6);
       ctx.shadowBlur = 0;
 
-      // Fighter Fuselage
+      // Main Center Fuselage (Blue Armor)
       ctx.fillStyle = '#0284c7';
-      ctx.fillRect(px + 20, py, 8, 34); // center core
+      ctx.fillRect(px + 28, py + 8, 16, 44);
+      // Nosecone highlight
       ctx.fillStyle = '#38bdf8';
-      ctx.fillRect(px + 22, py + 4, 4, 12); // nosecone highlight
+      ctx.beginPath();
+      ctx.moveTo(px + 36, py);
+      ctx.lineTo(px + 44, py + 16);
+      ctx.lineTo(px + 28, py + 16);
+      ctx.closePath();
+      ctx.fill();
 
-      // Swept Wings
+      // Swept Delta Wings (Purple Cyber Trim)
       ctx.fillStyle = '#7c3aed';
+      // Left Wing
       ctx.beginPath();
-      ctx.moveTo(px + 20, py + 12);
-      ctx.lineTo(px + 2, py + 32);
-      ctx.lineTo(px + 12, py + 32);
-      ctx.lineTo(px + 20, py + 26);
+      ctx.moveTo(px + 28, py + 18);
+      ctx.lineTo(px + 2, py + 48);
+      ctx.lineTo(px + 18, py + 48);
+      ctx.lineTo(px + 28, py + 38);
       ctx.closePath();
       ctx.fill();
 
+      // Right Wing
       ctx.beginPath();
-      ctx.moveTo(px + 28, py + 12);
-      ctx.lineTo(px + 46, py + 32);
-      ctx.lineTo(px + 36, py + 32);
-      ctx.lineTo(px + 28, py + 26);
+      ctx.moveTo(px + 44, py + 18);
+      ctx.lineTo(px + 70, py + 48);
+      ctx.lineTo(px + 54, py + 48);
+      ctx.lineTo(px + 44, py + 38);
       ctx.closePath();
       ctx.fill();
 
-      // Wing Cannons
+      // Wing Cannons (Left & Right)
       ctx.fillStyle = isTriple ? '#f43f5e' : '#38bdf8';
-      ctx.fillRect(px + 4, py + 22, 5, 12);
-      ctx.fillRect(px + 39, py + 22, 5, 12);
+      ctx.shadowColor = ctx.fillStyle;
+      ctx.shadowBlur = 8;
+      ctx.fillRect(px + 6, py + 28, 7, 20);
+      ctx.fillRect(px + 59, py + 28, 7, 20);
+      ctx.shadowBlur = 0;
 
-      // Cockpit Glass
+      // Cockpit Canopy (High-Gloss Cyan Glass)
       ctx.fillStyle = '#e0f2fe';
-      ctx.fillRect(px + 22, py + 10, 4, 8);
+      ctx.beginPath();
+      ctx.roundRect(px + 31, py + 16, 10, 18, 4);
+      ctx.fill();
+      ctx.fillStyle = '#38bdf8';
+      ctx.fillRect(px + 33, py + 20, 6, 10);
 
       st.animationId = requestAnimationFrame(loop);
     };

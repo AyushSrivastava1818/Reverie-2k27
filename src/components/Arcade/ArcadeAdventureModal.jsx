@@ -22,6 +22,14 @@ export function ArcadeAdventureModal({
   const [crtEnabled, setCrtEnabled] = useState(false);
   const [soundMuted, setSoundMuted] = useState(soundEngine.muted);
 
+  React.useEffect(() => {
+    if (initialView) setCurrentView(initialView);
+  }, [initialView]);
+
+  React.useEffect(() => {
+    if (initialStage) setSelectedMapStage(initialStage);
+  }, [initialStage]);
+
   const handleToggleCrt = () => {
     soundEngine.playBlip();
     setCrtEnabled(prev => !prev);

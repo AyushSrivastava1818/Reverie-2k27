@@ -46,22 +46,15 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
       mouthSpeed: 0.08,
       direction: 0
     },
-    // BIGGER GHOSTS (Radius 24px)
+    // 2 Sleek patrolling ghosts along the rails
     ghosts: [
-      { x: 500, y: 235, targetX: 700, targetY: 85, speed: 2.4, color: '#ef4444', name: 'Blinky', eyeDir: 0 },
-      { x: 540, y: 235, targetX: 250, targetY: 385, speed: 2.2, color: '#ec4899', name: 'Pinky', eyeDir: 0 },
-      { x: 580, y: 235, targetX: 710, targetY: 385, speed: 2.3, color: '#06b6d4', name: 'Inky', eyeDir: 0 },
-      { x: 460, y: 235, targetX: 300, targetY: 85, speed: 2.1, color: '#f97316', name: 'Clyde', eyeDir: 0 }
+      { x: 300, y: 85, targetX: 930, targetY: 85, speed: 2.5, color: '#ec4899', name: 'Pinky', eyeDir: 0 },
+      { x: 750, y: 235, targetX: 70, targetY: 235, speed: 2.5, color: '#06b6d4', name: 'Inky', eyeDir: 0 }
     ],
     pellets: [],
     powerPellets: [],
-    fruits: [
-      { x: 500, y: 160, type: 'cherry', eaten: false, bounce: 0 },
-      { x: 500, y: 310, type: 'strawberry', eaten: false, bounce: 0 }
-    ],
     eventStations: [],
-    particles: [],
-    scorePills: []
+    particles: []
   });
 
   // Populate all 18 events and pellets across all 3 days in the maze
@@ -254,37 +247,14 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
         ctx.restore();
       });
 
-      // 5. Draw Bonus Cherries & Strawberries
-      g.fruits.forEach(f => {
-        if (f.eaten) return;
-        f.bounce = Math.sin(frameCount * 0.08) * 4;
-        ctx.save();
-        ctx.shadowColor = '#ef4444';
-        ctx.shadowBlur = 18;
-        ctx.fillStyle = '#dc2626';
-        ctx.beginPath();
-        ctx.arc(f.x - 7, f.y + f.bounce, 8, 0, Math.PI * 2);
-        ctx.arc(f.x + 7, f.y + 4 + f.bounce, 8, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = '#22c55e';
-        ctx.lineWidth = 2.5;
-        ctx.beginPath();
-        ctx.moveTo(f.x - 7, f.y - 8 + f.bounce);
-        ctx.quadraticCurveTo(f.x, f.y - 20 + f.bounce, f.x + 9, f.y - 14 + f.bounce);
-        ctx.moveTo(f.x + 7, f.y - 4 + f.bounce);
-        ctx.quadraticCurveTo(f.x, f.y - 20 + f.bounce, f.x + 9, f.y - 14 + f.bounce);
-        ctx.stroke();
-        ctx.restore();
-      });
-
-      // 6. Draw ALL 18 Grand Event Stations Across Day 1, Day 2, and Day 3
+      // 5. Draw ALL 18 Grand Event Stations Across Day 1, Day 2, and Day 3
       g.eventStations.forEach(st => {
         st.glowPulse = Math.sin(frameCount * 0.08) * 6;
         const isFocused = activeEvent?.id === st.id;
 
         ctx.save();
         ctx.shadowColor = st.color;
-        ctx.shadowBlur = isFocused ? 38 : st.eaten ? 12 : 26 + st.glowPulse;
+        ctx.shadowBlur = isFocused ? 38 : st.eaten ? 12 : 24 + st.glowPulse;
 
         // Outer Rotating Orbit Ring
         ctx.strokeStyle = isFocused ? '#facc15' : st.color;
@@ -303,22 +273,40 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
 
         // Star / Check Icon inside
         ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 10px "Press Start 2P", monospace';
+        ctx.font = 'bold 11px monospace';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(st.eaten ? '✓' : '★', st.x, st.y);
 
-        // Time Tag above
-        ctx.font = 'bold 8px "Press Start 2P", monospace';
-        ctx.fillStyle = st.color;
+        // Time Tag Pill above
         const timeShort = st.time.split('-')[0].trim();
-        ctx.fillText(timeShort, st.x, st.y - 36);
+        ctx.font = 'bold 9px monospace';
+        const tw = ctx.measureText(timeShort).width;
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+        ctx.beginPath();
+        ctx.roundRect(st.x - tw / 2 - 5, st.y - 44, tw + 10, 14, 4);
+        ctx.fill();
+        ctx.strokeStyle = st.color;
+        ctx.lineWidth = 1;
+        ctx.stroke();
 
-        // Event Title below
-        ctx.font = '7.5px "Press Start 2P", monospace';
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = st.color;
+        ctx.fillText(timeShort, st.x, st.y - 34);
+
+        // Event Title below with readable dark backdrop pill
         const titleShort = st.title.length > 12 ? st.title.slice(0, 10) + '..' : st.title;
-        ctx.fillText(titleShort, st.x, st.y + 38);
+        ctx.font = 'bold 9px monospace';
+        const ew = ctx.measureText(titleShort).width;
+        ctx.fillStyle = 'rgba(5, 2, 14, 0.88)';
+        ctx.beginPath();
+        ctx.roundRect(st.x - ew / 2 - 5, st.y + 32, ew + 10, 14, 4);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText(titleShort, st.x, st.y + 42);
 
         ctx.restore();
       });
@@ -422,17 +410,6 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
           setScore(s => s + 50);
           setScaredGhostTimer(240);
           soundEngine.playFanfare();
-          g.scorePills.push({ x: pp.x, y: pp.y - 24, text: 'POWER! +50', alpha: 1 });
-        }
-      });
-
-      // Fruit Collisions
-      g.fruits.forEach(f => {
-        if (!f.eaten && Math.hypot(p.x - f.x, p.y - f.y) < 30) {
-          f.eaten = true;
-          setScore(s => s + 300);
-          soundEngine.playFanfare();
-          g.scorePills.push({ x: f.x, y: f.y - 24, text: 'BONUS! +300', alpha: 1 });
         }
       });
 
@@ -446,19 +423,18 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
             soundEngine.playCoin();
 
             setEatenEventIds(prev => new Set([...prev, st.id]));
-            g.scorePills.push({ x: st.x, y: st.y - 30, text: '+200 PTS', alpha: 1 });
 
-            // 26 rainbow fireworks particles
-            for (let i = 0; i < 26; i++) {
+            // Crisp rainbow fireworks particles
+            for (let i = 0; i < 20; i++) {
               const angle = Math.random() * Math.PI * 2;
-              const spd = 2 + Math.random() * 5.5;
+              const spd = 2 + Math.random() * 4.5;
               g.particles.push({
                 x: st.x,
                 y: st.y,
                 vx: Math.cos(angle) * spd,
                 vy: Math.sin(angle) * spd,
                 color: st.color,
-                life: 36
+                life: 30
               });
             }
           }
@@ -486,27 +462,14 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
       ctx.fill();
       ctx.restore();
 
-      // 9. Fireworks Particles
+      // Fireworks Particles
       g.particles = g.particles.filter(pt => {
         pt.x += pt.vx;
         pt.y += pt.vy;
         pt.life -= 1;
         ctx.fillStyle = pt.color;
-        ctx.fillRect(pt.x, pt.y, 4, 4);
+        ctx.fillRect(pt.x, pt.y, 3, 3);
         return pt.life > 0;
-      });
-
-      // 10. Floating Score Pills
-      g.scorePills = g.scorePills.filter(sp => {
-        sp.y -= 1.3;
-        sp.alpha -= 0.025;
-        ctx.save();
-        ctx.font = 'bold 10px "Press Start 2P", monospace';
-        ctx.fillStyle = `rgba(250, 204, 21, ${sp.alpha})`;
-        ctx.textAlign = 'center';
-        ctx.fillText(sp.text, sp.x, sp.y);
-        ctx.restore();
-        return sp.alpha > 0;
       });
 
       animId = requestAnimationFrame(loop);

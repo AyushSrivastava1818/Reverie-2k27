@@ -263,6 +263,8 @@ export function MarioEventBlocks({ onSelectEvent, onOpenFullDirectory, onClose, 
         {/* ------------------------------------------------------------- */}
         {/* 7 PROMINENT FLOATING QUESTION MARK BLOCKS (Ref: 22.11.17(2))   */}
         {/* ------------------------------------------------------------- */}
+        {/* 7 PROMINENT 16-BIT QUESTION MARK BLOCKS                       */}
+        {/* ------------------------------------------------------------- */}
         <div className="relative z-20 w-full max-w-5xl mx-auto px-4 my-auto">
           <div className="grid grid-cols-7 gap-2 sm:gap-4 items-end">
             {MARIO_CATEGORIES.map((cat) => {
@@ -271,39 +273,40 @@ export function MarioEventBlocks({ onSelectEvent, onOpenFullDirectory, onClose, 
               return (
                 <div
                   key={cat.id}
+                  data-category={cat.id}
                   onClick={() => handleBlockClick(cat)}
                   className={`flex flex-col items-center cursor-pointer group transition-transform ${
-                    isBouncing ? '-translate-y-6 scale-110' : 'hover:-translate-y-3 hover:scale-105'
+                    isBouncing ? '-translate-y-7 scale-110' : 'hover:-translate-y-3 hover:scale-105'
                   }`}
                 >
                   {/* Vibrant Handcrafted 16-bit Pixel Icon Above Question Block */}
-                  <div className="w-12 h-12 sm:w-16 sm:h-16 mb-2 flex items-center justify-center filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.6)]">
-                    {cat.iconType === 'laptop' && <PixelHackathonIcon size={44} className="animate-bounce" />}
-                    {cat.iconType === 'robot' && <PixelRoboticsIcon size={44} className="animate-bounce" />}
-                    {cat.iconType === 'gamepad' && <PixelGamingIcon size={44} className="animate-bounce" />}
-                    {cat.iconType === 'trophy' && <PixelQuizIcon size={44} className="animate-bounce" />}
-                    {cat.iconType === 'palette' && <PixelDesignIcon size={44} className="animate-bounce" />}
-                    {cat.iconType === 'wrench' && <PixelWorkshopIcon size={44} className="animate-bounce" />}
-                    {cat.iconType === 'music' && <PixelCulturalIcon size={44} className="animate-bounce" />}
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 mb-2 flex items-center justify-center filter drop-shadow-[0_4px_12px_rgba(0,0,0,0.7)]">
+                    {cat.iconType === 'laptop' && <PixelHackathonIcon size={46} className="animate-bounce" />}
+                    {cat.iconType === 'robot' && <PixelRoboticsIcon size={46} className="animate-bounce" />}
+                    {cat.iconType === 'gamepad' && <PixelGamingIcon size={46} className="animate-bounce" />}
+                    {cat.iconType === 'trophy' && <PixelQuizIcon size={46} className="animate-bounce" />}
+                    {cat.iconType === 'palette' && <PixelDesignIcon size={46} className="animate-bounce" />}
+                    {cat.iconType === 'wrench' && <PixelWorkshopIcon size={46} className="animate-bounce" />}
+                    {cat.iconType === 'music' && <PixelCulturalIcon size={46} className="animate-bounce" />}
                   </div>
 
                   {/* Golden Question Mark Block (3D Metallic Bevels & Screws) */}
-                  <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-gradient-to-b from-[#fde047] via-[#eab308] to-[#b45309] border-3 sm:border-4 border-[#78350f] shadow-[inset_3px_3px_0_#fef08a,inset_-3px_-3px_0_#92400e,0_6px_0_#451a03,0_8px_15px_rgba(0,0,0,0.5)] flex items-center justify-center">
+                  <div className="relative w-16 h-16 sm:w-22 sm:h-22 rounded-xl bg-gradient-to-b from-[#fef08a] via-[#eab308] to-[#92400e] border-3 sm:border-4 border-[#78350f] shadow-[inset_4px_4px_0_#ffffff,inset_-4px_-4px_0_#78350f,0_8px_0_#451a03,0_12px_20px_rgba(0,0,0,0.6)] flex items-center justify-center group-hover:brightness-110 transition-all">
                     {/* 4 Corner Rivet Screws */}
-                    <span className="absolute top-1.5 left-1.5 w-1.5 h-1.5 rounded-full bg-[#78350f]" />
-                    <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#78350f]" />
-                    <span className="absolute bottom-1.5 left-1.5 w-1.5 h-1.5 rounded-full bg-[#78350f]" />
-                    <span className="absolute bottom-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#78350f]" />
+                    <span className="absolute top-1.5 left-1.5 w-2 h-2 rounded-full bg-[#78350f] shadow-[inset_1px_1px_0_#451a03]" />
+                    <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#78350f] shadow-[inset_1px_1px_0_#451a03]" />
+                    <span className="absolute bottom-1.5 left-1.5 w-2 h-2 rounded-full bg-[#78350f] shadow-[inset_1px_1px_0_#451a03]" />
+                    <span className="absolute bottom-1.5 right-1.5 w-2 h-2 rounded-full bg-[#78350f] shadow-[inset_1px_1px_0_#451a03]" />
                     
-                    {/* Bold Question Mark */}
-                    <span className="text-3xl sm:text-4xl font-black text-[#582c03] drop-shadow-[1px_2px_0_#fef08a]">
+                    {/* Bold Question Mark with Embossed 16-Bit Relief */}
+                    <span className="text-3xl sm:text-5xl font-black text-[#582c03] drop-shadow-[2px_3px_0_#fef08a] select-none">
                       ?
                     </span>
                   </div>
 
                   {/* Wood Plaque with Category Number & Name */}
-                  <div className="w-full mt-2.5 py-1.5 px-1 rounded-lg bg-[#78350f] border-2 border-[#451a03] shadow-[0_3px_0_#270e02] flex flex-col items-center">
-                    <span className="text-[8px] text-yellow-300 font-bold">{cat.number}</span>
+                  <div className="w-full mt-2.5 py-1.5 px-1 rounded-lg bg-gradient-to-b from-[#92400e] to-[#78350f] border-2 border-[#451a03] shadow-[0_4px_0_#270e02] flex flex-col items-center">
+                    <span className="text-[8px] text-yellow-300 font-bold tracking-widest">{cat.number}</span>
                     <span className="text-[8px] sm:text-[10px] text-white font-black truncate w-full text-center tracking-tight">
                       {cat.name}
                     </span>
@@ -317,27 +320,33 @@ export function MarioEventBlocks({ onSelectEvent, onOpenFullDirectory, onClose, 
       </div>
 
       {/* ------------------------------------------------------------- */}
-      {/* TERRAIN: AUTHENTIC WARP PIPE, PIXEL MARIO, AND BRICK STRATA   */}
+      {/* TERRAIN: AUTHENTIC WARP PIPE, HERO-SIZED MARIO, BRICK SOIL     */}
       {/* ------------------------------------------------------------- */}
       <div className="relative z-20 w-full shrink-0">
         
-        {/* Surface Layer: Green Warp Pipe, Mario, Signpost */}
-        <div className="relative w-full h-16 px-8 flex items-end justify-between">
+        {/* Surface Layer: Green Warp Pipe, Bold Hero Mario, Signpost */}
+        <div className="relative w-full h-24 sm:h-28 px-6 sm:px-10 flex items-end justify-between">
           
           {/* Green Glossy Nintendo Warp Pipe */}
-          <div className="w-16 sm:w-20 h-16 bg-gradient-to-r from-emerald-600 via-green-400 to-emerald-700 border-3 border-emerald-950 rounded-t-xl shadow-[0_6px_12px_rgba(0,0,0,0.5)] flex flex-col items-center">
-            <div className="w-full h-4 bg-gradient-to-r from-emerald-400 via-green-300 to-emerald-600 border-b-2 border-emerald-950 rounded-t-lg" />
+          <div className="w-20 sm:w-26 h-20 sm:h-24 bg-gradient-to-r from-emerald-600 via-green-400 to-emerald-700 border-4 border-emerald-950 rounded-t-2xl shadow-[0_8px_16px_rgba(0,0,0,0.6)] flex flex-col items-center relative z-10">
+            <div className="w-full h-5 sm:h-6 bg-gradient-to-r from-emerald-400 via-green-300 to-emerald-600 border-b-3 border-emerald-950 rounded-t-xl" />
           </div>
 
-          {/* Authentic 16-Bit Super Mario World Sprite standing near Pipe */}
-          <div className="absolute left-28 sm:left-36 bottom-1 z-20 animate-bounce" style={{ animationDuration: '0.8s' }}>
-            <SuperMarioSprite size={46} />
+          {/* Authentic 16-Bit Super Mario World Sprite (HERO SIZE - Bold & Prominent!) */}
+          <div className="absolute left-28 sm:left-40 bottom-1.5 z-20 flex flex-col items-center">
+            {/* Ground Shadow */}
+            <div className="w-16 h-4 bg-black/45 rounded-full blur-[2px] absolute -bottom-1" />
+            
+            {/* Mario Sprite */}
+            <div className="animate-bounce" style={{ animationDuration: '0.9s' }}>
+              <SuperMarioSprite size={80} />
+            </div>
           </div>
 
           {/* Right Side: Wooden signpost "ALL 18 EVENTS ➔" */}
           <button
             onClick={onOpenFullDirectory}
-            className="px-4 py-2 rounded-xl bg-[#92400e] hover:bg-[#b45309] border-3 border-[#451a03] text-yellow-300 text-[10px] sm:text-xs font-black shadow-[0_4px_0_#290f02,0_6px_10px_rgba(0,0,0,0.4)] active:translate-y-1 cursor-pointer flex items-center gap-2 z-20 transition-transform hover:scale-105"
+            className="px-4 sm:px-6 py-2.5 rounded-xl bg-gradient-to-b from-[#b45309] to-[#78350f] hover:from-[#d97706] hover:to-[#92400e] border-3 border-[#451a03] text-yellow-300 text-xs sm:text-sm font-black shadow-[0_5px_0_#290f02,0_8px_15px_rgba(0,0,0,0.5)] active:translate-y-1 cursor-pointer flex items-center gap-2.5 z-20 transition-transform hover:scale-105"
           >
             <span>ALL 18 EVENTS</span>
             <span>➔</span>
@@ -345,34 +354,39 @@ export function MarioEventBlocks({ onSelectEvent, onOpenFullDirectory, onClose, 
         </div>
 
         {/* Lush Green Grass Strip with Flowers */}
-        <div className="relative w-full h-4 bg-gradient-to-r from-green-500 via-emerald-400 to-green-600 border-t-2 border-green-300 shadow">
-          <div className="absolute inset-0 flex items-center justify-around text-[9px] pointer-events-none">
+        <div className="relative w-full h-5 bg-gradient-to-r from-green-500 via-emerald-400 to-green-600 border-t-3 border-green-300 shadow">
+          <div className="absolute inset-0 flex items-center justify-around text-xs pointer-events-none">
             <span>🌸</span>
             <span>🌼</span>
             <span>🌺</span>
             <span>🌼</span>
             <span>🌸</span>
             <span>🌼</span>
+            <span>🌸</span>
+            <span>🌺</span>
           </div>
         </div>
         
         {/* Authentic Super Mario World Checkered Brick Soil */}
-        <div className="w-full h-16 sm:h-20 bg-[#9a3412] border-t-3 border-[#451a03] shadow-inner relative overflow-hidden">
-          <div className="w-full h-full opacity-60 bg-[repeating-linear-gradient(90deg,#7c2d12,#7c2d12_24px,#c2410c_24px,#c2410c_48px)]" />
+        <div className="w-full h-16 sm:h-20 bg-[#9a3412] border-t-4 border-[#451a03] shadow-inner relative overflow-hidden">
+          <div className="w-full h-full opacity-65 bg-[repeating-linear-gradient(90deg,#7c2d12,#7c2d12_28px,#c2410c_28px,#c2410c_56px)]" />
         </div>
       </div>
 
       {/* ------------------------------------------------------------- */}
-      {/* POPUP MODAL: EXACT REPLICA OF 22.11.17(2) BOTTOM HALF          */}
+      {/* 16-BIT ARCADE EVENT DOSSIER / FLASHCARD MODAL                   */}
       {/* ------------------------------------------------------------- */}
       {selectedCategory && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 animate-in fade-in zoom-in-95 duration-200">
-          <div className="relative w-full max-w-2xl bg-gradient-to-b from-[#1c1236] via-[#140b29] to-[#0a0518] rounded-2xl border-4 border-yellow-400 shadow-[0_0_50px_rgba(250,204,21,0.7)] overflow-hidden flex flex-col p-4 sm:p-6">
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 animate-in fade-in zoom-in-95 duration-200">
+          <div className="relative w-full max-w-2xl bg-gradient-to-b from-[#1c1236] via-[#140b29] to-[#0a0518] rounded-2xl border-4 border-yellow-400 shadow-[0_0_60px_rgba(250,204,21,0.8)] overflow-hidden flex flex-col p-4 sm:p-6">
             
             {/* Header: Yellow Pixel Plaque + Red [X] */}
-            <div className="flex items-center justify-between pb-3 border-b-2 border-purple-800/80 mb-4">
-              <div className="px-5 py-1.5 rounded-lg bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-500 border-2 border-white shadow-md">
-                <span className="font-pixel text-xs sm:text-sm font-black text-black tracking-wider uppercase">
+            <div className="flex items-center justify-between pb-3 border-b-2 border-purple-800/80 mb-3">
+              <div className="flex items-center gap-2">
+                <span className="px-3 py-1 rounded bg-yellow-400 text-black font-pixel text-xs font-black">
+                  REALM {selectedCategory.number}
+                </span>
+                <span className="font-pixel text-sm sm:text-base font-black text-yellow-300 tracking-wider">
                   {selectedCategory.name}
                 </span>
               </div>
@@ -390,17 +404,19 @@ export function MarioEventBlocks({ onSelectEvent, onOpenFullDirectory, onClose, 
               
               {/* Left Column: Big Glowing Pixel Art Display on Stone Altar */}
               <div className="sm:col-span-5 flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-b from-[#251052] to-[#120726] border-2 border-cyan-400 shadow-[0_0_30px_rgba(6,182,212,0.5)]">
-                <div className="my-2 filter drop-shadow-[0_0_20px_rgba(6,182,212,0.9)] animate-pulse">
-                  {selectedCategory.iconType === 'laptop' && <PixelHackathonIcon size={80} />}
-                  {selectedCategory.iconType === 'robot' && <PixelRoboticsIcon size={80} />}
-                  {selectedCategory.iconType === 'gamepad' && <PixelGamingIcon size={80} />}
-                  {selectedCategory.iconType === 'trophy' && <PixelQuizIcon size={80} />}
-                  {selectedCategory.iconType === 'palette' && <PixelDesignIcon size={80} />}
-                  {selectedCategory.iconType === 'wrench' && <PixelWorkshopIcon size={80} />}
-                  {selectedCategory.iconType === 'music' && <PixelCulturalIcon size={80} />}
+                <div className="my-2 filter drop-shadow-[0_0_25px_rgba(6,182,212,0.95)] animate-pulse">
+                  {selectedCategory.iconType === 'laptop' && <PixelHackathonIcon size={84} />}
+                  {selectedCategory.iconType === 'robot' && <PixelRoboticsIcon size={84} />}
+                  {selectedCategory.iconType === 'gamepad' && <PixelGamingIcon size={84} />}
+                  {selectedCategory.iconType === 'trophy' && <PixelQuizIcon size={84} />}
+                  {selectedCategory.iconType === 'palette' && <PixelDesignIcon size={84} />}
+                  {selectedCategory.iconType === 'wrench' && <PixelWorkshopIcon size={84} />}
+                  {selectedCategory.iconType === 'music' && <PixelCulturalIcon size={84} />}
                 </div>
                 {/* Stone Altar Pedestal */}
-                <div className="w-28 h-5 bg-zinc-700 border-2 border-zinc-500 rounded shadow mt-2" />
+                <div className="w-32 h-6 bg-zinc-700 border-2 border-zinc-500 rounded-lg shadow-md mt-2 flex items-center justify-center text-[8px] font-pixel text-yellow-300">
+                  ★ UNLOCKED ★
+                </div>
               </div>
 
               {/* Right Column: Mission Briefing, Date, Venue, Mission Points */}
@@ -428,7 +444,7 @@ export function MarioEventBlocks({ onSelectEvent, onOpenFullDirectory, onClose, 
                 {/* Mission Objectives */}
                 <div>
                   <span className="text-[9px] font-pixel text-yellow-300 block mb-1">
-                    YOUR MISSION:
+                    KEY HIGHLIGHTS:
                   </span>
                   <ul className="space-y-1 text-[9px] font-pixel text-slate-300">
                     {selectedCategory.missions.map((m, i) => (
@@ -440,7 +456,29 @@ export function MarioEventBlocks({ onSelectEvent, onOpenFullDirectory, onClose, 
                   </ul>
                 </div>
 
-                {/* Big Yellow Pixel Action Button: REGISTER NOW */}
+                {/* Matching Events in this Category */}
+                {selectedCategory.matchingEvents.length > 0 && (
+                  <div>
+                    <span className="text-[8px] font-pixel text-cyan-400 block mb-1">
+                      EVENTS IN THIS REALM:
+                    </span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {selectedCategory.matchingEvents.slice(0, 3).map((ev) => (
+                        <button
+                          key={ev.id}
+                          onClick={() => {
+                            if (onSelectEvent) onSelectEvent(ev);
+                          }}
+                          className="px-2 py-1 rounded bg-purple-900/80 hover:bg-purple-700 border border-purple-400 text-white font-pixel text-[8px] cursor-pointer"
+                        >
+                          {ev.title} ➔
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Big Yellow Pixel Action Button: START MISSION */}
                 <div className="pt-2 flex flex-col gap-2">
                   <button
                     onClick={() => {
@@ -451,9 +489,9 @@ export function MarioEventBlocks({ onSelectEvent, onOpenFullDirectory, onClose, 
                         onOpenFullDirectory();
                       }
                     }}
-                    className="w-full py-3 rounded-xl bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-500 hover:from-yellow-300 hover:to-amber-400 border-3 border-white text-black font-pixel text-xs sm:text-sm font-black shadow-[0_5px_0_#b45309,0_8px_15px_rgba(250,204,21,0.5)] active:translate-y-1 cursor-pointer flex items-center justify-center gap-2 transition-transform hover:scale-102"
+                    className="w-full py-3 rounded-xl bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-500 hover:from-yellow-300 hover:to-amber-400 border-3 border-white text-black font-pixel text-xs sm:text-sm font-black shadow-[0_5px_0_#b45309,0_8px_20px_rgba(250,204,21,0.6)] active:translate-y-1 cursor-pointer flex items-center justify-center gap-2 transition-transform hover:scale-102"
                   >
-                    <span>REGISTER NOW</span>
+                    <span>START MISSION & REGISTER</span>
                     <span>➔</span>
                   </button>
 
@@ -461,7 +499,7 @@ export function MarioEventBlocks({ onSelectEvent, onOpenFullDirectory, onClose, 
                     onClick={() => setSelectedCategory(null)}
                     className="text-[9px] text-zinc-400 hover:text-white font-pixel text-center cursor-pointer transition-colors"
                   >
-                    ← BACK TO EVENTS
+                    ← BACK TO REALMS
                   </button>
                 </div>
 
