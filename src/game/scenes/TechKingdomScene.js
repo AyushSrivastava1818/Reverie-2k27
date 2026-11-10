@@ -110,14 +110,18 @@ export class TechKingdomScene extends BaseKingdomScene {
     this.add.image(3020, this.groundY, 'flag').setOrigin(0.5, 1);
   }
 
-  // Distinct Cyberpunk Architectural Building with Window Lights & Rooftop Antenna
+  // Distinct Cyberpunk Architectural Building with Translucent Glass & Neon Accents
   addCyberBuilding(x, width, height, tintColor, title, numBadge) {
     const bldgY = this.groundY;
 
-    // Main tower block
-    const bldg = this.add.rectangle(x, bldgY - height / 2, width, height, tintColor, 0.95);
-    bldg.setStrokeStyle(2, 0x38bdf8);
+    // Translucent cyber monolith allowing the master cyberpunk city to shine through!
+    const bldg = this.add.rectangle(x, bldgY - height / 2, width, height, 0x050b1a, 0.55);
+    bldg.setStrokeStyle(2, 0x38bdf8, 0.85);
     bldg.setDepth(-4);
+
+    // Sleek cyan inner glow accent
+    const innerAcc = this.add.rectangle(x, bldgY - height / 2, width - 8, height - 8, tintColor, 0.25);
+    innerAcc.setDepth(-4);
 
     // Rooftop Antenna
     const antenna = this.add.line(0, 0, x, bldgY - height, x, bldgY - height - 36, 0x38bdf8, 1);
@@ -133,19 +137,20 @@ export class TechKingdomScene extends BaseKingdomScene {
       repeat: -1
     });
 
-    // Grid of illuminated windows
-    const cols = Math.floor(width / 28);
-    const rows = Math.floor(height / 36);
-    const startX = x - (cols * 28) / 2 + 14;
-    const startY = bldgY - height + 36;
+    // Sleek cyber window lights
+    const cols = Math.floor(width / 32);
+    const rows = Math.floor(height / 42);
+    const startX = x - (cols * 32) / 2 + 16;
+    const startY = bldgY - height + 42;
 
     for (let c = 0; c < cols; c++) {
       for (let r = 0; r < rows; r++) {
-        // Random bright/dim window colors (cyan, amber, violet)
         const isLit = (c + r * 3) % 2 === 0;
-        const winColor = isLit ? ((c + r) % 3 === 0 ? 0x22d3ee : 0xfbbf24) : 0x0f172a;
-        const win = this.add.rectangle(startX + c * 28, startY + r * 36, 14, 18, winColor, 0.85);
-        win.setDepth(-3);
+        if (isLit) {
+          const winColor = (c + r) % 3 === 0 ? 0x22d3ee : 0xfbbf24;
+          const win = this.add.rectangle(startX + c * 32, startY + r * 42, 12, 16, winColor, 0.7);
+          win.setDepth(-3);
+        }
       }
     }
 

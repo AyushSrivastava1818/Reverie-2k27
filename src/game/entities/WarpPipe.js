@@ -11,6 +11,7 @@ export class WarpPipe extends Phaser.GameObjects.Container {
     this.targetScene = options.targetScene || 'TechKingdomScene';
     this.destinationName = options.destinationName || 'WARP TUNNEL: TECH REALM';
     this.spawnPoint = options.spawnPoint || { x: 160, y: 440 };
+    this.isArcade = !!options.isArcade || this.targetScene === 'arcade';
 
     // 1. Pipe Sprite (76x100)
     const spriteKey = `pipe_${this.color}`;
@@ -148,6 +149,16 @@ export class WarpPipe extends Phaser.GameObjects.Container {
 
     // Trigger player duck into pipe
     player.enterPipe(this, () => {
+      // If this is the ARCADE WARP TUNNEL, directly open the Arcade Universe!
+      if (this.isArcade || this.targetScene === 'arcade') {
+        soundEngine.playFanfare();
+        eventBus.emit('open-arcade-modal', { stage: 1, view: 'world-map' });
+        this.scene.time.delayedCall(800, () => {
+          this.scene.isTransitioning = false;
+        });
+        return;
+      }
+
       // Trigger the spectacular Warp Tunnel Hyperspace Overlay
       eventBus.emit('warp-tunnel-active', {
         active: true,

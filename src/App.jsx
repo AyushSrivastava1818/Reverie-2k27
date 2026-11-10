@@ -132,6 +132,11 @@ export function App() {
       }
     });
 
+    // 3b. Direct Arcade Modal trigger from in-game Warp Tunnel
+    const unbindOpenArcade = eventBus.on('open-arcade-modal', (data) => {
+      handleOpenArcadeAdventure(data?.stage || 1, data?.view || 'world-map');
+    });
+
     // 4. Kota Bot dialogue trigger
     const unbindKotaBot = eventBus.on('open-kota-dialogue', (data) => {
       setKotaBotState({
@@ -197,6 +202,7 @@ export function App() {
       unbindPipeNear();
       unbindPortalNear();
       unbindNpcNear();
+      if (unbindOpenArcade) unbindOpenArcade();
       if (unbindWarp) unbindWarp();
       window.removeEventListener('keydown', handleGlobalKeyDown);
     };

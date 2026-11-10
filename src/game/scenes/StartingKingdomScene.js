@@ -219,11 +219,12 @@ export class StartingKingdomScene extends BaseKingdomScene {
       spawnPoint: { x: 160, y: this.groundY - 60 }
     });
 
-    // 3. PURPLE PIPE -> FLAGSHIP ZONE
+    // 3. GOLD ARCADE PIPE -> RETRO ARCADE UNIVERSE (Replaced Flagship tunnel!)
     this.addWarpPipe(2900, this.groundY, {
-      color: 'purple',
-      targetScene: 'FlagshipScene',
-      destinationName: 'FLAGSHIP ZONE',
+      color: 'yellow',
+      targetScene: 'arcade',
+      isArcade: true,
+      destinationName: 'ARCADE',
       spawnPoint: { x: 160, y: this.groundY - 60 }
     });
 

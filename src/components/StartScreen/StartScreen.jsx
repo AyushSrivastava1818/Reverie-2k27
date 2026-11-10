@@ -118,6 +118,13 @@ export function StartScreen({
       });
     } catch (e) {}
 
+    if (sceneKey === 'arcade' || sceneKey === 'FlagshipScene') {
+      if (onOpenArcade) {
+        onOpenArcade();
+        return;
+      }
+    }
+
     if (onSelectKingdom) {
       onSelectKingdom(sceneKey);
     } else {
@@ -166,13 +173,13 @@ export function StartScreen({
       hoverStyle: 'hover:shadow-[0_8px_0_#9d174d,0_0_28px_rgba(236,72,153,0.9)]'
     },
     { 
-      id: 'FlagshipScene', 
-      name: 'FLAGSHIP', 
-      tag: 'CARNIVAL',
-      Icon: Trophy,
+      id: 'arcade', 
+      name: 'ARCADE', 
+      tag: 'QUEST',
+      Icon: Gamepad2,
       left: '57.2%',
       width: '12.2%',
-      borderClass: 'border-amber-400 text-amber-300 bg-[#221002]/95 hover:bg-[#361903]',
+      borderClass: 'border-amber-400 text-yellow-300 bg-[#221002]/95 hover:bg-[#361903]',
       style: {
         boxShadow: '0 5px 0 #92400e, 0 0 18px rgba(245, 158, 11, 0.45)'
       },

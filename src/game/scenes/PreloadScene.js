@@ -51,7 +51,11 @@ export class PreloadScene extends Phaser.Scene {
     this.load.image('reverie_logo', '/assets/branding/reverie_logo.png');
     this.load.image('reverie_emblem', '/assets/branding/reverie_emblem.png');
 
-    // Thematic Parallax Backgrounds
+    // Thematic Parallax Backgrounds (Master High-Definition 16-Bit Artworks)
+    this.load.image('bg_starting_master', '/assets/backgrounds/bg_starting_master.jpg');
+    this.load.image('bg_tech_master', '/assets/backgrounds/bg_tech_master.jpg');
+    this.load.image('bg_culture_master', '/assets/backgrounds/bg_culture_master.jpg');
+    this.load.image('bg_plaza_master', '/assets/backgrounds/bg_plaza_master.jpg');
     this.load.image('bg_stars', '/assets/backgrounds/bg_stars.png');
     this.load.image('bg_mario_hills', '/assets/backgrounds/bg_mario_hills.png');
     this.load.image('bg_cyber_city', '/assets/backgrounds/bg_cyber_city.png');

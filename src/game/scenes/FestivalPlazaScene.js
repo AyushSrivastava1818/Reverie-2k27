@@ -173,11 +173,12 @@ export class FestivalPlazaScene extends BaseKingdomScene {
       spawnPoint: { x: 160, y: this.groundY - 60 }
     });
 
-    // Warp Pipe to Flagship Zone
+    // Warp Pipe to Arcade Universe (Replaced Flagship)
     this.addWarpPipe(2880, this.groundY, {
-      color: 'purple',
-      targetScene: 'FlagshipScene',
-      destinationName: 'FLAGSHIP ZONE',
+      color: 'yellow',
+      targetScene: 'arcade',
+      isArcade: true,
+      destinationName: 'ARCADE',
       spawnPoint: { x: 160, y: this.groundY - 60 }
     });
 

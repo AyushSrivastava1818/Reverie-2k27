@@ -138,12 +138,13 @@ export class CultureKingdomScene extends BaseKingdomScene {
     }
 
     // =========================================================================
-    // 12. FORWARD WARP PIPE TO FLAGSHIP ZONE
+    // 12. FORWARD WARP PIPE TO ARCADE
     // =========================================================================
     this.addWarpPipe(2860, this.groundY, {
-      color: 'purple',
-      targetScene: 'FlagshipScene',
-      destinationName: 'FLAGSHIP ZONE',
+      color: 'yellow',
+      targetScene: 'arcade',
+      isArcade: true,
+      destinationName: 'ARCADE',
       spawnPoint: { x: 160, y: this.groundY - 60 }
     });
 
@@ -156,12 +157,12 @@ export class CultureKingdomScene extends BaseKingdomScene {
   // ===========================================================================
 
   createBotanicalGreenhouse(x, y) {
-    // Illuminated greenhouse glass structure with green neon accents
-    const glass = this.add.rectangle(x, y - 55, 96, 110, 0x064e3b, 0.75);
+    // Illuminated greenhouse pavilion with translucent glass allowing concert backdrop to shine through
+    const glass = this.add.rectangle(x, y - 55, 96, 110, 0x064e3b, 0.45);
     glass.setStrokeStyle(2, 0x10b981).setDepth(-3);
 
     // Glass roof gable
-    const roof = this.add.triangle(x, y - 120, 0, -22, -48, 14, 48, 14, 0x047857);
+    const roof = this.add.triangle(x, y - 120, 0, -22, -48, 14, 48, 14, 0x047857, 0.6);
     roof.setStrokeStyle(2, 0x34d399).setDepth(-3);
 
     // Interior floral glow
@@ -177,8 +178,8 @@ export class CultureKingdomScene extends BaseKingdomScene {
   }
 
   createSpaceshipAirlock(x, y) {
-    // Futuristic Among Us space pod with emergency meeting window
-    const pod = this.add.rectangle(x, y - 50, 92, 100, 0x1e1b4b, 0.9);
+    // Futuristic Among Us space pod with glowing inspection portal
+    const pod = this.add.rectangle(x, y - 50, 92, 100, 0x1e1b4b, 0.55);
     pod.setStrokeStyle(2.5, 0xef4444).setDepth(-3);
 
     // Oval inspection window
