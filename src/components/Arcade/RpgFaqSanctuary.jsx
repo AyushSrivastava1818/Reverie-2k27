@@ -101,6 +101,12 @@ export function RpgFaqSanctuary({ onAdvanceStage, onClose, onBackToMap }) {
       {/* ------------------------------------------------------------- */}
       <div className="relative w-full max-w-4xl bg-[#170a2c] rounded-2xl border-4 border-[#f59e0b] shadow-[0_0_50px_rgba(245,158,11,0.6)] p-5 sm:p-7 flex flex-col justify-between my-auto">
         
+        {/* Ornate Gold Filigree Corner Brackets */}
+        <div className="absolute top-1 left-1 w-4 h-4 border-t-3 border-l-3 border-yellow-300 pointer-events-none" />
+        <div className="absolute top-1 right-1 w-4 h-4 border-t-3 border-r-3 border-yellow-300 pointer-events-none" />
+        <div className="absolute bottom-1 left-1 w-4 h-4 border-b-3 border-l-3 border-yellow-300 pointer-events-none" />
+        <div className="absolute bottom-1 right-1 w-4 h-4 border-b-3 border-r-3 border-yellow-300 pointer-events-none" />
+        
         {/* Top Half: Wizard (Left) & Question Menu (Right) */}
         <div className="grid grid-cols-1 sm:grid-cols-12 gap-6 items-center mb-5">
           

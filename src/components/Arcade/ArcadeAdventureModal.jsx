@@ -39,8 +39,8 @@ export function ArcadeAdventureModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 select-none animate-in fade-in duration-200">
       
-      {/* Full-Screen Aspect-Locked High-Res Arcade Cabinet (Max 1280x860, fills viewport) */}
-      <div className="relative w-full max-w-5xl h-[98vh] flex flex-col bg-[#07050e] border-4 border-[#2b2738] rounded-3xl shadow-[0_0_60px_rgba(168,85,247,0.5)] overflow-hidden">
+      {/* Full-Screen Aspect-Locked High-Res Arcade Cabinet */}
+      <div className="relative w-full max-w-6xl h-[98vh] flex flex-col bg-[#07050e] border-4 border-[#2b2738] rounded-3xl shadow-[0_0_80px_rgba(168,85,247,0.6)] overflow-hidden">
         
         {/* CRT Scanline Filter (Toggleable) */}
         {crtEnabled && (

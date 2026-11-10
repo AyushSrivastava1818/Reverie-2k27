@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { soundEngine } from '../../game/systems/SoundEngine';
 import { pastSponsors } from '../../data/sponsors';
+import { SpaceInvaderAlien } from './ArcadePixelSprites';
 
 export function SpaceInvadersSponsors({ onAdvanceStage, onClose, onBackToMap }) {
   const [activeModalSponsor, setActiveModalSponsor] = useState(null);
@@ -63,8 +64,8 @@ export function SpaceInvadersSponsors({ onAdvanceStage, onClose, onBackToMap }) 
       {/* ------------------------------------------------------------- */}
       <div className="relative my-2 flex items-center justify-between max-w-4xl mx-auto w-full shrink-0">
         {/* Magenta Alien Invader (Left) */}
-        <div className="text-3xl sm:text-5xl filter drop-shadow-[0_0_15px_#ec4899] animate-bounce">
-          👾
+        <div className="animate-bounce">
+          <SpaceInvaderAlien size={44} color="#ec4899" frame={0} />
         </div>
 
         {/* Center 3D Pixel Headline */}
@@ -78,8 +79,8 @@ export function SpaceInvadersSponsors({ onAdvanceStage, onClose, onBackToMap }) 
         </div>
 
         {/* Green Alien Invader (Right) */}
-        <div className="text-3xl sm:text-5xl filter drop-shadow-[0_0_15px_#10b981] animate-bounce" style={{ animationDelay: '200ms' }}>
-          👾
+        <div className="animate-bounce" style={{ animationDelay: '200ms' }}>
+          <SpaceInvaderAlien size={44} color="#10b981" frame={1} />
         </div>
       </div>
 

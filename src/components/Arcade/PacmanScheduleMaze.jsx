@@ -295,23 +295,57 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
             PLAY • EXPLORE • CONNECT
           </span>
 
-          <p className="text-xs sm:text-sm text-slate-200 font-sans font-semibold leading-relaxed my-2 max-w-md">
-            A grand celebration of technology, creativity and community. Get ready for an unforgettable retro gaming experience!
-          </p>
+          <div className="flex items-start gap-4 my-2">
+            {/* Illustrated Arcade Cabinet (Ref: 22.11.17.jpeg) */}
+            <div className="w-20 sm:w-24 shrink-0 flex flex-col items-center">
+              <svg width="84" height="110" viewBox="0 0 56 74" className="filter drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
+                {/* Cabinet Hull */}
+                <polygon points="12,8 44,8 46,68 10,68" fill="#1e1b4b" stroke="#3b82f6" strokeWidth="1.5" />
+                {/* Marquee Header */}
+                <rect x="13" y="9" width="30" height="9" fill="#0284c7" />
+                <rect x="15" y="11" width="26" height="5" fill="#facc15" />
+                <text x="28" y="15" fill="#000" fontSize="4.5" fontFamily="monospace" fontWeight="900" textAnchor="middle">REVERIE</text>
+                {/* Angled CRT Screen Bezel */}
+                <polygon points="14,20 42,20 40,42 16,42" fill="#030712" stroke="#06b6d4" strokeWidth="1" />
+                {/* Glowing Screen Content */}
+                <rect x="17" y="23" width="22" height="16" rx="2" fill="#082f49" />
+                <text x="28" y="31" fill="#38bdf8" fontSize="5" fontFamily="monospace" fontWeight="900" textAnchor="middle">GAME</text>
+                <text x="28" y="37" fill="#f43f5e" fontSize="5" fontFamily="monospace" fontWeight="900" textAnchor="middle">ON</text>
+                {/* Control Panel Shelf with Joystick & Buttons */}
+                <polygon points="10,44 46,44 48,52 8,52" fill="#334155" stroke="#475569" strokeWidth="1" />
+                <circle cx="18" cy="48" r="2" fill="#ef4444" /> {/* Red Joystick */}
+                <line x1="18" y1="48" x2="18" y2="51" stroke="#000" strokeWidth="1" />
+                <circle cx="28" cy="47" r="1.2" fill="#38bdf8" />
+                <circle cx="33" cy="47" r="1.2" fill="#facc15" />
+                <circle cx="38" cy="47" r="1.2" fill="#22c55e" />
+                {/* Coin Door with 25c slot */}
+                <rect x="20" y="55" width="16" height="11" fill="#0f172a" stroke="#1e293b" />
+                <line x1="25" y1="58" x2="25" y2="62" stroke="#facc15" strokeWidth="1" />
+                <line x1="31" y1="58" x2="31" y2="62" stroke="#facc15" strokeWidth="1" />
+              </svg>
+            </div>
 
-          {/* Festival Schedule Metadata */}
-          <div className="space-y-2.5 py-3.5 border-y border-purple-800/80 my-2 text-[10px] sm:text-xs font-pixel text-purple-200">
-            <div className="flex items-center gap-2.5">
-              <span className="text-yellow-400 text-sm">📅</span>
-              <span>Date: 20-22 Feb, 2K27</span>
-            </div>
-            <div className="flex items-center gap-2.5">
-              <span className="text-pink-400 text-sm">📍</span>
-              <span>Venue: IIIT Kota Campus & Tech Arena</span>
-            </div>
-            <div className="flex items-center gap-2.5">
-              <span className="text-cyan-400 text-sm">⭐</span>
-              <span>Events: 18+ Premier Competitions & Pronites</span>
+            {/* Description & Festival Info */}
+            <div className="flex-1">
+              <p className="text-xs sm:text-sm text-slate-200 font-sans font-semibold leading-relaxed mb-2">
+                A grand celebration of technology, creativity and community. Get ready for an unforgettable retro gaming experience!
+              </p>
+
+              {/* Festival Schedule Metadata */}
+              <div className="space-y-2 py-2 border-y border-purple-800/80 text-[10px] sm:text-xs font-pixel text-purple-200">
+                <div className="flex items-center gap-2">
+                  <span className="text-yellow-400 text-sm">📅</span>
+                  <span>Date: 20-22 Feb, 2K27</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-pink-400 text-sm">📍</span>
+                  <span>Venue: IIIT Kota Campus & Tech Arena</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-cyan-400 text-sm">⭐</span>
+                  <span>Events: 18+ Premier Competitions & Pronites</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>

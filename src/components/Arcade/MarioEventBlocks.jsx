@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
 import { soundEngine } from '../../game/systems/SoundEngine';
 import { eventsData } from '../../data/events';
+import {
+  PixelHackathonIcon,
+  PixelRoboticsIcon,
+  PixelGamingIcon,
+  PixelQuizIcon,
+  PixelDesignIcon,
+  PixelWorkshopIcon,
+  PixelCulturalIcon,
+  SuperMarioSprite
+} from './ArcadePixelSprites';
 
 const MARIO_CATEGORIES = [
   {
@@ -266,15 +276,15 @@ export function MarioEventBlocks({ onSelectEvent, onOpenFullDirectory, onClose, 
                     isBouncing ? '-translate-y-6 scale-110' : 'hover:-translate-y-3 hover:scale-105'
                   }`}
                 >
-                  {/* Vibrant Pixel Icon Above Question Block */}
-                  <div className="w-10 h-10 sm:w-14 sm:h-14 mb-2 flex items-center justify-center filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.6)]">
-                    {cat.iconType === 'laptop' && <span className="text-3xl sm:text-4xl animate-bounce">💻</span>}
-                    {cat.iconType === 'robot' && <span className="text-3xl sm:text-4xl animate-bounce">🤖</span>}
-                    {cat.iconType === 'gamepad' && <span className="text-3xl sm:text-4xl animate-bounce">🎮</span>}
-                    {cat.iconType === 'trophy' && <span className="text-3xl sm:text-4xl animate-bounce">🏆</span>}
-                    {cat.iconType === 'palette' && <span className="text-3xl sm:text-4xl animate-bounce">🎨</span>}
-                    {cat.iconType === 'wrench' && <span className="text-3xl sm:text-4xl animate-bounce">🔧</span>}
-                    {cat.iconType === 'music' && <span className="text-3xl sm:text-4xl animate-bounce">🎵</span>}
+                  {/* Vibrant Handcrafted 16-bit Pixel Icon Above Question Block */}
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 mb-2 flex items-center justify-center filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.6)]">
+                    {cat.iconType === 'laptop' && <PixelHackathonIcon size={44} className="animate-bounce" />}
+                    {cat.iconType === 'robot' && <PixelRoboticsIcon size={44} className="animate-bounce" />}
+                    {cat.iconType === 'gamepad' && <PixelGamingIcon size={44} className="animate-bounce" />}
+                    {cat.iconType === 'trophy' && <PixelQuizIcon size={44} className="animate-bounce" />}
+                    {cat.iconType === 'palette' && <PixelDesignIcon size={44} className="animate-bounce" />}
+                    {cat.iconType === 'wrench' && <PixelWorkshopIcon size={44} className="animate-bounce" />}
+                    {cat.iconType === 'music' && <PixelCulturalIcon size={44} className="animate-bounce" />}
                   </div>
 
                   {/* Golden Question Mark Block (3D Metallic Bevels & Screws) */}
@@ -319,9 +329,9 @@ export function MarioEventBlocks({ onSelectEvent, onOpenFullDirectory, onClose, 
             <div className="w-full h-4 bg-gradient-to-r from-emerald-400 via-green-300 to-emerald-600 border-b-2 border-emerald-950 rounded-t-lg" />
           </div>
 
-          {/* Authentic Pixel Mario Sprite standing near Pipe */}
+          {/* Authentic 16-Bit Super Mario World Sprite standing near Pipe */}
           <div className="absolute left-28 sm:left-36 bottom-1 z-20 animate-bounce" style={{ animationDuration: '0.8s' }}>
-            <MarioFullSprite />
+            <SuperMarioSprite size={46} />
           </div>
 
           {/* Right Side: Wooden signpost "ALL 18 EVENTS ➔" */}
@@ -380,14 +390,14 @@ export function MarioEventBlocks({ onSelectEvent, onOpenFullDirectory, onClose, 
               
               {/* Left Column: Big Glowing Pixel Art Display on Stone Altar */}
               <div className="sm:col-span-5 flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-b from-[#251052] to-[#120726] border-2 border-cyan-400 shadow-[0_0_30px_rgba(6,182,212,0.5)]">
-                <div className="text-6xl sm:text-7xl my-3 filter drop-shadow-[0_0_20px_rgba(6,182,212,0.9)] animate-pulse">
-                  {selectedCategory.iconType === 'laptop' && '💻'}
-                  {selectedCategory.iconType === 'robot' && '🤖'}
-                  {selectedCategory.iconType === 'gamepad' && '🎮'}
-                  {selectedCategory.iconType === 'trophy' && '🏆'}
-                  {selectedCategory.iconType === 'palette' && '🎨'}
-                  {selectedCategory.iconType === 'wrench' && '🔧'}
-                  {selectedCategory.iconType === 'music' && '🎵'}
+                <div className="my-2 filter drop-shadow-[0_0_20px_rgba(6,182,212,0.9)] animate-pulse">
+                  {selectedCategory.iconType === 'laptop' && <PixelHackathonIcon size={80} />}
+                  {selectedCategory.iconType === 'robot' && <PixelRoboticsIcon size={80} />}
+                  {selectedCategory.iconType === 'gamepad' && <PixelGamingIcon size={80} />}
+                  {selectedCategory.iconType === 'trophy' && <PixelQuizIcon size={80} />}
+                  {selectedCategory.iconType === 'palette' && <PixelDesignIcon size={80} />}
+                  {selectedCategory.iconType === 'wrench' && <PixelWorkshopIcon size={80} />}
+                  {selectedCategory.iconType === 'music' && <PixelCulturalIcon size={80} />}
                 </div>
                 {/* Stone Altar Pedestal */}
                 <div className="w-28 h-5 bg-zinc-700 border-2 border-zinc-500 rounded shadow mt-2" />

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { soundEngine } from '../../game/systems/SoundEngine';
+import { SonicGenesisSprite } from './ArcadePixelSprites';
 
 export const STAGES = [
   { id: 1, name: 'STAGE 1: EVENTS', short: 'EVENTS', stageLabel: 'CHOOSE EVENT!' },
@@ -184,8 +185,8 @@ export function SonicStageSelector({
 
             {/* Sonic Sprite standing on Island 1 */}
             <div className="relative w-full flex items-end justify-center gap-1 mb-0.5">
-              <SonicSprite active={currentStage === 1} />
-              <span className="text-xs">🌴</span>
+              <SonicGenesisSprite size={32} active={currentStage === 1} />
+              <PixelPalmTree />
             </div>
 
             {/* 3D Checkered Island with Cascading Waterfall */}
@@ -217,8 +218,8 @@ export function SonicStageSelector({
             {/* Spring Bumper & Palm Tree */}
             <div className="flex items-center gap-2 mb-0.5">
               <span className="text-xs">🔴</span>
-              <span className="text-xs">🌴</span>
-              {currentStage === 2 && <SonicSprite active={true} />}
+              <PixelPalmTree />
+              {currentStage === 2 && <SonicGenesisSprite size={32} active={true} />}
             </div>
 
             <GreenHillIsland width={155} height={55} hasWaterfall={true} />
@@ -248,7 +249,7 @@ export function SonicStageSelector({
             <div className="flex items-center gap-2 mb-0.5">
               <span className="text-xs">🧙‍♂️</span>
               <span className="text-xs">❓</span>
-              {currentStage === 3 && <SonicSprite active={true} />}
+              {currentStage === 3 && <SonicGenesisSprite size={32} active={true} />}
             </div>
 
             <GreenHillIsland width={150} height={52} hasWaterfall={true} />
@@ -277,9 +278,9 @@ export function SonicStageSelector({
 
             {/* Loop-the-loop & Tree */}
             <div className="flex items-center gap-1.5 mb-0.5">
-              <span className="text-xs">🔄</span>
-              <span className="text-xs">🌴</span>
-              {currentStage === 4 && <SonicSprite active={true} />}
+              <SonicLoopDeLoop />
+              <PixelPalmTree />
+              {currentStage === 4 && <SonicGenesisSprite size={32} active={true} />}
             </div>
 
             <GreenHillIsland width={145} height={50} hasWaterfall={true} />
@@ -462,47 +463,34 @@ function GreenHillIsland({ width = 150, height = 50, hasWaterfall = true }) {
 }
 
 // -------------------------------------------------------------
-// 16-BIT SEGA GENESIS SONIC PIXEL SPRITE
+// GREEN HILL PIXEL PALM TREE & LOOP-DE-LOOP
 // -------------------------------------------------------------
-function SonicSprite({ active }) {
+function PixelPalmTree() {
   return (
-    <div className={`filter drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)] ${active ? 'animate-bounce' : ''}`} style={{ animationDuration: '0.6s' }}>
-      <svg width="28" height="36" viewBox="0 0 28 36">
-        {/* Blue Spikes & Body */}
-        <circle cx="14" cy="12" r="8" fill="#1d4ed8" />
-        {/* Spikes back */}
-        <polygon points="10,6 2,4 8,12" fill="#1d4ed8" />
-        <polygon points="8,12 0,14 8,18" fill="#1d4ed8" />
-        <polygon points="8,18 2,22 10,22" fill="#1d4ed8" />
-        
-        {/* Peach Muzzle & Ears */}
-        <ellipse cx="16" cy="14" rx="5" ry="4" fill="#fed7aa" />
-        <polygon points="16,4 18,1 21,5" fill="#1d4ed8" />
-        <polygon points="17,4 18,2 20,5" fill="#fed7aa" />
-        
-        {/* Big White Eyes & Black Pupils */}
-        <ellipse cx="14" cy="10" rx="3" ry="4" fill="#ffffff" />
-        <ellipse cx="18" cy="10" rx="3" ry="4" fill="#ffffff" />
-        <circle cx="15" cy="10" r="1.5" fill="#000000" />
-        <circle cx="19" cy="10" r="1.5" fill="#000000" />
-        
-        {/* Black Nose */}
-        <circle cx="21" cy="13" r="1.2" fill="#000000" />
+    <svg width="24" height="32" viewBox="0 0 24 32" className="filter drop-shadow">
+      {/* Brown segmented curved trunk */}
+      <path d="M 12 32 Q 10 24 12 14" fill="none" stroke="#78350f" strokeWidth="3.5" strokeLinecap="round" />
+      <path d="M 12 32 Q 10 24 12 14" fill="none" stroke="#b45309" strokeWidth="2" strokeDasharray="3,3" />
+      {/* Green Fronds */}
+      <path d="M 12 14 Q 4 12 2 18" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" />
+      <path d="M 12 14 Q 2 6 6 2" fill="none" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M 12 14 Q 14 4 18 2" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M 12 14 Q 20 10 22 16" fill="none" stroke="#15803d" strokeWidth="2" strokeLinecap="round" />
+      {/* Coconuts */}
+      <circle cx="11" cy="14" r="1.5" fill="#451a03" />
+      <circle cx="13" cy="14.5" r="1.5" fill="#451a03" />
+    </svg>
+  );
+}
 
-        {/* Torso */}
-        <rect x="10" y="18" width="8" height="8" rx="3" fill="#1d4ed8" />
-        <circle cx="14" cy="22" r="3" fill="#fed7aa" /> {/* Peach Chest */}
-
-        {/* White Gloves */}
-        <circle cx="8" cy="22" r="2.5" fill="#ffffff" />
-        <circle cx="20" cy="22" r="2.5" fill="#ffffff" />
-
-        {/* Red Power Sneakers with White Stripe & Gold Buckle */}
-        <rect x="9" y="27" width="5" height="7" rx="2" fill="#dc2626" />
-        <rect x="9" y="29" width="5" height="2" fill="#ffffff" />
-        <rect x="16" y="27" width="5" height="7" rx="2" fill="#dc2626" />
-        <rect x="16" y="29" width="5" height="2" fill="#ffffff" />
-      </svg>
-    </div>
+function SonicLoopDeLoop() {
+  return (
+    <svg width="28" height="28" viewBox="0 0 28 28" className="filter drop-shadow">
+      {/* 3D Brown checkered loop ring */}
+      <circle cx="14" cy="14" r="11" fill="none" stroke="#92400e" strokeWidth="4" />
+      <circle cx="14" cy="14" r="11" fill="none" stroke="#78350f" strokeWidth="4" strokeDasharray="6,6" />
+      {/* Inner Grass Crest */}
+      <path d="M 3 24 Q 14 4 25 24" fill="none" stroke="#22c55e" strokeWidth="2" />
+    </svg>
   );
 }

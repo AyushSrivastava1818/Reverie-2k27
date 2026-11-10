@@ -162,17 +162,62 @@ export function VictoryStageClear({ onRestartQuest, onEnterWorld, onOpenDirector
             </span>
             <div className="grid grid-cols-4 sm:grid-cols-8 gap-2.5">
               {[
-                { icon: '🪙', label: 'COIN' },
-                { icon: '⭐', label: 'STAR' },
-                { icon: '🍄', label: 'POWER' },
-                { icon: '🍄', label: '1UP' },
-                { icon: '🎟️', label: 'VIP PASS' },
-                { icon: '🏆', label: 'TROPHY' },
-                { icon: '🎮', label: 'ARCADE' },
-                { icon: '👑', label: 'ROYALTY' }
+                { type: 'coin', label: 'COIN' },
+                { type: 'star', label: 'STAR' },
+                { type: 'power', label: 'POWER' },
+                { type: 'oneup', label: '1UP' },
+                { type: 'pass', label: 'EVENT PASS' },
+                { type: 'trophy', label: 'TROPHY' },
+                { type: 'arcade', label: 'ARCADE' },
+                { type: 'loyalty', label: 'LOYALTY' }
               ].map((item, i) => (
-                <div key={i} className="p-2 rounded-xl bg-[#090314] border-2 border-cyan-400/70 flex flex-col items-center justify-center shadow">
-                  <span className="text-xl">{item.icon}</span>
+                <div key={i} className="p-2 rounded-xl bg-[#090314] border-2 border-cyan-400/70 flex flex-col items-center justify-center shadow hover:border-yellow-400 transition-colors">
+                  <div className="w-8 h-8 flex items-center justify-center">
+                    {item.type === 'coin' && (
+                      <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-amber-500 to-yellow-300 border border-yellow-200 flex items-center justify-center text-[10px] text-black font-black shadow">
+                        🪙
+                      </div>
+                    )}
+                    {item.type === 'star' && (
+                      <div className="text-xl text-yellow-300 filter drop-shadow animate-pulse">⭐</div>
+                    )}
+                    {item.type === 'power' && (
+                      <svg width="24" height="24" viewBox="0 0 24 24">
+                        <ellipse cx="12" cy="11" rx="10" ry="8" fill="#dc2626" />
+                        <circle cx="8" cy="9" r="2.5" fill="#ffffff" />
+                        <circle cx="16" cy="9" r="2.5" fill="#ffffff" />
+                        <rect x="7" y="14" width="10" height="7" rx="2" fill="#fed7aa" />
+                        <rect x="9" y="16" width="1.5" height="3" fill="#000" />
+                        <rect x="13.5" y="16" width="1.5" height="3" fill="#000" />
+                      </svg>
+                    )}
+                    {item.type === 'oneup' && (
+                      <svg width="24" height="24" viewBox="0 0 24 24">
+                        <ellipse cx="12" cy="11" rx="10" ry="8" fill="#16a34a" />
+                        <circle cx="8" cy="9" r="2.5" fill="#ffffff" />
+                        <circle cx="16" cy="9" r="2.5" fill="#ffffff" />
+                        <rect x="7" y="14" width="10" height="7" rx="2" fill="#fed7aa" />
+                        <rect x="9" y="16" width="1.5" height="3" fill="#000" />
+                        <rect x="13.5" y="16" width="1.5" height="3" fill="#000" />
+                      </svg>
+                    )}
+                    {item.type === 'pass' && (
+                      <div className="px-1 py-0.5 rounded bg-yellow-400 text-black text-[6px] font-black border border-white shadow">
+                        PASS
+                      </div>
+                    )}
+                    {item.type === 'trophy' && (
+                      <div className="text-xl text-yellow-400 filter drop-shadow">🏆</div>
+                    )}
+                    {item.type === 'arcade' && (
+                      <div className="text-xl text-cyan-400 filter drop-shadow">🎮</div>
+                    )}
+                    {item.type === 'loyalty' && (
+                      <div className="px-1 py-0.5 rounded bg-purple-600 text-white text-[6px] font-black border border-purple-300 shadow">
+                        CARD
+                      </div>
+                    )}
+                  </div>
                   <span className="text-[7px] font-pixel text-slate-300 mt-1 truncate">{item.label}</span>
                 </div>
               ))}
