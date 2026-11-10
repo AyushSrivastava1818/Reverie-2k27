@@ -44,6 +44,11 @@ export function MemoryMatch() {
     setIsPlaying(true);
   };
 
+  // Auto start immediately
+  useEffect(() => {
+    initGame();
+  }, []);
+
   const handleCardClick = (index) => {
     if (!isPlaying || flipped.length >= 2 || flipped.includes(index) || matched.includes(cards[index].pairId)) {
       return;
@@ -105,55 +110,37 @@ export function MemoryMatch() {
 
       {/* Main Board Viewport */}
       <div className="relative w-full flex-1 p-4 sm:p-6 bg-[#070313] flex items-center justify-center overflow-y-auto">
-        {!isPlaying ? (
-          <div className="text-center p-6 space-y-4 max-w-sm">
-            <h3 className="font-display text-2xl sm:text-3xl font-black text-yellow-300">
-              MEMORY MATRIX 2K27
-            </h3>
-            <p className="font-body text-xs sm:text-sm text-slate-300 leading-relaxed">
-              Match festival artifacts, Kota Bot cores, and rock guitars. Solve the board to earn +15 festival coins!
-            </p>
-            <button
-              onClick={initGame}
-              className="px-6 py-3 rounded-xl bg-pink-600 hover:bg-pink-500 font-display text-sm font-black uppercase tracking-wider flex items-center justify-center gap-2 mx-auto shadow-xl shadow-pink-600/40 cursor-pointer"
-            >
-              <Play size={18} />
-              <span>START MEMORY MATCH</span>
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-4 max-w-lg w-full">
-            {cards.map((c, idx) => {
-              const isCardFlipped = flipped.includes(idx) || matched.includes(c.pairId);
-              const IconComp = c.icon;
+        <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-4 max-w-lg w-full">
+          {cards.map((c, idx) => {
+            const isCardFlipped = flipped.includes(idx) || matched.includes(c.pairId);
+            const IconComp = c.icon;
 
-              return (
-                <div
-                  key={c.id}
-                  onClick={() => handleCardClick(idx)}
-                  className={`h-24 sm:h-28 rounded-2xl border-2 cursor-pointer flex flex-col items-center justify-center p-2 transition-all transform ${
-                    isCardFlipped
-                      ? `bg-[#180d38] ${c.color} scale-100 shadow-lg`
-                      : 'bg-[#120826] border-purple-900 hover:border-purple-500 hover:scale-105 active:scale-95'
-                  }`}
-                >
-                  {isCardFlipped ? (
-                    <>
-                      <IconComp size={32} className="animate-scaleUp" />
-                      <span className="font-display text-[9px] font-black uppercase tracking-wider mt-1 text-center line-clamp-1">
-                        {c.name}
-                      </span>
-                    </>
-                  ) : (
-                    <span className="font-display text-2xl font-black text-purple-600">
-                      ?
+            return (
+              <div
+                key={c.id}
+                onClick={() => handleCardClick(idx)}
+                className={`h-24 sm:h-28 rounded-2xl border-2 cursor-pointer flex flex-col items-center justify-center p-2 transition-all transform ${
+                  isCardFlipped
+                    ? `bg-[#180d38] ${c.color} scale-100 shadow-lg`
+                    : 'bg-[#120826] border-purple-900 hover:border-purple-500 hover:scale-105 active:scale-95'
+                }`}
+              >
+                {isCardFlipped ? (
+                  <>
+                    <IconComp size={32} className="animate-scaleUp" />
+                    <span className="font-display text-[9px] font-black uppercase tracking-wider mt-1 text-center line-clamp-1">
+                      {c.name}
                     </span>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
+                  </>
+                ) : (
+                  <span className="font-display text-2xl font-black text-purple-600">
+                    ?
+                  </span>
+                )}
+              </div>
+            );
+          })}
+        </div>
 
         {/* Victory Dialog */}
         {gameWon && (

@@ -12,12 +12,10 @@ import { ContactsModal } from './components/Modals/ContactsModal';
 import { FastTravelModal } from './components/Modals/FastTravelModal';
 import { EventDirectoryModal } from './components/Modals/EventDirectoryModal';
 import { SkinsModal } from './components/Modals/SkinsModal';
-import { AchievementsModal } from './components/Modals/AchievementsModal';
 import { KotaBotModal } from './components/Modals/KotaBotModal';
 import { ReverieLiveModal } from './components/Modals/ReverieLiveModal';
 import { MiniGameArcade } from './components/Arcade/MiniGameArcade';
-import { RewardsShopModal } from './components/Modals/RewardsShopModal';
-import { LeaderboardModal } from './components/Modals/LeaderboardModal';
+import { ArcadeAdventureModal } from './components/Arcade/ArcadeAdventureModal';
 import { AchievementToast } from './components/Achievements/AchievementToast';
 import { eventBus } from './game/EventBus';
 import { soundEngine } from './game/systems/SoundEngine';
@@ -31,21 +29,20 @@ export function App() {
   const [coinCount, setCoinCount] = useState(0);
   const [currentSkin, setCurrentSkin] = useState('player_mario');
 
-  // Modals state
+  // Modals state — streamlined & consolidated
   const [activeEvent, setActiveEvent] = useState(null);
-  const [statsOpen, setStatsOpen] = useState(false);
+  const [statsModalState, setStatsModalState] = useState({ open: false, tab: 'stats' });
+  const [sponsorsModalState, setSponsorsModalState] = useState({ open: false, tab: 'galaxy' });
   const [galleryOpen, setGalleryOpen] = useState(false);
-  const [sponsorsOpen, setSponsorsOpen] = useState(false);
   const [contactsOpen, setContactsOpen] = useState(false);
   const [mapOpen, setMapOpen] = useState(false);
   const [directoryOpen, setDirectoryOpen] = useState(false);
   const [directoryCategory, setDirectoryCategory] = useState('all');
   const [skinsOpen, setSkinsOpen] = useState(false);
-  const [achievementsOpen, setAchievementsOpen] = useState(false);
   const [liveOpen, setLiveOpen] = useState(false);
   const [arcadeOpen, setArcadeOpen] = useState(false);
-  const [rewardsOpen, setRewardsOpen] = useState(false);
-  const [leaderboardOpen, setLeaderboardOpen] = useState(false);
+  const [arcadeAdventureOpen, setArcadeAdventureOpen] = useState(false);
+  const [arcadeAdventureStage, setArcadeAdventureStage] = useState(1);
   const [kotaBotState, setKotaBotState] = useState({ open: false, zone: 'StartingKingdomScene', sceneName: 'Starting Kingdom' });
 
   // Proximity flags for mobile action button
@@ -56,6 +53,12 @@ export function App() {
   const handleOpenDirectory = (cat = 'all') => {
     setDirectoryCategory(cat || 'all');
     setDirectoryOpen(true);
+  };
+
+  const handleOpenArcadeAdventure = (stage = 1) => {
+    soundEngine.playFanfare();
+    setArcadeAdventureStage(stage || 1);
+    setArcadeAdventureOpen(true);
   };
 
   useEffect(() => {
@@ -96,24 +99,24 @@ export function App() {
     const unbindEventModal = eventBus.on('open-event-modal', (eventData) => {
       if (eventData.customModal === 'stats') {
         achievementSystem.recordFestivalInfo();
-        setStatsOpen(true);
+        setStatsModalState({ open: true, tab: 'stats' });
       } else if (eventData.customModal === 'gallery') {
         achievementSystem.recordFestivalInfo();
         setGalleryOpen(true);
       } else if (eventData.customModal === 'sponsors') {
         achievementSystem.recordFestivalInfo();
-        setSponsorsOpen(true);
+        setSponsorsModalState({ open: true, tab: 'galaxy' });
       } else if (eventData.customModal === 'contacts') {
         achievementSystem.recordFestivalInfo();
         setContactsOpen(true);
       } else if (eventData.customModal === 'skins') {
         setSkinsOpen(true);
-      } else if (eventData.customModal === 'arcade') {
-        setArcadeOpen(true);
+      } else if (eventData.customModal === 'arcade' || eventData.customModal === 'arcade-adventure') {
+        handleOpenArcadeAdventure(1);
       } else if (eventData.customModal === 'leaderboard') {
-        setLeaderboardOpen(true);
+        setStatsModalState({ open: true, tab: 'leaderboard' });
       } else if (eventData.customModal === 'rewards') {
-        setRewardsOpen(true);
+        setSponsorsModalState({ open: true, tab: 'rewards' });
       } else {
         setActiveEvent(eventData);
       }
@@ -128,9 +131,9 @@ export function App() {
       });
     });
 
-    // 5. Open Achievements Modal
+    // 5. Open Achievements Modal -> Integrated into StatsModal Quests Tab
     const unbindAchievements = eventBus.on('open-achievements-modal', () => {
-      setAchievementsOpen(true);
+      setStatsModalState({ open: true, tab: 'quests' });
     });
 
     // 6. Proximity detection listeners
@@ -154,18 +157,16 @@ export function App() {
     const handleGlobalKeyDown = (e) => {
       if (e.key === 'Escape') {
         setActiveEvent(null);
-        setStatsOpen(false);
+        setStatsModalState(prev => ({ ...prev, open: false }));
         setGalleryOpen(false);
-        setSponsorsOpen(false);
+        setSponsorsModalState(prev => ({ ...prev, open: false }));
         setContactsOpen(false);
         setMapOpen(false);
         setDirectoryOpen(false);
         setSkinsOpen(false);
-        setAchievementsOpen(false);
         setLiveOpen(false);
         setArcadeOpen(false);
-        setRewardsOpen(false);
-        setLeaderboardOpen(false);
+        setArcadeAdventureOpen(false);
         setKotaBotState(prev => ({ ...prev, open: false }));
       }
     };
@@ -191,28 +192,21 @@ export function App() {
       {/* Real-Time Achievement Unlock Toasts */}
       <AchievementToast />
 
-      {/* LAYER 1: Dedicated Website Header (Always visible, clean, zero duplication!) */}
+      {/* LAYER 1: Dedicated Website Header (Exactly the 9 specified destinations) */}
       <WebsiteHeader
         onOpenMap={() => setMapOpen(true)}
         onOpenDirectory={() => handleOpenDirectory('all')}
         onOpenLive={() => setLiveOpen(true)}
-        onOpenArcade={() => setArcadeOpen(true)}
-        onOpenRewards={() => setRewardsOpen(true)}
-        onOpenLeaderboard={() => setLeaderboardOpen(true)}
+        onOpenArcade={() => handleOpenArcadeAdventure(1)}
         onOpenSkins={() => setSkinsOpen(true)}
-        onOpenBot={() => setKotaBotState({ open: true, zone: currentZoneKey, sceneName: currentZone })}
-        onOpenAchievements={() => setAchievementsOpen(true)}
-        onOpenStats={() => {
-          achievementSystem.recordFestivalInfo();
-          setStatsOpen(true);
-        }}
+        onOpenStats={() => setStatsModalState({ open: true, tab: 'stats' })}
         onOpenGallery={() => {
           achievementSystem.recordFestivalInfo();
           setGalleryOpen(true);
         }}
         onOpenSponsors={() => {
           achievementSystem.recordFestivalInfo();
-          setSponsorsOpen(true);
+          setSponsorsModalState({ open: true, tab: 'galaxy' });
         }}
         onOpenContacts={() => {
           achievementSystem.recordFestivalInfo();
@@ -230,6 +224,7 @@ export function App() {
             <InGameHUD 
               currentZone={currentZone} 
               coinCount={coinCount} 
+              onOpenQuests={() => setStatsModalState({ open: true, tab: 'quests' })}
             />
 
             {/* Touch Controls (Mobile Only) */}
@@ -249,74 +244,68 @@ export function App() {
             onStart={() => setGameStarted(true)} 
             onSelectKingdom={(sceneKey) => {
               setGameStarted(true);
-              soundEngine.playPipe();
-              if (sceneKey !== 'StartingKingdomScene') {
-                const switchNow = () => eventBus.emit('switch-zone', sceneKey);
-                setTimeout(switchNow, 80);
-                setTimeout(switchNow, 220);
-                setTimeout(switchNow, 400);
-              }
+              eventBus.emit('switch-zone', { zoneKey: sceneKey });
             }}
             onOpenDirectory={() => handleOpenDirectory('all')}
             onOpenMap={() => setMapOpen(true)}
             onOpenSkins={() => setSkinsOpen(true)}
             onOpenBot={() => setKotaBotState({ open: true, zone: currentZoneKey, sceneName: currentZone })}
-            onOpenStats={() => {
-              achievementSystem.recordFestivalInfo();
-              setStatsOpen(true);
-            }}
+            onOpenStats={() => setStatsModalState({ open: true, tab: 'stats' })}
             onOpenLive={() => setLiveOpen(true)}
+            onOpenArcade={() => handleOpenArcadeAdventure(1)}
           />
         )}
       </div>
 
-      {/* --- POPUP MODALS --- */}
-      {/* 1. Spacious Dedicated Event Details Modal */}
+      {/* =================================================================== */}
+      {/* MODAL OVERLAYS (Streamlined & Non-Duplicated)                       */}
+      {/* =================================================================== */}
+
+      {/* 1. Event Dossier Modal */}
       {activeEvent && (
         <EventModal
           event={activeEvent}
           onClose={() => setActiveEvent(null)}
-          onOpenGallery={() => {
-            setActiveEvent(null);
-            setGalleryOpen(true);
-          }}
-          onOpenMap={() => {
-            setActiveEvent(null);
-            setMapOpen(true);
-          }}
         />
       )}
 
-      {/* 2. Character Skin Customization Wardrobe Modal */}
+      {/* 2. Unified Stats & Leaderboard Modal (Stats, Scores, Quests, Impact) */}
+      {statsModalState.open && (
+        <StatsModal
+          initialTab={statsModalState.tab}
+          onClose={() => setStatsModalState(prev => ({ ...prev, open: false }))}
+        />
+      )}
+
+      {/* 3. Past Glimpses Historical Festival Photo Gallery */}
+      {galleryOpen && (
+        <GalleryModal
+          onClose={() => setGalleryOpen(false)}
+        />
+      )}
+
+      {/* 4. Unified Sponsors + Arcade + Rewards Hub */}
+      {sponsorsModalState.open && (
+        <SponsorsModal
+          initialTab={sponsorsModalState.tab}
+          onClose={() => setSponsorsModalState(prev => ({ ...prev, open: false }))}
+        />
+      )}
+
+      {/* 5. Festival Secretariat & Core Committee Contacts */}
+      {contactsOpen && (
+        <ContactsModal
+          onClose={() => setContactsOpen(false)}
+        />
+      )}
+
+      {/* 6. Hero Avatar Wardrobe (Skins connected to coin economy) */}
       {skinsOpen && (
         <SkinsModal
           currentSkin={currentSkin}
-          onSelectSkin={(skinId) => {
-            setCurrentSkin(skinId);
-            setSkinsOpen(false);
-          }}
+          onSelectSkin={(skinId) => setCurrentSkin(skinId)}
           onClose={() => setSkinsOpen(false)}
         />
-      )}
-
-      {/* 3. Impact Statistics Modal */}
-      {statsOpen && (
-        <StatsModal onClose={() => setStatsOpen(false)} />
-      )}
-
-      {/* 4. Past Glimpses Gallery Lightbox */}
-      {galleryOpen && (
-        <GalleryModal onClose={() => setGalleryOpen(false)} />
-      )}
-
-      {/* 5. Sponsorship & Perks Matrix Modal */}
-      {sponsorsOpen && (
-        <SponsorsModal onClose={() => setSponsorsOpen(false)} />
-      )}
-
-      {/* 6. Contact Secretariat Modal */}
-      {contactsOpen && (
-        <ContactsModal onClose={() => setContactsOpen(false)} />
       )}
 
       {/* 7. Interactive World Map */}
@@ -334,7 +323,7 @@ export function App() {
         />
       )}
 
-      {/* 8. Comprehensive Event Directory */}
+      {/* 8. Comprehensive Event Directory (Arena + Grid) */}
       {directoryOpen && (
         <EventDirectoryModal
           initialCategory={directoryCategory}
@@ -361,27 +350,12 @@ export function App() {
           }}
           onOpenAchievements={() => {
             setKotaBotState(prev => ({ ...prev, open: false }));
-            setAchievementsOpen(true);
+            setStatsModalState({ open: true, tab: 'quests' });
           }}
         />
       )}
 
-      {/* 10. Quest & Achievement Log Modal / Festival Passport */}
-      {achievementsOpen && (
-        <AchievementsModal
-          onClose={() => setAchievementsOpen(false)}
-          onOpenWardrobe={() => {
-            setAchievementsOpen(false);
-            setSkinsOpen(true);
-          }}
-          onOpenMap={() => {
-            setAchievementsOpen(false);
-            setMapOpen(true);
-          }}
-        />
-      )}
-
-      {/* 11. REVERIE LIVE Schedule & Real-Time Announcements Panel */}
+      {/* 10. REVERIE LIVE Schedule (Circuit Grand Prix & Timeline) */}
       {liveOpen && (
         <ReverieLiveModal
           onClose={() => setLiveOpen(false)}
@@ -392,37 +366,38 @@ export function App() {
         />
       )}
 
-      {/* 12. RETRO MINI-GAME ARCADE HUB */}
+      {/* 11. Retro Mini-Game Arcade Hub (All 5 Games) */}
       {arcadeOpen && (
         <MiniGameArcade
           onClose={() => setArcadeOpen(false)}
           onOpenRewards={() => {
             setArcadeOpen(false);
-            setRewardsOpen(true);
+            setSponsorsModalState({ open: true, tab: 'rewards' });
           }}
           onSkipToSponsors={() => {
             setArcadeOpen(false);
-            setSponsorsOpen(true);
+            setSponsorsModalState({ open: true, tab: 'sponsors' });
           }}
         />
       )}
 
-      {/* 13. FESTIVAL REWARDS SHOP & VOUCHERS */}
-      {rewardsOpen && (
-        <RewardsShopModal
-          onClose={() => setRewardsOpen(false)}
-          onOpenWardrobe={() => {
-            setRewardsOpen(false);
-            setSkinsOpen(true);
+      {/* 12. Flagship 5-Stage Retro Arcade Festival Adventure */}
+      {arcadeAdventureOpen && (
+        <ArcadeAdventureModal
+          initialStage={arcadeAdventureStage}
+          onClose={() => setArcadeAdventureOpen(false)}
+          onSelectEvent={(ev) => {
+            setArcadeAdventureOpen(false);
+            setActiveEvent(ev);
           }}
-        />
-      )}
-
-      {/* 14. HIGH SCORE BOULEVARD LEADERBOARD */}
-      {leaderboardOpen && (
-        <LeaderboardModal
-          onClose={() => setLeaderboardOpen(false)}
-          currentSkin={currentSkin}
+          onOpenFullDirectory={() => {
+            setArcadeAdventureOpen(false);
+            handleOpenDirectory('all');
+          }}
+          onOpenRewards={() => {
+            setArcadeAdventureOpen(false);
+            setSponsorsModalState({ open: true, tab: 'rewards' });
+          }}
         />
       )}
     </div>

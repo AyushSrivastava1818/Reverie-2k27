@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Play, Compass, Castle, Cpu, Music, Trophy, Landmark } from 'lucide-react';
+import { Play, Compass, Castle, Cpu, Music, Trophy, Landmark, Gamepad2 } from 'lucide-react';
 import { soundEngine } from '../../game/systems/SoundEngine';
 import { ThreeDBackground } from '../ThreeD/ThreeDBackground';
 import confetti from 'canvas-confetti';
@@ -22,7 +22,8 @@ export function StartScreen({
   onOpenSkins,
   onOpenBot,
   onOpenStats,
-  onOpenLive
+  onOpenLive,
+  onOpenArcade
 }) {
   const [muted, setMuted] = useState(soundEngine.muted);
   const containerRef = useRef(null);
@@ -249,6 +250,27 @@ export function StartScreen({
           </div>
         </div>
 
+        {/* PRIMARY 3D BUTTON 0: ARCADE QUEST (5 STAGES) */}
+        <button
+          onClick={() => {
+            soundEngine.playFanfare();
+            onOpenArcade?.();
+          }}
+          onMouseEnter={() => soundEngine.playBlip()}
+          className="absolute z-40 rounded-full font-display font-black tracking-widest uppercase text-yellow-300 hover:text-white flex items-center justify-center gap-2 transition-all cursor-pointer bg-gradient-to-r from-purple-950 via-indigo-950 to-purple-950 hover:bg-[#250d4a] border-2 border-yellow-400 hover:border-yellow-200 shadow-[0_4px_0_#78350f,0_0_20px_rgba(250,204,21,0.6)] hover:shadow-[0_6px_0_#78350f,0_0_30px_rgba(250,204,21,0.9)] hover:-translate-y-0.5 active:translate-y-1 active:shadow-none"
+          style={{
+            left: '30.0%',
+            top: '60.5%',
+            width: '40.0%',
+            height: '6.4%',
+            fontSize: 'clamp(9px, 0.95vw, 13px)',
+            cursor: 'pointer'
+          }}
+        >
+          <Gamepad2 size={16} className="text-yellow-400 shrink-0 animate-pulse" />
+          <span className="drop-shadow">PLAY ARCADE QUEST (5 STAGES)</span>
+        </button>
+
         {/* PRIMARY 3D BUTTON 1: PRESS START */}
         <button
           onClick={handlePressStart}
@@ -438,6 +460,20 @@ export function StartScreen({
           >
             <Compass size={16} className="text-cyan-400 shrink-0" />
             <span className="drop-shadow">EVENT DIRECTORY (18)</span>
+          </button>
+
+          {/* PLAY ARCADE QUEST (5 STAGES) */}
+          <button
+            onClick={() => {
+              soundEngine.playFanfare();
+              onOpenArcade?.();
+            }}
+            onMouseEnter={() => soundEngine.playBlip()}
+            className="w-full py-2.5 px-5 rounded-full font-display text-xs font-black tracking-widest uppercase text-yellow-300 hover:text-white flex items-center justify-center gap-2 transition-all cursor-pointer bg-gradient-to-r from-purple-950 via-indigo-950 to-purple-950 border-2 border-yellow-400 shadow-[0_4px_0_#78350f,0_0_15px_rgba(250,204,21,0.6)] active:translate-y-1 active:shadow-none"
+            style={{ cursor: 'pointer' }}
+          >
+            <Gamepad2 size={16} className="text-yellow-400 shrink-0 animate-pulse" />
+            <span className="drop-shadow">PLAY ARCADE QUEST (5 STAGES)</span>
           </button>
         </div>
 

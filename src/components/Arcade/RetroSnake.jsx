@@ -25,6 +25,7 @@ export function RetroSnake() {
   useEffect(() => {
     const saved = localStorage.getItem('reverie_snake_high');
     if (saved) setHighScore(parseInt(saved, 10) || 0);
+    startGame();
   }, []);
 
   const spawnFood = (currentSnake) => {
@@ -197,21 +198,17 @@ export function RetroSnake() {
           ))}
         </div>
 
-        {/* Start Overlay */}
-        {!isPlaying && !gameOver && (
-          <div className="absolute inset-0 bg-black/85 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center z-10">
-            <h3 className="font-display text-2xl font-black text-emerald-400 mb-2">
-              RETRO SNAKE 2K27
+        {/* Pause Overlay */}
+        {isPaused && !gameOver && (
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center z-10">
+            <h3 className="font-display text-2xl font-black text-yellow-400 mb-4">
+              SNAKE PAUSED
             </h3>
-            <p className="font-body text-xs text-slate-300 max-w-xs mb-4">
-              Guide the neon serpent to consume festival energy cores and expand your score!
-            </p>
             <button
-              onClick={startGame}
-              className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-display text-xs font-black uppercase tracking-wider flex items-center gap-2 cursor-pointer shadow-lg shadow-emerald-600/30"
+              onClick={() => setIsPaused(false)}
+              className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-display text-xs font-black uppercase tracking-wider cursor-pointer text-white"
             >
-              <Play size={16} />
-              <span>START GAME</span>
+              RESUME [P]
             </button>
           </div>
         )}

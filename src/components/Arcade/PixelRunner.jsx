@@ -3,9 +3,10 @@ import { Play, RotateCcw, Pause, Trophy, Coins, ArrowUp, Heart } from 'lucide-re
 import { soundEngine } from '../../game/systems/SoundEngine';
 import { achievementSystem } from '../../game/systems/AchievementSystem';
 
-export function PixelRunner() {
+export function PixelRunner({ onScoreUpdate, isExternalPaused }) {
   const canvasRef = useRef(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
@@ -19,8 +20,8 @@ export function PixelRunner() {
     gameSpeed: 5,
     score: 0,
     coinsEarned: 0,
-    lastObstacle: 0,
-    lastCoin: 0,
+    lastObstacle: Date.now(),
+    lastCoin: Date.now(),
     animationId: null
   });
 
@@ -31,7 +32,7 @@ export function PixelRunner() {
 
   const jump = () => {
     const st = stateRef.current;
-    if (st.player.isGrounded && isPlaying && !gameOver) {
+    if (st.player.isGrounded && isPlaying && !gameOver && !isPaused && !isExternalPaused) {
       st.player.vy = -12;
       st.player.isGrounded = false;
       soundEngine.playJump();
@@ -56,8 +57,14 @@ export function PixelRunner() {
     setScore(0);
     setCoinsEarned(0);
     setGameOver(false);
+    setIsPaused(false);
     setIsPlaying(true);
   };
+
+  // Auto-start on mount
+  useEffect(() => {
+    startGame();
+  }, []);
 
   useEffect(() => {
     if (!isPlaying || gameOver) return;
@@ -305,21 +312,17 @@ export function PixelRunner() {
           onClick={jump}
         />
 
-        {/* Start Overlay */}
-        {!isPlaying && !gameOver && (
-          <div className="absolute inset-0 bg-black/85 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center z-10">
-            <h3 className="font-display text-2xl sm:text-3xl font-black text-cyan-300 tracking-wider mb-2">
-              PIXEL RUNNER 2K27
+        {/* Pause Overlay */}
+        {isPaused && (
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center z-10">
+            <h3 className="font-display text-2xl font-black text-yellow-400 mb-4">
+              PAUSED
             </h3>
-            <p className="font-body text-xs sm:text-sm text-slate-300 max-w-sm mb-6">
-              Tap or press [SPACE / UP] to jump over cyber spikes & flying drones while gathering festival coins!
-            </p>
             <button
-              onClick={startGame}
-              className="px-6 py-3 rounded-xl bg-pink-600 hover:bg-pink-500 font-display text-sm font-black uppercase tracking-wider flex items-center gap-2 shadow-xl shadow-pink-600/40 cursor-pointer"
+              onClick={() => setIsPaused(false)}
+              className="px-6 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 font-display text-xs font-black uppercase tracking-wider cursor-pointer text-white"
             >
-              <Play size={18} />
-              <span>START SPRINT</span>
+              RESUME [P]
             </button>
           </div>
         )}

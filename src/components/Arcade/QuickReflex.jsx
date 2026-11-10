@@ -12,14 +12,6 @@ export function QuickReflex() {
   const timerRef = useRef(null);
   const startTimeRef = useRef(null);
 
-  useEffect(() => {
-    const saved = localStorage.getItem('reverie_reflex_best');
-    if (saved) setBestTime(parseInt(saved, 10));
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
-  }, []);
-
   const startRound = () => {
     soundEngine.playBlip();
     setGameState('waiting');
@@ -34,6 +26,15 @@ export function QuickReflex() {
       soundEngine.playLaser();
     }, delay);
   };
+
+  useEffect(() => {
+    const saved = localStorage.getItem('reverie_reflex_best');
+    if (saved) setBestTime(parseInt(saved, 10));
+    startRound();
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
 
   const handleTap = () => {
     if (gameState === 'waiting') {

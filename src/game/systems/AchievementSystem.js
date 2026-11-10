@@ -275,6 +275,15 @@ class AchievementSystem {
     if (!this.state || !Array.isArray(this.state.unlockedIds)) return 0;
     return this.state.unlockedIds.length;
   }
+
+  recordStageClear() {
+    this.addBonusCoins(50);
+    this.checkAchievements();
+  }
+
+  recordCoinReward(amount = 10) {
+    this.addBonusCoins(amount);
+  }
 }
 
 export const achievementSystem = new AchievementSystem();
