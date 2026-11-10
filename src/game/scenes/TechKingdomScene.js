@@ -35,7 +35,7 @@ export class TechKingdomScene extends BaseKingdomScene {
     this.addWarpPipe(140, this.groundY, {
       color: 'yellow',
       targetScene: 'StartingKingdomScene',
-      destinationName: '◀ RETURN TO START HUB',
+      destinationName: 'STARTING HUB',
       spawnPoint: { x: 2140, y: this.groundY - 60 }
     });
 
@@ -103,7 +103,7 @@ export class TechKingdomScene extends BaseKingdomScene {
     this.addWarpPipe(2800, this.groundY, {
       color: 'pink',
       targetScene: 'CultureKingdomScene',
-      destinationName: 'WARP TO CULTURE KINGDOM ▶',
+      destinationName: 'CULTURE REALM',
       spawnPoint: { x: 160, y: this.groundY - 60 }
     });
 

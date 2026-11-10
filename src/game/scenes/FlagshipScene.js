@@ -169,7 +169,7 @@ export class FlagshipScene extends BaseKingdomScene {
     this.addWarpPipe(130, this.groundY, {
       color: 'yellow',
       targetScene: 'StartingKingdomScene',
-      destinationName: '◀ RETURN TO START HUB',
+      destinationName: 'STARTING HUB',
       spawnPoint: { x: 2740, y: this.groundY - 60 }
     });
 
@@ -363,7 +363,7 @@ export class FlagshipScene extends BaseKingdomScene {
     this.addWarpPipe(2580, this.groundY, {
       color: 'white',
       targetScene: 'FestivalPlazaScene',
-      destinationName: 'WARP TO FESTIVAL PLAZA ▶',
+      destinationName: 'FESTIVAL PLAZA',
       spawnPoint: { x: 160, y: this.groundY - 60 }
     });
 

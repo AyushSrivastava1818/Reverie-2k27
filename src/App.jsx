@@ -16,6 +16,7 @@ import { KotaBotModal } from './components/Modals/KotaBotModal';
 import { ReverieLiveModal } from './components/Modals/ReverieLiveModal';
 import { MiniGameArcade } from './components/Arcade/MiniGameArcade';
 import { ArcadeAdventureModal } from './components/Arcade/ArcadeAdventureModal';
+import { WarpTunnelOverlay } from './components/Arcade/WarpTunnelOverlay';
 import { AchievementToast } from './components/Achievements/AchievementToast';
 import { eventBus } from './game/EventBus';
 import { soundEngine } from './game/systems/SoundEngine';
@@ -45,6 +46,7 @@ export function App() {
   const [arcadeAdventureStage, setArcadeAdventureStage] = useState(1);
   const [arcadeAdventureView, setArcadeAdventureView] = useState('world-map');
   const [kotaBotState, setKotaBotState] = useState({ open: false, zone: 'StartingKingdomScene', sceneName: 'Starting Kingdom' });
+  const [warpTunnelData, setWarpTunnelData] = useState(null);
 
   // Proximity flags for mobile action button
   const [isPipeNear, setIsPipeNear] = useState(false);
@@ -155,6 +157,10 @@ export function App() {
       setCoinCount(newBal);
     });
 
+    const unbindWarp = eventBus.on('warp-tunnel-active', (data) => {
+      setWarpTunnelData(data);
+    });
+
     // Global ESC Key Close Handler for all modals
     const handleGlobalKeyDown = (e) => {
       if (e.key === 'Escape') {
@@ -185,6 +191,7 @@ export function App() {
       unbindPipeNear();
       unbindPortalNear();
       unbindNpcNear();
+      if (unbindWarp) unbindWarp();
       window.removeEventListener('keydown', handleGlobalKeyDown);
     };
   }, [currentZone, currentZoneKey]);
@@ -401,6 +408,14 @@ export function App() {
             setArcadeAdventureOpen(false);
             setSponsorsModalState({ open: true, tab: 'rewards' });
           }}
+        />
+      )}
+
+      {/* 13. Retro Hyperspace Warp Tunnel Transition */}
+      {warpTunnelData && (
+        <WarpTunnelOverlay
+          data={warpTunnelData}
+          onComplete={() => setWarpTunnelData(null)}
         />
       )}
     </div>

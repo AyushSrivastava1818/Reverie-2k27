@@ -207,7 +207,7 @@ export class StartingKingdomScene extends BaseKingdomScene {
     this.addWarpPipe(2420, this.groundY, {
       color: 'green',
       targetScene: 'TechKingdomScene',
-      destinationName: 'TECH KINGDOM (7 EVENTS)',
+      destinationName: 'TECH REALM',
       spawnPoint: { x: 160, y: this.groundY - 60 }
     });
 
@@ -215,7 +215,7 @@ export class StartingKingdomScene extends BaseKingdomScene {
     this.addWarpPipe(2660, this.groundY, {
       color: 'pink',
       targetScene: 'CultureKingdomScene',
-      destinationName: 'CULTURE KINGDOM (7 EVENTS)',
+      destinationName: 'CULTURE REALM',
       spawnPoint: { x: 160, y: this.groundY - 60 }
     });
 
@@ -223,7 +223,7 @@ export class StartingKingdomScene extends BaseKingdomScene {
     this.addWarpPipe(2900, this.groundY, {
       color: 'purple',
       targetScene: 'FlagshipScene',
-      destinationName: 'FLAGSHIP ZONE (4 ATTRACTIONS)',
+      destinationName: 'FLAGSHIP ZONE',
       spawnPoint: { x: 160, y: this.groundY - 60 }
     });
 
@@ -231,7 +231,7 @@ export class StartingKingdomScene extends BaseKingdomScene {
     this.addWarpPipe(3140, this.groundY, {
       color: 'white',
       targetScene: 'FestivalPlazaScene',
-      destinationName: 'FESTIVAL PLAZA (SPONSORS & STATS)',
+      destinationName: 'FESTIVAL PLAZA',
       spawnPoint: { x: 160, y: this.groundY - 60 }
     });
 
@@ -245,7 +245,7 @@ export class StartingKingdomScene extends BaseKingdomScene {
     const secretPipe = this.addWarpPipe(3400, this.groundY, {
       color: 'gold',
       targetScene: 'SecretBonusRoomScene',
-      destinationName: '??? SECRET CREATOR VAULT',
+      destinationName: '8-BIT SECRET VAULT',
       spawnPoint: { x: 140, y: this.groundY - 60 }
     });
 

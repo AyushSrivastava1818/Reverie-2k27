@@ -39,7 +39,7 @@ export class FestivalPlazaScene extends BaseKingdomScene {
     this.addWarpPipe(140, this.groundY, {
       color: 'yellow',
       targetScene: 'StartingKingdomScene',
-      destinationName: '◀ RETURN TO START HUB',
+      destinationName: 'STARTING HUB',
       spawnPoint: { x: 3040, y: this.groundY - 60 }
     });
 
@@ -169,7 +169,7 @@ export class FestivalPlazaScene extends BaseKingdomScene {
     this.addWarpPipe(2640, this.groundY, {
       color: 'cyan',
       targetScene: 'TechKingdomScene',
-      destinationName: 'WARP TO TECH KINGDOM ▶',
+      destinationName: 'TECH REALM',
       spawnPoint: { x: 160, y: this.groundY - 60 }
     });
 
@@ -177,7 +177,7 @@ export class FestivalPlazaScene extends BaseKingdomScene {
     this.addWarpPipe(2880, this.groundY, {
       color: 'purple',
       targetScene: 'FlagshipScene',
-      destinationName: 'WARP TO FLAGSHIP ZONE ▶',
+      destinationName: 'FLAGSHIP ZONE',
       spawnPoint: { x: 160, y: this.groundY - 60 }
     });
 

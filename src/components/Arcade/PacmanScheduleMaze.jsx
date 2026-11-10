@@ -1,251 +1,145 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { soundEngine } from '../../game/systems/SoundEngine';
-
-// Compact 15x15 classic Pacman grid
-// 1: Wall, 0: Pellet, 3: Power Pellet, 2: Empty
-const PACMAN_GRID = [
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  [1, 3, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 3, 1],
-  [1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1],
-  [1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1],
-  [1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1],
-  [1, 1, 1, 0, 1, 1, 2, 1, 1, 0, 1, 1, 1, 0, 1],
-  [1, 0, 0, 0, 1, 2, 2, 2, 1, 0, 0, 0, 1, 0, 1],
-  [0, 0, 1, 0, 1, 2, 2, 2, 1, 0, 1, 0, 1, 0, 0],
-  [1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1],
-  [1, 1, 1, 0, 0, 0, 4, 0, 0, 0, 1, 1, 1, 0, 1],
-  [1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1],
-  [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1],
-  [1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1],
-  [1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 1],
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-];
+import { festivalSchedule } from '../../data/schedule';
+import { ChevronRight, ChevronLeft, Calendar, Clock, MapPin, Play, Pause, ExternalLink, Trophy, Volume2, VolumeX, Sparkles } from 'lucide-react';
 
 export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
-  const canvasRef = useRef(null);
+  const [selectedDay, setSelectedDay] = useState(1);
+  const [activeEventIndex, setActiveEventIndex] = useState(0);
   const [score, setScore] = useState(1250);
-  const [collected, setCollected] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(false);
+  const [chompedEvents, setChompedEvents] = useState({ 1: new Set([0]), 2: new Set(), 3: new Set() });
+  const [isChomping, setIsChomping] = useState(false);
+  const [soundMuted, setSoundMuted] = useState(soundEngine.muted);
 
-  const gameState = useRef({
-    grid: PACMAN_GRID.map(row => [...row]),
-    pacman: { x: 7, y: 9, dirX: 0, dirY: 0, nextDirX: 0, nextDirY: 0, mouth: 0.2, mouthDir: 0.05 },
-    ghosts: [
-      { x: 6, y: 6, color: '#ef4444', dirX: 1, dirY: 0 },
-      { x: 7, y: 6, color: '#ec4899', dirX: -1, dirY: 0 },
-      { x: 8, y: 6, color: '#06b6d4', dirX: 0, dirY: 1 },
-      { x: 7, y: 7, color: '#f97316', dirX: 0, dirY: -1 }
-    ],
-    lastUpdate: 0
-  });
+  // Filter events for active day
+  const dayEvents = festivalSchedule.filter(e => e.day === selectedDay);
+  const currentEvent = dayEvents[activeEventIndex] || dayEvents[0];
 
-  // Keyboard controls
+  // Auto-play interval
+  useEffect(() => {
+    if (!isAutoPlaying) return;
+    const interval = setInterval(() => {
+      handleNextEvent();
+    }, 3800);
+    return () => clearInterval(interval);
+  }, [isAutoPlaying, activeEventIndex, selectedDay, dayEvents.length]);
+
+  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
-      const p = gameState.current.pacman;
-      if (['ArrowUp', 'w', 'W'].includes(e.key)) {
-        p.nextDirX = 0; p.nextDirY = -1;
-      } else if (['ArrowDown', 's', 'S'].includes(e.key)) {
-        p.nextDirX = 0; p.nextDirY = 1;
+      if (['ArrowRight', 'd', 'D', ' '].includes(e.key)) {
+        e.preventDefault();
+        handleNextEvent();
       } else if (['ArrowLeft', 'a', 'A'].includes(e.key)) {
-        p.nextDirX = -1; p.nextDirY = 0;
-      } else if (['ArrowRight', 'd', 'D'].includes(e.key)) {
-        p.nextDirX = 1; p.nextDirY = 0;
+        e.preventDefault();
+        handlePrevEvent();
+      } else if (e.key === '1') {
+        handleDayChange(1);
+      } else if (e.key === '2') {
+        handleDayChange(2);
+      } else if (e.key === '3') {
+        handleDayChange(3);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [activeEventIndex, selectedDay, dayEvents.length]);
 
-  // Canvas loop
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let animationId;
-    let lastMove = 0;
-    let lastGhost = 0;
+  const handleDayChange = (day) => {
+    soundEngine.playBlip();
+    setSelectedDay(day);
+    setActiveEventIndex(0);
+    setChompedEvents(prev => ({
+      ...prev,
+      [day]: new Set([...(prev[day] || []), 0])
+    }));
+  };
 
-    const tileSize = 24; // 360x360
-    canvas.width = 360;
-    canvas.height = 360;
+  const handleNextEvent = () => {
+    soundEngine.playBlip();
+    setIsChomping(true);
+    setTimeout(() => setIsChomping(false), 300);
 
-    const render = (time) => {
-      const state = gameState.current;
-      const p = state.pacman;
+    const nextIndex = (activeEventIndex + 1) % dayEvents.length;
+    setActiveEventIndex(nextIndex);
+    setScore(s => s + 100);
+    setChompedEvents(prev => {
+      const nextSet = new Set(prev[selectedDay] || []);
+      nextSet.add(nextIndex);
+      return { ...prev, [selectedDay]: nextSet };
+    });
+  };
 
-      // Pacman animation
-      p.mouth += p.mouthDir;
-      if (p.mouth > 0.4 || p.mouth < 0.05) p.mouthDir *= -1;
+  const handlePrevEvent = () => {
+    soundEngine.playBlip();
+    const prevIndex = (activeEventIndex - 1 + dayEvents.length) % dayEvents.length;
+    setActiveEventIndex(prevIndex);
+  };
 
-      // Pacman move every 200ms
-      if (time - lastMove > 200) {
-        lastMove = time;
-        const nextX = (p.x + p.nextDirX + 15) % 15;
-        const nextY = (p.y + p.nextDirY + 15) % 15;
-        if (state.grid[nextY] && state.grid[nextY][nextX] !== 1) {
-          p.dirX = p.nextDirX;
-          p.dirY = p.nextDirY;
-        }
+  const toggleSound = () => {
+    const next = !soundMuted;
+    setSoundMuted(next);
+    soundEngine.setMuted(next);
+  };
 
-        const tx = (p.x + p.dirX + 15) % 15;
-        const ty = (p.y + p.dirY + 15) % 15;
-        if (state.grid[ty] && state.grid[ty][tx] !== 1) {
-          p.x = tx;
-          p.y = ty;
-          if (state.grid[p.y][p.x] === 0 || state.grid[p.y][p.x] === 3) {
-            const isPower = state.grid[p.y][p.x] === 3;
-            state.grid[p.y][p.x] = 2;
-            soundEngine.playBlip();
-            setScore(s => s + (isPower ? 50 : 10));
-            setCollected(c => Math.min(5, c + 1));
-          }
-        }
-      }
+  const getCategoryColor = (cat) => {
+    switch (cat?.toLowerCase()) {
+      case 'flagship': return { text: 'text-amber-400', border: 'border-amber-500', bg: 'bg-amber-950/60', badge: 'bg-amber-500/20 text-amber-300' };
+      case 'technical': return { text: 'text-cyan-400', border: 'border-cyan-500', bg: 'bg-cyan-950/60', badge: 'bg-cyan-500/20 text-cyan-300' };
+      case 'cultural': return { text: 'text-pink-400', border: 'border-pink-500', bg: 'bg-pink-950/60', badge: 'bg-pink-500/20 text-pink-300' };
+      default: return { text: 'text-emerald-400', border: 'border-emerald-500', bg: 'bg-emerald-950/60', badge: 'bg-emerald-500/20 text-emerald-300' };
+    }
+  };
 
-      // Ghosts move every 320ms
-      if (time - lastGhost > 320) {
-        lastGhost = time;
-        state.ghosts.forEach(g => {
-          const dirs = [{ dx: 0, dy: -1 }, { dx: 0, dy: 1 }, { dx: -1, dy: 0 }, { dx: 1, dy: 0 }];
-          const valid = dirs.filter(d => {
-            const gx = (g.x + d.dx + 15) % 15;
-            const gy = (g.y + d.dy + 15) % 15;
-            return state.grid[gy] && state.grid[gy][gx] !== 1;
-          });
-          if (valid.length > 0) {
-            const choice = valid[Math.floor(Math.random() * valid.length)];
-            g.x = (g.x + choice.dx + 15) % 15;
-            g.y = (g.y + choice.dy + 15) % 15;
-          }
-        });
-      }
-
-      // DRAW MAZE
-      ctx.fillStyle = '#03010b';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      for (let r = 0; r < 15; r++) {
-        for (let c = 0; c < 15; c++) {
-          const val = state.grid[r][c];
-          const px = c * tileSize;
-          const py = r * tileSize;
-
-          if (val === 1) {
-            ctx.fillStyle = '#0f172a';
-            ctx.fillRect(px, py, tileSize, tileSize);
-            ctx.strokeStyle = '#2563eb';
-            ctx.lineWidth = 2.2;
-            ctx.strokeRect(px + 1, py + 1, tileSize - 2, tileSize - 2);
-          } else if (val === 0) {
-            ctx.fillStyle = '#fde047';
-            ctx.beginPath();
-            ctx.arc(px + 12, py + 12, 3, 0, Math.PI * 2);
-            ctx.fill();
-          } else if (val === 3) {
-            ctx.fillStyle = '#facc15';
-            ctx.shadowColor = '#facc15';
-            ctx.shadowBlur = 10;
-            ctx.beginPath();
-            ctx.arc(px + 12, py + 12, 6.5, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.shadowBlur = 0;
-          }
-        }
-      }
-
-      // Cherry bonus in center
-      ctx.font = '16px serif';
-      ctx.fillText('🍒', 7 * tileSize + 2, 7 * tileSize + 18);
-
-      // DRAW PACMAN
-      const pacX = p.x * tileSize + 12;
-      const pacY = p.y * tileSize + 12;
-      let angle = 0;
-      if (p.dirX === 1) angle = 0;
-      else if (p.dirX === -1) angle = Math.PI;
-      else if (p.dirY === 1) angle = Math.PI * 0.5;
-      else if (p.dirY === -1) angle = Math.PI * 1.5;
-
-      ctx.fillStyle = '#facc15';
-      ctx.beginPath();
-      ctx.arc(pacX, pacY, 10, angle + p.mouth * Math.PI, angle + (2 - p.mouth) * Math.PI);
-      ctx.lineTo(pacX, pacY);
-      ctx.fill();
-
-      // DRAW GHOSTS
-      state.ghosts.forEach(g => {
-        const gx = g.x * tileSize + 2;
-        const gy = g.y * tileSize + 2;
-        ctx.fillStyle = g.color;
-        ctx.beginPath();
-        ctx.arc(gx + 10, gy + 10, 9, Math.PI, 0, false);
-        ctx.lineTo(gx + 19, gy + 19);
-        ctx.lineTo(gx + 15, gy + 16);
-        ctx.lineTo(gx + 10, gy + 19);
-        ctx.lineTo(gx + 5, gy + 16);
-        ctx.lineTo(gx + 1, gy + 19);
-        ctx.closePath();
-        ctx.fill();
-
-        // Eyes
-        ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.arc(gx + 7, gy + 9, 2.5, 0, Math.PI * 2);
-        ctx.arc(gx + 14, gy + 9, 2.5, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = '#0f172a';
-        ctx.beginPath();
-        ctx.arc(gx + 7, gy + 9, 1.2, 0, Math.PI * 2);
-        ctx.arc(gx + 14, gy + 9, 1.2, 0, Math.PI * 2);
-        ctx.fill();
-      });
-
-      animationId = requestAnimationFrame(render);
-    };
-
-    animationId = requestAnimationFrame(render);
-    return () => cancelAnimationFrame(animationId);
-  }, []);
+  const totalChomped = Object.values(chompedEvents).reduce((acc, set) => acc + set.size, 0);
+  const colorScheme = getCategoryColor(currentEvent?.category);
 
   return (
-    <div className="relative w-full h-full flex flex-col justify-between p-3 sm:p-5 bg-gradient-to-b from-[#080214] via-[#0d0422] to-[#04010a] font-pixel text-white select-none overflow-y-auto border-4 border-yellow-400 rounded-3xl shadow-[0_0_40px_rgba(250,204,21,0.5)]">
+    <div className="relative w-full h-full flex flex-col bg-[#05030a] text-white overflow-hidden select-none font-sans">
       
-      {/* ------------------------------------------------------------- */}
-      {/* TOP HUD: PLAYER 01, HEARTS, SCORE, STAGE 01 / 06 (Ref: 22.11.17)*/}
-      {/* ------------------------------------------------------------- */}
-      <div className="flex items-center justify-between pb-3 border-b-2 border-purple-900/80 shrink-0">
-        <div className="flex items-center gap-2">
-          {onBackToMap && (
-            <button
-              onClick={onBackToMap}
-              className="px-2.5 py-1 rounded bg-purple-950 border border-purple-400 text-yellow-300 text-[8px] sm:text-[9px] font-black cursor-pointer hover:bg-purple-900"
-            >
-              ← WORLD MAP
-            </button>
-          )}
-          <span className="text-xl text-yellow-400">🟡</span>
-          <span className="font-pixel text-xs sm:text-sm text-yellow-400 font-black tracking-wider">
-            PLAYER 01
-          </span>
-          <div className="flex items-center gap-1 ml-2">
-            <span className="text-red-500 text-xs sm:text-sm animate-pulse">❤️</span>
-            <span className="text-red-500 text-xs sm:text-sm animate-pulse">❤️</span>
-            <span className="text-red-500 text-xs sm:text-sm animate-pulse">❤️</span>
+      {/* 1. TOP RETRO ARCADE HUD (Matching Reference 22.11.17) */}
+      <div className="flex-shrink-0 flex items-center justify-between px-3 sm:px-6 py-2.5 bg-[#090514] border-b-2 border-yellow-500/50 shadow-md">
+        
+        {/* Left: Player 01 + Hearts */}
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex items-center gap-1.5">
+            {/* Animated Mini Pac-man */}
+            <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-yellow-400 relative overflow-hidden flex items-center justify-center shadow-[0_0_10px_#facc15]">
+              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-0 h-0 border-t-[5px] border-t-transparent border-b-[5px] border-b-transparent border-r-[8px] border-r-[#090514] animate-pulse" />
+            </div>
+            <span className="font-['Press_Start_2P'] text-[9px] sm:text-xs text-yellow-300 tracking-wider">PLAYER 01</span>
+          </div>
+
+          <div className="flex items-center gap-1">
+            <span className="text-red-500 text-xs sm:text-sm">❤️</span>
+            <span className="text-red-500 text-xs sm:text-sm">❤️</span>
+            <span className="text-red-500 text-xs sm:text-sm">❤️</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-4 sm:gap-6">
-          <span className="font-pixel text-xs sm:text-sm text-yellow-300 font-black">
-            SCORE: <span className="text-white">{score.toString().padStart(5, '0')}</span>
-          </span>
-          <span className="font-pixel text-xs sm:text-sm text-cyan-400 font-black">
-            STAGE 01 / 06
-          </span>
-          <span className="text-xs sm:text-sm">🔊</span>
+        {/* Center: Live Score Display */}
+        <div className="hidden sm:flex items-center gap-2">
+          <span className="font-['Press_Start_2P'] text-[9px] sm:text-xs text-gray-400">SCORE:</span>
+          <span className="font-['Press_Start_2P'] text-xs sm:text-sm text-yellow-400 tracking-widest">{String(score).padStart(6, '0')}</span>
+        </div>
+
+        {/* Right: Stage Badge & Sound Controls */}
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className="px-2.5 py-1 bg-purple-950/80 border border-purple-500/50 rounded font-['Press_Start_2P'] text-[8px] sm:text-[10px] text-purple-300">
+            STAGE 03 / 05
+          </div>
+          <button
+            onClick={toggleSound}
+            className="p-1.5 rounded-lg bg-gray-900 border border-gray-700 hover:border-yellow-400 text-gray-300 hover:text-yellow-400 transition"
+            title="Toggle Sound"
+          >
+            {soundMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+          </button>
           {onClose && (
             <button
               onClick={onClose}
-              className="px-2 py-0.5 rounded bg-red-600 hover:bg-red-500 text-white text-[9px] font-black cursor-pointer"
+              className="p-1 rounded-lg bg-red-950/70 border border-red-500/70 text-red-300 hover:bg-red-900 hover:text-white transition font-bold text-xs px-2"
             >
               ✕
             </button>
@@ -253,145 +147,297 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
         </div>
       </div>
 
-      {/* ------------------------------------------------------------- */}
-      {/* MAIN VIEW: PLAYABLE MAZE (LEFT) & PIXEL FEST CARD (RIGHT)      */}
-      {/* ------------------------------------------------------------- */}
-      <div className="flex-1 my-auto grid grid-cols-1 md:grid-cols-12 gap-5 items-center max-w-5xl mx-auto w-full py-2">
-        
-        {/* Left Side: Playable Pac-Man Canvas in Neon Frame */}
-        <div className="md:col-span-5 flex flex-col items-center justify-center">
-          <div className="p-3 rounded-2xl bg-[#09031a] border-4 border-blue-500 shadow-[0_0_35px_rgba(37,99,235,0.8)] flex flex-col items-center">
-            <canvas 
-              ref={canvasRef} 
-              className="rounded-xl block"
-              style={{ width: '320px', height: '320px', imageRendering: 'pixelated' }}
-            />
-          </div>
-          <span className="font-pixel text-[8px] sm:text-[9px] text-cyan-300 mt-2 uppercase tracking-widest animate-pulse">
-            ★ USE ARROW KEYS OR WASD TO PLAY ★
-          </span>
+      {/* 2. DAY SELECTOR NAVIGATION (DAY 1: 20 FEB | DAY 2: 21 FEB | DAY 3: 22 FEB) */}
+      <div className="flex-shrink-0 flex items-center justify-between px-3 sm:px-6 py-2 bg-[#0d081f] border-b border-cyan-500/30 overflow-x-auto">
+        <div className="flex items-center gap-1.5 sm:gap-3">
+          {[
+            { day: 1, label: 'DAY 01', date: 'FEB 20, 2027', count: 5 },
+            { day: 2, label: 'DAY 02', date: 'FEB 21, 2027', count: 6 },
+            { day: 3, label: 'DAY 03', date: 'FEB 22, 2027', count: 7 }
+          ].map(d => {
+            const isSelected = selectedDay === d.day;
+            const chompedCount = (chompedEvents[d.day] || new Set()).size;
+            return (
+              <button
+                key={d.day}
+                onClick={() => handleDayChange(d.day)}
+                className={`flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-lg text-xs font-['Press_Start_2P'] transition-all ${
+                  isSelected
+                    ? 'bg-yellow-400 text-black border-2 border-yellow-300 shadow-[0_0_15px_rgba(250,204,21,0.6)] scale-105'
+                    : 'bg-black/40 text-gray-400 border border-gray-700 hover:border-yellow-500/60 hover:text-yellow-300'
+                }`}
+              >
+                <span>{d.label}</span>
+                <span className="hidden md:inline text-[8px] opacity-75">({d.date})</span>
+                <span className={`text-[8px] px-1.5 py-0.5 rounded ${isSelected ? 'bg-black/20 text-black' : 'bg-gray-800 text-yellow-400'}`}>
+                  {chompedCount}/{d.count}
+                </span>
+              </button>
+            );
+          })}
         </div>
 
-        {/* Right Side: Pixel Fest Arcade Kiosk & Schedule (Ref: 22.11.17) */}
-        <div className="md:col-span-7 flex flex-col justify-between p-5 sm:p-6 rounded-2xl bg-gradient-to-b from-[#180a36] via-[#100526] to-[#0a0218] border-3 border-purple-500 shadow-[0_0_30px_rgba(168,85,247,0.5)] relative overflow-hidden">
-          
-          {/* Full Moon & Castle silhouette in top right */}
-          <div className="absolute top-4 right-6 w-16 h-16 rounded-full bg-slate-100/30 blur-[1px] pointer-events-none" />
-          <div className="absolute top-8 right-4 text-4xl opacity-40 pointer-events-none">🏰</div>
+        {/* Auto-Run Toggle */}
+        <button
+          onClick={() => setIsAutoPlaying(prev => !prev)}
+          className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-['Press_Start_2P'] text-[9px] border transition ${
+            isAutoPlaying
+              ? 'bg-emerald-500 text-black border-emerald-300 shadow-[0_0_10px_#10b981]'
+              : 'bg-gray-900 text-gray-300 border-gray-700 hover:border-yellow-400'
+          }`}
+        >
+          {isAutoPlaying ? <Pause size={12} /> : <Play size={12} />}
+          <span>{isAutoPlaying ? 'PAUSE STREAM' : 'AUTO CHOMP'}</span>
+        </button>
+      </div>
 
-          {/* Yellow Top Badge: WELCOME TO */}
-          <div className="self-start px-3.5 py-1.5 rounded-md bg-yellow-400 border border-amber-600 shadow mb-2">
-            <span className="font-pixel text-[10px] font-black text-black tracking-widest uppercase">
-              WELCOME TO
-            </span>
+      {/* 3. BIG SCREEN SCHEDULE HIGHWAY (EVENTS STREAMING INTO PAC-MAN'S MOUTH) */}
+      <div className="relative flex-1 flex flex-col p-2 sm:p-4 overflow-y-auto min-h-0">
+        
+        {/* GRAND RETRO CIRCUIT CONVEYOR (Full Width Big Screen) */}
+        <div className="relative w-full bg-[#0a071c] border-2 sm:border-3 border-blue-500 rounded-2xl p-3 sm:p-4 shadow-[0_0_30px_rgba(59,130,246,0.3)] mb-3 overflow-hidden">
+          
+          {/* Retro Neon Circuit Grid Background */}
+          <div className="absolute inset-0 opacity-15 pointer-events-none bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:16px_16px]" />
+          
+          {/* Top Stage Header */}
+          <div className="relative z-10 flex items-center justify-between mb-2 pb-2 border-b border-blue-500/30">
+            <div className="flex items-center gap-2">
+              <span className="font-['Press_Start_2P'] text-[10px] sm:text-xs text-cyan-400">⚡ PAC-MAN SCHEDULE CIRCUIT</span>
+              <span className="text-[10px] text-gray-400">CHOMP THROUGH ALL {dayEvents.length} EVENTS FOR DAY {selectedDay}</span>
+            </div>
+            <div className="font-['Press_Start_2P'] text-[9px] text-yellow-400">
+              EVENT #{activeEventIndex + 1} OF {dayEvents.length}
+            </div>
           </div>
 
-          {/* Big 3D Pixel Headline: PIXEL FEST */}
-          <h2 className="font-pixel text-3xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-pink-400 to-purple-400 tracking-wider drop-shadow-[0_2px_0_#000]">
-            PIXEL FEST
-          </h2>
-          
-          <span className="font-pixel text-xs sm:text-sm text-cyan-300 tracking-widest uppercase my-1 font-bold">
-            PLAY • EXPLORE • CONNECT
-          </span>
+          {/* PAC-MAN CHOMPING HIGHWAY */}
+          <div className="relative z-10 w-full py-4 flex items-center justify-between overflow-x-auto gap-2">
+            
+            {/* PAC-MAN (GIANT 16-BIT RETRO CHOMPER) */}
+            <div className="flex-shrink-0 flex flex-col items-center mr-2 sm:mr-4">
+              <div className="relative">
+                {/* Pacman Body with animated mouth */}
+                <svg width="68" height="68" viewBox="0 0 100 100" className={`filter drop-shadow-[0_0_16px_#facc15] transition-transform ${isChomping ? 'scale-110' : 'scale-100'}`}>
+                  <circle cx="50" cy="50" r="48" fill="#facc15" />
+                  {/* Eye */}
+                  <circle cx="50" cy="24" r="5" fill="#000000" />
+                  {/* Mouth cut-out (Animates open / close) */}
+                  <path
+                    d={isChomping ? "M50,50 L98,40 A48,48 0 0,0 98,60 Z" : "M50,50 L98,20 A48,48 0 0,0 98,80 Z"}
+                    fill="#0a071c"
+                    className="transition-all duration-150"
+                  />
+                </svg>
 
-          <div className="flex items-start gap-4 my-2">
-            {/* Illustrated Arcade Cabinet (Ref: 22.11.17.jpeg) */}
-            <div className="w-20 sm:w-24 shrink-0 flex flex-col items-center">
-              <svg width="84" height="110" viewBox="0 0 56 74" className="filter drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
-                {/* Cabinet Hull */}
-                <polygon points="12,8 44,8 46,68 10,68" fill="#1e1b4b" stroke="#3b82f6" strokeWidth="1.5" />
-                {/* Marquee Header */}
-                <rect x="13" y="9" width="30" height="9" fill="#0284c7" />
-                <rect x="15" y="11" width="26" height="5" fill="#facc15" />
-                <text x="28" y="15" fill="#000" fontSize="4.5" fontFamily="monospace" fontWeight="900" textAnchor="middle">REVERIE</text>
-                {/* Angled CRT Screen Bezel */}
-                <polygon points="14,20 42,20 40,42 16,42" fill="#030712" stroke="#06b6d4" strokeWidth="1" />
-                {/* Glowing Screen Content */}
-                <rect x="17" y="23" width="22" height="16" rx="2" fill="#082f49" />
-                <text x="28" y="31" fill="#38bdf8" fontSize="5" fontFamily="monospace" fontWeight="900" textAnchor="middle">GAME</text>
-                <text x="28" y="37" fill="#f43f5e" fontSize="5" fontFamily="monospace" fontWeight="900" textAnchor="middle">ON</text>
-                {/* Control Panel Shelf with Joystick & Buttons */}
-                <polygon points="10,44 46,44 48,52 8,52" fill="#334155" stroke="#475569" strokeWidth="1" />
-                <circle cx="18" cy="48" r="2" fill="#ef4444" /> {/* Red Joystick */}
-                <line x1="18" y1="48" x2="18" y2="51" stroke="#000" strokeWidth="1" />
-                <circle cx="28" cy="47" r="1.2" fill="#38bdf8" />
-                <circle cx="33" cy="47" r="1.2" fill="#facc15" />
-                <circle cx="38" cy="47" r="1.2" fill="#22c55e" />
-                {/* Coin Door with 25c slot */}
-                <rect x="20" y="55" width="16" height="11" fill="#0f172a" stroke="#1e293b" />
-                <line x1="25" y1="58" x2="25" y2="62" stroke="#facc15" strokeWidth="1" />
-                <line x1="31" y1="58" x2="31" y2="62" stroke="#facc15" strokeWidth="1" />
-              </svg>
+                {/* Chomp Sparks */}
+                {isChomping && (
+                  <div className="absolute -right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                    <Sparkles size={20} className="text-yellow-300 animate-spin" />
+                  </div>
+                )}
+              </div>
+              <span className="mt-1 font-['Press_Start_2P'] text-[8px] text-yellow-300">WAKA WAKA!</span>
             </div>
 
-            {/* Description & Festival Info */}
-            <div className="flex-1">
-              <p className="text-xs sm:text-sm text-slate-200 font-sans font-semibold leading-relaxed mb-2">
-                A grand celebration of technology, creativity and community. Get ready for an unforgettable retro gaming experience!
-              </p>
+            {/* EVENT MILESTONES STREAMING TOWARDS PAC-MAN */}
+            <div className="flex-1 flex items-center gap-2 sm:gap-4 overflow-x-auto py-2 px-1">
+              {dayEvents.map((ev, idx) => {
+                const isActive = idx === activeEventIndex;
+                const isEaten = (chompedEvents[selectedDay] || new Set()).has(idx);
+                const evColor = getCategoryColor(ev.category);
 
-              {/* Festival Schedule Metadata */}
-              <div className="space-y-2 py-2 border-y border-purple-800/80 text-[10px] sm:text-xs font-pixel text-purple-200">
+                return (
+                  <button
+                    key={ev.id || idx}
+                    onClick={() => {
+                      soundEngine.playBlip();
+                      setActiveEventIndex(idx);
+                      setIsChomping(true);
+                      setTimeout(() => setIsChomping(false), 300);
+                      setChompedEvents(prev => {
+                        const nextSet = new Set(prev[selectedDay] || []);
+                        nextSet.add(idx);
+                        return { ...prev, [selectedDay]: nextSet };
+                      });
+                    }}
+                    className={`flex-shrink-0 relative group flex flex-col items-center justify-between p-2.5 sm:p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer text-left ${
+                      isActive
+                        ? `${evColor.border} ${evColor.bg} ring-2 ring-yellow-400 scale-105 shadow-[0_0_20px_rgba(250,204,21,0.5)]`
+                        : isEaten
+                        ? 'border-gray-700 bg-black/50 opacity-70 hover:opacity-100 hover:border-gray-500'
+                        : 'border-blue-500/50 bg-[#120a2e]/80 hover:border-cyan-400'
+                    }`}
+                    style={{ minWidth: '160px', maxWidth: '210px' }}
+                  >
+                    {/* Top Tag: Time */}
+                    <div className="w-full flex items-center justify-between text-[8px] sm:text-[9px] font-['Press_Start_2P'] text-gray-300 mb-1">
+                      <span className="text-yellow-400 truncate">{ev.time.split('-')[0].trim()}</span>
+                      <span className={`px-1 rounded text-[7px] ${evColor.badge}`}>{ev.category}</span>
+                    </div>
+
+                    {/* Event Title */}
+                    <div className="w-full font-['Press_Start_2P'] text-[9px] sm:text-[10px] text-white font-bold leading-tight my-1 truncate">
+                      {ev.title}
+                    </div>
+
+                    {/* Bottom Status Pellet */}
+                    <div className="w-full flex items-center justify-between pt-1 border-t border-white/10 mt-1">
+                      <span className="text-[9px] text-gray-400 flex items-center gap-1">
+                        <MapPin size={10} className="text-pink-400 flex-shrink-0" />
+                        <span className="truncate max-w-[110px]">{ev.venue}</span>
+                      </span>
+
+                      {/* Eaten Check / Pellet Indicator */}
+                      <div className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[8px] ${
+                        isActive
+                          ? 'bg-yellow-400 text-black font-bold animate-ping'
+                          : isEaten
+                          ? 'bg-emerald-500 text-black font-bold'
+                          : 'bg-yellow-400/50'
+                      }`}>
+                        {isEaten ? '✓' : '•'}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* STREAM CONTROLS (Prev / Next Chomp / Auto) */}
+          <div className="relative z-10 flex items-center justify-between pt-3 border-t border-blue-500/30 mt-1">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handlePrevEvent}
+                className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-900 border border-gray-700 hover:border-yellow-400 text-gray-300 hover:text-yellow-300 font-['Press_Start_2P'] text-[9px] transition"
+              >
+                <ChevronLeft size={14} />
+                <span>PREV EVENT</span>
+              </button>
+              <button
+                onClick={handleNextEvent}
+                className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-yellow-400 hover:bg-yellow-300 text-black font-['Press_Start_2P'] text-[9px] font-bold shadow-[0_0_15px_#facc15] transition active:scale-95"
+              >
+                <span>CHOMP NEXT ▶</span>
+                <ChevronRight size={14} />
+              </button>
+            </div>
+
+            <div className="hidden md:flex items-center gap-3 text-xs text-gray-400 font-['Press_Start_2P'] text-[8px]">
+              <span>[←/→] STEER</span>
+              <span>•</span>
+              <span>[SPACE] CHOMP</span>
+              <span>•</span>
+              <span>[1/2/3] SWITCH DAY</span>
+            </div>
+          </div>
+        </div>
+
+        {/* 4. ACTIVE EVENT ARCADE DOSSIER (Big Expanded Card) */}
+        {currentEvent && (
+          <div className={`relative flex-1 bg-[#0d0920] border-2 sm:border-3 ${colorScheme.border} rounded-2xl p-4 sm:p-6 shadow-2xl flex flex-col justify-between overflow-hidden animate-in fade-in zoom-in-95 duration-200`}>
+            
+            {/* Background filigree watermark */}
+            <div className="absolute right-4 bottom-2 text-7xl font-['Press_Start_2P'] text-white/[0.03] select-none pointer-events-none">
+              DAY {selectedDay}
+            </div>
+
+            {/* Event Header */}
+            <div>
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
                 <div className="flex items-center gap-2">
-                  <span className="text-yellow-400 text-sm">📅</span>
-                  <span>Date: 20-22 Feb, 2K27</span>
+                  <span className={`px-2.5 py-1 rounded font-['Press_Start_2P'] text-[9px] sm:text-[10px] ${colorScheme.badge}`}>
+                    {currentEvent.category.toUpperCase()}
+                  </span>
+                  <span className="px-2.5 py-1 rounded bg-purple-950/70 border border-purple-500/50 font-['Press_Start_2P'] text-[9px] sm:text-[10px] text-purple-300">
+                    DAY {selectedDay} OF 3
+                  </span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-pink-400 text-sm">📍</span>
-                  <span>Venue: IIIT Kota Campus & Tech Arena</span>
+
+                <div className="flex items-center gap-3 text-xs sm:text-sm font-semibold text-yellow-300">
+                  <span className="flex items-center gap-1.5 bg-black/40 px-3 py-1 rounded-lg border border-yellow-500/30">
+                    <Clock size={14} className="text-yellow-400" />
+                    <span>{currentEvent.time}</span>
+                  </span>
+                  <span className="flex items-center gap-1.5 bg-black/40 px-3 py-1 rounded-lg border border-pink-500/30">
+                    <MapPin size={14} className="text-pink-400" />
+                    <span>{currentEvent.venue}</span>
+                  </span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-cyan-400 text-sm">⭐</span>
-                  <span>Events: 18+ Premier Competitions & Pronites</span>
-                </div>
+              </div>
+
+              {/* Event Title */}
+              <h2 className="font-['Press_Start_2P'] text-base sm:text-2xl text-white tracking-wide mb-3 leading-snug">
+                {currentEvent.title}
+              </h2>
+
+              {/* Event Description */}
+              <p className="text-gray-200 text-sm sm:text-base leading-relaxed max-w-4xl mb-4 font-['Rajdhani',sans-serif] font-medium">
+                {currentEvent.desc}
+              </p>
+            </div>
+
+            {/* Event Action Buttons & Registration */}
+            <div className="pt-4 border-t border-gray-800 flex flex-wrap items-center justify-between gap-3 mt-auto">
+              <div className="text-xs text-gray-400 flex items-center gap-2">
+                <Trophy size={16} className="text-yellow-400" />
+                <span className="font-['Press_Start_2P'] text-[8px] sm:text-[9px]">OFFICIAL FESTIVAL COMPETITION • REVERIE 2K27</span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                {currentEvent.registrationLink && (
+                  <a
+                    href={currentEvent.registrationLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-black font-['Press_Start_2P'] text-[10px] sm:text-xs font-bold shadow-[0_0_20px_rgba(250,204,21,0.6)] transition-all hover:scale-105 active:scale-95"
+                  >
+                    <span>REGISTER ON UNSTOP</span>
+                    <ExternalLink size={14} />
+                  </a>
+                )}
               </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
-      {/* ------------------------------------------------------------- */}
-      {/* BOTTOM BAR: MISSION 01 / COLLECT: 0/5 / NEXT STAGE ▶          */}
-      {/* ------------------------------------------------------------- */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t-2 border-yellow-400/80 mt-2 shrink-0">
-        
-        {/* Mission 01 Info */}
+      {/* 5. BOTTOM HUD (Matching Reference 22.11.17) */}
+      <div className="flex-shrink-0 flex items-center justify-between px-3 sm:px-6 py-3 bg-[#080415] border-t-2 border-yellow-500/50 shadow-inner">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-yellow-500/20 border-2 border-yellow-400 flex items-center justify-center text-xl">
-            🏆
-          </div>
+          <Trophy size={20} className="text-yellow-400 hidden sm:block" />
           <div>
-            <span className="font-pixel text-[10px] sm:text-xs text-yellow-300 font-black block">
-              MISSION 01: KNOW YOUR EVENT
-            </span>
-            <span className="font-sans text-[11px] text-slate-300 font-medium">
-              Discover the story, purpose and highlights of Pixel Fest.
-            </span>
+            <div className="font-['Press_Start_2P'] text-[8px] sm:text-[10px] text-yellow-300">
+              MISSION 03: FESTIVAL SCHEDULE ROUTE
+            </div>
+            <div className="text-[10px] sm:text-xs text-gray-400 hidden sm:block">
+              Total schedule events chomped: {totalChomped} of {festivalSchedule.length}
+            </div>
           </div>
         </div>
 
-        {/* Collect Counter & Next Stage Button */}
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1.5 font-pixel text-[10px] sm:text-xs text-yellow-300">
-            <span className="text-slate-400">COLLECT:</span>
-            <span>🟡</span>
-            <span className="text-white font-black">{collected} / 5</span>
-          </div>
-
-          <button
-            onClick={onAdvanceStage}
-            className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-500 border-2 border-white text-black font-pixel text-xs font-black uppercase tracking-wider shadow-[0_4px_0_#78350f] hover:scale-105 active:translate-y-1 active:shadow-none cursor-pointer flex items-center gap-1.5"
-          >
-            <span>NEXT STAGE</span>
-            <span>▶</span>
-          </button>
+        <div className="flex items-center gap-2 sm:gap-4">
+          {onBackToMap && (
+            <button
+              onClick={onBackToMap}
+              className="px-3 sm:px-4 py-2 rounded-xl bg-gray-900 border border-gray-700 hover:border-gray-500 text-gray-300 font-['Press_Start_2P'] text-[9px] sm:text-[10px] transition"
+            >
+              ◀ WORLD MAP
+            </button>
+          )}
+          {onAdvanceStage && (
+            <button
+              onClick={() => {
+                soundEngine.playJump();
+                onAdvanceStage();
+              }}
+              className="px-4 sm:px-6 py-2 rounded-xl bg-yellow-400 hover:bg-yellow-300 text-black font-['Press_Start_2P'] text-[9px] sm:text-[11px] font-bold shadow-[0_0_20px_rgba(250,204,21,0.7)] transition hover:scale-105 active:scale-95 flex items-center gap-2"
+            >
+              <span>NEXT STAGE ▶</span>
+            </button>
+          )}
         </div>
-      </div>
-
-      {/* Bottom Sub-Label */}
-      <div className="text-center pt-1 text-[8px] sm:text-[9px] font-pixel text-cyan-400 animate-pulse">
-        &gt;&gt; READY PLAYER 01? LET'S GO! &lt;&lt;
       </div>
     </div>
   );

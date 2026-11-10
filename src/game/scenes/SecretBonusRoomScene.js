@@ -80,7 +80,7 @@ export class SecretBonusRoomScene extends BaseKingdomScene {
     this.addWarpPipe(1340, this.groundY, {
       color: 'gold',
       targetScene: 'StartingKingdomScene',
-      destinationName: 'RETURN TO STARTING KINGDOM',
+      destinationName: 'STARTING HUB',
       spawnPoint: { x: 3050, y: this.groundY - 60 }
     });
   }
