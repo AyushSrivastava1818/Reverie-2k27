@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { SonicStageSelector } from './SonicStageSelector';
 import { MarioEventBlocks } from './MarioEventBlocks';
+import { SponsorGalaxy } from './SponsorGalaxy';
 import { SpaceInvadersSponsors } from './SpaceInvadersSponsors';
 import { PacmanScheduleMaze } from './PacmanScheduleMaze';
 import { RpgFaqSanctuary } from './RpgFaqSanctuary';
@@ -119,9 +120,9 @@ export function ArcadeAdventureModal({
             />
           )}
 
-          {/* VIEW 3: STAGE 2 — SPACE INVADERS GALAXY FLEET (Ref: 22.11.18(1)) */}
+          {/* VIEW 3: STAGE 2 — SPONSOR GALAXY (PLAYABLE 90s SPACE SHOOTER) */}
           {currentView === 'stage-2' && (
-            <SpaceInvadersSponsors
+            <SponsorGalaxy
               onAdvanceStage={() => setCurrentView('stage-3')}
               onClose={() => setCurrentView('world-map')}
               onBackToMap={() => setCurrentView('world-map')}

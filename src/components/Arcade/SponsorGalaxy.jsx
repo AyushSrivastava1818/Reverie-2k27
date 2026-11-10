@@ -8,7 +8,7 @@ import { soundEngine } from '../../game/systems/SoundEngine';
 import { achievementSystem } from '../../game/systems/AchievementSystem';
 import confetti from 'canvas-confetti';
 
-export function SponsorGalaxy({ onSkipToDirectory, onOpenRewards, onSelectSponsor, onClose }) {
+export function SponsorGalaxy({ onSkipToDirectory, onOpenRewards, onSelectSponsor, onClose, onAdvanceStage, onBackToMap }) {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
 
@@ -546,30 +546,38 @@ export function SponsorGalaxy({ onSkipToDirectory, onOpenRewards, onSelectSponso
         ctx.fill();
         ctx.stroke();
 
-        // Sponsor Logo Display Badge
+        // Sponsor Logo Display Badge - Crisp rounded white plate for 100% logo clarity
         const img = sponsorImagesRef.current[t.sponsor.name];
-        const logoSize = 34;
-        const logoX = rx + 8;
+        const logoSize = 36;
+        const logoX = rx + 6;
         const logoY = ry + (rh - logoSize) / 2;
 
-        // Logo background plate
-        ctx.fillStyle = '#0a0518';
-        ctx.fillRect(logoX, logoY, logoSize, logoSize);
-        ctx.strokeStyle = 'rgba(147, 51, 234, 0.6)';
-        ctx.strokeRect(logoX, logoY, logoSize, logoSize);
+        // Bright white rounded badge plate
+        ctx.save();
+        ctx.fillStyle = '#ffffff';
+        ctx.shadowColor = 'rgba(255, 255, 255, 0.5)';
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.roundRect(logoX, logoY, logoSize, logoSize, 6);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = t.hp < t.maxHp ? '#ef4444' : '#38bdf8';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
 
         if (img && img.complete && img.naturalWidth > 0) {
           try {
-            ctx.drawImage(img, logoX + 2, logoY + 2, logoSize - 4, logoSize - 4);
+            ctx.drawImage(img, logoX + 3, logoY + 3, logoSize - 6, logoSize - 6);
           } catch(e) {}
         } else {
           // Fallback initial
-          ctx.fillStyle = '#38bdf8';
-          ctx.font = 'bold 16px sans-serif';
+          ctx.fillStyle = '#0f172a';
+          ctx.font = 'bold 15px sans-serif';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.fillText(t.sponsor.name.slice(0, 2), logoX + logoSize / 2, logoY + logoSize / 2);
         }
+        ctx.restore();
 
         // Sponsor Name Tag
         ctx.fillStyle = '#ffffff';
@@ -816,6 +824,32 @@ export function SponsorGalaxy({ onSkipToDirectory, onOpenRewards, onSelectSponso
             >
               <Gift size={13} className="text-yellow-400" />
               <span>REWARDS</span>
+            </button>
+          )}
+
+          {/* Back to World Map */}
+          {onBackToMap && (
+            <button
+              onClick={() => {
+                soundEngine.playBlip();
+                onBackToMap();
+              }}
+              className="px-2.5 py-1 rounded-lg bg-gray-900 hover:bg-gray-800 border border-gray-600 text-gray-300 font-display text-[11px] font-black uppercase flex items-center gap-1 transition-all cursor-pointer"
+            >
+              <span>◀ MAP</span>
+            </button>
+          )}
+
+          {/* Advance to Next Stage */}
+          {onAdvanceStage && (
+            <button
+              onClick={() => {
+                soundEngine.playJump();
+                onAdvanceStage();
+              }}
+              className="px-3 py-1 rounded-lg bg-yellow-400 hover:bg-yellow-300 text-black font-display text-[11px] font-black uppercase flex items-center gap-1 transition-all cursor-pointer shadow-[0_0_12px_#facc15]"
+            >
+              <span>STAGE 3 ▶</span>
             </button>
           )}
 

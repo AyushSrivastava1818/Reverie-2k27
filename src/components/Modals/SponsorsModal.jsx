@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { SpaceInvadersSponsors } from '../Arcade/SpaceInvadersSponsors';
+import { SponsorGalaxy } from '../Arcade/SponsorGalaxy';
 import { soundEngine } from '../../game/systems/SoundEngine';
 import { whySponsorUs } from '../../data/sponsors';
 import { sponsorshipPerksData } from '../../data/sponsorshipPerks';
-import { X, Sparkles, Award, Megaphone, Zap, Users2, Globe, FileText, Gift } from 'lucide-react';
+import { FileText, Rocket, ExternalLink } from 'lucide-react';
 
 export function SponsorsModal({ onClose, initialTab = 'galaxy' }) {
   const [viewMode, setViewMode] = useState(initialTab === 'rewards' ? 'perks' : 'galaxy');
@@ -12,9 +12,9 @@ export function SponsorsModal({ onClose, initialTab = 'galaxy' }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-1 sm:p-4 bg-black/95 select-none animate-in fade-in duration-200">
       
       {/* High-Res Arcade Frame Cabinet */}
-      <div className="relative w-full max-w-5xl h-[96vh] flex flex-col bg-[#07050e] border-4 border-[#2b2738] rounded-3xl shadow-[0_0_80px_rgba(168,85,247,0.6)] overflow-hidden">
+      <div className="relative w-full max-w-6xl h-[98vh] flex flex-col bg-[#07050e] border-4 border-[#2b2738] rounded-3xl shadow-[0_0_80px_rgba(168,85,247,0.6)] overflow-hidden">
         
-        {/* TOP BAR: SWITCH BETWEEN SPACE INVADERS & BROCHURE */}
+        {/* TOP BAR: SWITCH BETWEEN SPACE SHOOTER & BROCHURE */}
         <div className="flex-shrink-0 flex items-center justify-between px-3 sm:px-6 py-2.5 bg-[#090514] border-b-2 border-purple-500/50 shadow-md">
           <div className="flex items-center gap-2">
             <button
@@ -28,7 +28,8 @@ export function SponsorsModal({ onClose, initialTab = 'galaxy' }) {
                   : 'bg-black/40 text-gray-400 border border-gray-800 hover:text-white'
               }`}
             >
-              <span>👾 SPACE INVADERS FLEET</span>
+              <Rocket size={12} className="text-cyan-400" />
+              <span>🚀 PLAYABLE SPACE SHOOTER</span>
             </button>
 
             <button
@@ -59,12 +60,12 @@ export function SponsorsModal({ onClose, initialTab = 'galaxy' }) {
           </button>
         </div>
 
-        {/* MAIN BODY: IDENTICAL SPACE INVADERS FLEET EXPERIENCE */}
+        {/* MAIN BODY: PLAYABLE 90s SPACE SHOOTER GAME */}
         <div className="flex-1 min-h-0 overflow-hidden">
           {viewMode === 'galaxy' ? (
-            <SpaceInvadersSponsors
+            <SponsorGalaxy
               onClose={onClose}
-              onBackToMap={onClose}
+              onSkipToDirectory={() => setViewMode('perks')}
               onAdvanceStage={() => setViewMode('perks')}
             />
           ) : (
@@ -120,7 +121,7 @@ export function SponsorsModal({ onClose, initialTab = 'galaxy' }) {
                   onClick={() => setViewMode('galaxy')}
                   className="px-6 py-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-['Press_Start_2P'] text-xs shadow-[0_0_20px_#a855f7] transition"
                 >
-                  ◀ BACK TO SPACE INVADERS FLEET
+                  ◀ BACK TO SPACE SHOOTER
                 </button>
               </div>
             </div>
