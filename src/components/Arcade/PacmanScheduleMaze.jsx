@@ -1,35 +1,44 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { soundEngine } from '../../game/systems/SoundEngine';
 import { festivalSchedule } from '../../data/schedule';
-import { ExternalLink, Volume2, VolumeX, Sparkles, Trophy, ArrowRight, Play, Pause, MapPin, Clock, Calendar, Zap, Award } from 'lucide-react';
+import { ExternalLink, Volume2, VolumeX, Sparkles, Trophy, ArrowRight, Play, Pause, MapPin, Clock, Calendar, Zap, Award, CheckCircle2 } from 'lucide-react';
 
 export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
   const canvasRef = useRef(null);
-  const [selectedDay, setSelectedDay] = useState(1);
-  const [score, setScore] = useState(2650);
+  const [activeFilterDay, setActiveFilterDay] = useState('ALL'); // 'ALL' | 1 | 2 | 3
+  const [score, setScore] = useState(3250);
   const [highScore, setHighScore] = useState(9990);
-  const [activeEvent, setActiveEvent] = useState(null);
+  const [activeEvent, setActiveEvent] = useState(festivalSchedule[0]);
   const [soundMuted, setSoundMuted] = useState(soundEngine.muted);
   const [isAutoCruise, setIsAutoCruise] = useState(true);
   const [scaredGhostTimer, setScaredGhostTimer] = useState(0);
+  const [eatenEventIds, setEatenEventIds] = useState(new Set([festivalSchedule[0]?.id]));
 
-  // Filter events for selected day
-  const dayEvents = festivalSchedule.filter(e => e.day === selectedDay);
+  // All 18 events from schedule data
+  const allEvents = festivalSchedule;
 
-  // Advanced game state for full-screen 3-level authentic Pac-Man circuit
+  // Advanced game state for full-screen 3-level authentic Pac-Man circuit covering all 18 events
   const gameRef = useRef({
-    // Multi-track circuit nodes covering the full canvas (0 to 1000 width, 50 to 380 height)
+    // Multi-track circuit nodes covering the full canvas
     trackNodes: [
-      { x: 70, y: 70 }, { x: 300, y: 70 }, { x: 500, y: 70 }, { x: 700, y: 70 }, { x: 930, y: 70 },
-      { x: 930, y: 200 }, { x: 750, y: 200 }, { x: 750, y: 340 }, { x: 930, y: 340 },
-      { x: 700, y: 340 }, { x: 500, y: 340 }, { x: 300, y: 340 }, { x: 70, y: 340 },
-      { x: 70, y: 200 }, { x: 250, y: 200 }, { x: 250, y: 70 },
-      { x: 70, y: 70 }
+      // Day 1 Top Rail (y: 65)
+      { x: 60, y: 65 }, { x: 260, y: 65 }, { x: 460, y: 65 }, { x: 680, y: 65 }, { x: 940, y: 65 },
+      // Right chute down to Day 2
+      { x: 940, y: 195 },
+      // Day 2 Middle Rail (y: 195)
+      { x: 740, y: 195 }, { x: 580, y: 195 }, { x: 420, y: 195 }, { x: 260, y: 195 }, { x: 60, y: 195 },
+      // Left chute down to Day 3
+      { x: 60, y: 325 },
+      // Day 3 Bottom Rail (y: 325)
+      { x: 240, y: 325 }, { x: 420, y: 325 }, { x: 600, y: 325 }, { x: 780, y: 325 }, { x: 940, y: 325 },
+      // Right loop return
+      { x: 940, y: 65 },
+      { x: 60, y: 65 }
     ],
     pacman: {
-      x: 70,
-      y: 70,
-      speed: 3.6,
+      x: 60,
+      y: 65,
+      speed: 3.8,
       nodeIndex: 0,
       radius: 22,
       mouthAngle: 0.22,
@@ -37,91 +46,89 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
       direction: 0
     },
     ghosts: [
-      { x: 450, y: 200, targetX: 500, targetY: 70, speed: 2.2, color: '#ef4444', name: 'Blinky', eyeDir: 0 },
-      { x: 480, y: 200, targetX: 300, targetY: 340, speed: 2.0, color: '#ec4899', name: 'Pinky', eyeDir: 0 },
-      { x: 520, y: 200, targetX: 750, targetY: 70, speed: 2.1, color: '#06b6d4', name: 'Inky', eyeDir: 0 },
-      { x: 550, y: 200, targetX: 700, targetY: 340, speed: 1.9, color: '#f97316', name: 'Clyde', eyeDir: 0 }
+      { x: 480, y: 195, targetX: 680, targetY: 65, speed: 2.3, color: '#ef4444', name: 'Blinky', eyeDir: 0 },
+      { x: 520, y: 195, targetX: 260, targetY: 325, speed: 2.1, color: '#ec4899', name: 'Pinky', eyeDir: 0 },
+      { x: 560, y: 195, targetX: 780, targetY: 325, speed: 2.2, color: '#06b6d4', name: 'Inky', eyeDir: 0 },
+      { x: 440, y: 195, targetX: 260, targetY: 65, speed: 2.0, color: '#f97316', name: 'Clyde', eyeDir: 0 }
     ],
     pellets: [],
     powerPellets: [],
     fruits: [
-      { x: 500, y: 200, type: 'cherry', eaten: false, bounce: 0 },
-      { x: 500, y: 80, type: 'strawberry', eaten: false, bounce: 0 }
+      { x: 500, y: 130, type: 'cherry', eaten: false, bounce: 0 },
+      { x: 500, y: 260, type: 'strawberry', eaten: false, bounce: 0 }
     ],
     eventStations: [],
     particles: [],
     scorePills: []
   });
 
-  // Re-generate maze circuit and stations on day change
+  // Build the complete 18-event multi-corridor circuit
   useEffect(() => {
-    const events = festivalSchedule.filter(e => e.day === selectedDay);
     const canvasWidth = 1000;
     
-    // Stations distributed along the multi-track circuit
-    // Half on top track (y: 70), half on bottom track (y: 340)
-    const stations = events.map((ev, i) => {
-      const isTop = i < Math.ceil(events.length / 2);
-      const rowEvents = isTop ? Math.ceil(events.length / 2) : Math.floor(events.length / 2);
-      const rowIndex = isTop ? i : i - Math.ceil(events.length / 2);
-      const spacing = (canvasWidth - 260) / (rowEvents + 1);
-      const x = 130 + spacing * (rowIndex + 1);
-      const y = isTop ? 70 : 340;
+    // Group events by day:
+    // Day 1 (5 events) -> Upper Corridor (y: 65)
+    // Day 2 (6 events) -> Middle Corridor (y: 195)
+    // Day 3 (7 events) -> Lower Corridor (y: 325)
+    const day1Events = allEvents.filter(e => e.day === 1);
+    const day2Events = allEvents.filter(e => e.day === 2);
+    const day3Events = allEvents.filter(e => e.day === 3);
 
-      return {
-        ...ev,
-        x,
-        y,
-        radius: 28,
-        eaten: i === 0,
-        color: ev.category === 'flagship' ? '#f59e0b' : ev.category === 'technical' ? '#06b6d4' : '#ec4899',
-        glowPulse: 0
-      };
-    });
+    const stations = [];
 
-    // Populate pellets along all corridors
+    // Helper to position a row of events
+    const placeRow = (events, yPos, startX, endX) => {
+      const spacing = (endX - startX) / (events.length + 1);
+      events.forEach((ev, i) => {
+        stations.push({
+          ...ev,
+          x: startX + spacing * (i + 1),
+          y: yPos,
+          radius: 26,
+          eaten: eatenEventIds.has(ev.id),
+          color: ev.day === 1 ? '#f59e0b' : ev.day === 2 ? '#06b6d4' : '#ec4899',
+          glowPulse: 0
+        });
+      });
+    };
+
+    placeRow(day1Events, 65, 80, canvasWidth - 80);
+    placeRow(day2Events, 195, 80, canvasWidth - 80);
+    placeRow(day3Events, 325, 80, canvasWidth - 80);
+
+    // Populate pellets across the 3 corridors and connecting vertical chutes
     const dots = [];
     const pPellets = [
-      { x: 70, y: 70, eaten: false },
-      { x: 930, y: 70, eaten: false },
-      { x: 70, y: 340, eaten: false },
-      { x: 930, y: 340, eaten: false },
-      { x: 500, y: 200, eaten: false }
+      { x: 60, y: 65, eaten: false },
+      { x: 940, y: 65, eaten: false },
+      { x: 60, y: 195, eaten: false },
+      { x: 940, y: 195, eaten: false },
+      { x: 60, y: 325, eaten: false },
+      { x: 940, y: 325, eaten: false }
     ];
 
-    // Top rail dots (y: 70)
-    for (let x = 100; x < canvasWidth - 100; x += 26) {
-      if (!stations.some(s => Math.abs(s.x - x) < 38 && s.y === 70)) {
-        dots.push({ x, y: 70, eaten: false });
+    // Corridors dots
+    [65, 195, 325].forEach(yRail => {
+      for (let x = 80; x < canvasWidth - 80; x += 28) {
+        if (!stations.some(s => Math.abs(s.x - x) < 36 && s.y === yRail)) {
+          dots.push({ x, y: yRail, eaten: false });
+        }
       }
-    }
-    // Bottom rail dots (y: 340)
-    for (let x = 100; x < canvasWidth - 100; x += 26) {
-      if (!stations.some(s => Math.abs(s.x - x) < 38 && s.y === 340)) {
-        dots.push({ x, y: 340, eaten: false });
-      }
-    }
-    // Middle cross rail dots (y: 200)
-    for (let x = 110; x < canvasWidth - 110; x += 32) {
-      if (x < 420 || x > 580) {
-        dots.push({ x, y: 200, eaten: false });
-      }
-    }
+    });
+
     // Vertical side chutes dots
-    for (let y = 100; y < 320; y += 26) {
-      dots.push({ x: 70, y, eaten: false });
-      dots.push({ x: 930, y, eaten: false });
+    for (let y = 85; y < 185; y += 24) {
+      dots.push({ x: 940, y, eaten: false });
+    }
+    for (let y = 215; y < 315; y += 24) {
+      dots.push({ x: 60, y, eaten: false });
+      dots.push({ x: 940, y, eaten: false });
     }
 
     gameRef.current.eventStations = stations;
     gameRef.current.pellets = dots;
     gameRef.current.powerPellets = pPellets;
-    gameRef.current.pacman.x = 70;
-    gameRef.current.pacman.y = 70;
-    gameRef.current.pacman.nodeIndex = 0;
-
-    if (events[0]) setActiveEvent(events[0]);
-  }, [selectedDay]);
+  }, []);
 
   // Keyboard navigation
   useEffect(() => {
@@ -157,12 +164,12 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // 1. Deep Space Neon Arcade Backdrop
-      ctx.fillStyle = '#030108';
+      ctx.fillStyle = '#030107';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // CRT Scanline / Phosphor Glow
       ctx.save();
-      ctx.strokeStyle = 'rgba(20, 15, 45, 0.5)';
+      ctx.strokeStyle = 'rgba(25, 18, 55, 0.45)';
       ctx.lineWidth = 1;
       for (let gy = 0; gy < canvas.height; gy += 14) {
         ctx.beginPath();
@@ -172,7 +179,7 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
       }
       ctx.restore();
 
-      // 2. Draw Multi-Level Neon Labyrinth Walls (Namco High-Glow Double Blue)
+      // 2. Draw 3-Tiered Neon Maze Corridors (Namco High-Glow Double Blue)
       ctx.save();
       ctx.shadowColor = '#2563eb';
       ctx.shadowBlur = 18;
@@ -183,45 +190,36 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
 
       // Outer Perimeter Neon Wall
       ctx.beginPath();
-      ctx.roundRect(30, 30, canvas.width - 60, 350, 32);
+      ctx.roundRect(25, 25, canvas.width - 50, 345, 28);
       ctx.stroke();
 
-      // Upper Corridor Partition
+      // Horizontal Corridor Dividers
       ctx.strokeStyle = '#1d4ed8';
       ctx.lineWidth = 3;
+      
+      // Divider 1 (Between Day 1 and Day 2)
       ctx.beginPath();
-      ctx.roundRect(140, 110, 240, 55, 14);
-      ctx.roundRect(620, 110, 240, 55, 14);
+      ctx.roundRect(110, 115, 340, 35, 10);
+      ctx.roundRect(550, 115, 340, 35, 10);
       ctx.stroke();
 
-      // Lower Corridor Partition
+      // Divider 2 (Between Day 2 and Day 3)
       ctx.beginPath();
-      ctx.roundRect(140, 245, 240, 55, 14);
-      ctx.roundRect(620, 245, 240, 55, 14);
+      ctx.roundRect(110, 245, 340, 35, 10);
+      ctx.roundRect(550, 245, 340, 35, 10);
       ctx.stroke();
 
-      // Central Ghost Lair with Neon Barrier
-      ctx.shadowColor = '#ec4899';
-      ctx.shadowBlur = 22;
-      ctx.strokeStyle = '#ec4899';
-      ctx.fillStyle = 'rgba(18, 6, 40, 0.95)';
-      ctx.beginPath();
-      ctx.roundRect(420, 165, 160, 70, 14);
-      ctx.fill();
-      ctx.stroke();
+      // Day Zone Watermarks in Corridor Backgrounds
+      ctx.font = 'bold 9px "Press Start 2P", monospace';
+      ctx.fillStyle = 'rgba(245, 158, 11, 0.25)';
+      ctx.textAlign = 'left';
+      ctx.fillText('DAY 01: FESTIVAL INAUGURATION', 40, 48);
 
-      // Ghost Lair Neon Gateway
-      ctx.strokeStyle = '#38bdf8';
-      ctx.lineWidth = 2.5;
-      ctx.beginPath();
-      ctx.moveTo(465, 165);
-      ctx.lineTo(535, 165);
-      ctx.stroke();
+      ctx.fillStyle = 'rgba(6, 182, 212, 0.25)';
+      ctx.fillText('DAY 02: 24H HACKATHON & ROBOTICS', 40, 178);
 
-      ctx.font = 'bold 8px "Press Start 2P", monospace';
-      ctx.fillStyle = '#f472b6';
-      ctx.textAlign = 'center';
-      ctx.fillText('GHOST LAIR', 500, 204);
+      ctx.fillStyle = 'rgba(236, 72, 153, 0.25)';
+      ctx.fillText('DAY 03: SHOWCASE & PRONITE VALEDICTORY', 40, 308);
 
       ctx.restore();
 
@@ -231,7 +229,7 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
         ctx.save();
         ctx.fillStyle = '#fed7aa';
         ctx.beginPath();
-        ctx.arc(dot.x, dot.y, 3.5, 0, Math.PI * 2);
+        ctx.arc(dot.x, dot.y, 3, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
       });
@@ -240,7 +238,7 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
       g.powerPellets.forEach(pp => {
         if (pp.eaten) return;
         ctx.save();
-        const pulse = 7 + Math.sin(frameCount * 0.12) * 3;
+        const pulse = 6.5 + Math.sin(frameCount * 0.12) * 2.8;
         ctx.shadowColor = '#facc15';
         ctx.shadowBlur = 20;
         ctx.fillStyle = '#fef08a';
@@ -250,42 +248,42 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
         ctx.restore();
       });
 
-      // 5. Draw Bonus Cherries in Corridors
+      // 5. Draw Bonus Cherries & Strawberries
       g.fruits.forEach(f => {
         if (f.eaten) return;
-        f.bounce = Math.sin(frameCount * 0.08) * 4;
+        f.bounce = Math.sin(frameCount * 0.08) * 3.5;
         ctx.save();
         ctx.shadowColor = '#ef4444';
-        ctx.shadowBlur = 18;
-        // Two cherry spheres
+        ctx.shadowBlur = 16;
         ctx.fillStyle = '#dc2626';
         ctx.beginPath();
-        ctx.arc(f.x - 7, f.y + f.bounce, 8, 0, Math.PI * 2);
-        ctx.arc(f.x + 7, f.y + 4 + f.bounce, 8, 0, Math.PI * 2);
+        ctx.arc(f.x - 6, f.y + f.bounce, 7, 0, Math.PI * 2);
+        ctx.arc(f.x + 6, f.y + 3 + f.bounce, 7, 0, Math.PI * 2);
         ctx.fill();
-        // Green stem
         ctx.strokeStyle = '#22c55e';
-        ctx.lineWidth = 2.5;
+        ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.moveTo(f.x - 7, f.y - 8 + f.bounce);
-        ctx.quadraticCurveTo(f.x, f.y - 20 + f.bounce, f.x + 9, f.y - 14 + f.bounce);
-        ctx.moveTo(f.x + 7, f.y - 4 + f.bounce);
-        ctx.quadraticCurveTo(f.x, f.y - 20 + f.bounce, f.x + 9, f.y - 14 + f.bounce);
+        ctx.moveTo(f.x - 6, f.y - 7 + f.bounce);
+        ctx.quadraticCurveTo(f.x, f.y - 18 + f.bounce, f.x + 8, f.y - 12 + f.bounce);
+        ctx.moveTo(f.x + 6, f.y - 4 + f.bounce);
+        ctx.quadraticCurveTo(f.x, f.y - 18 + f.bounce, f.x + 8, f.y - 12 + f.bounce);
         ctx.stroke();
         ctx.restore();
       });
 
-      // 6. Draw Grand Festival Event Stations
+      // 6. Draw ALL 18 Grand Festival Event Stations
       g.eventStations.forEach(st => {
-        st.glowPulse = Math.sin(frameCount * 0.08) * 6;
+        st.glowPulse = Math.sin(frameCount * 0.08) * 5;
+        const isFocused = activeEvent?.id === st.id;
+
         ctx.save();
         ctx.shadowColor = st.color;
-        ctx.shadowBlur = st.eaten ? 14 : 32 + st.glowPulse;
+        ctx.shadowBlur = isFocused ? 36 : st.eaten ? 12 : 24 + st.glowPulse;
 
         // Outer Rotating Orbit Ring
-        ctx.strokeStyle = st.color;
-        ctx.lineWidth = 3.5;
-        ctx.fillStyle = st.eaten ? 'rgba(8, 4, 20, 0.95)' : 'rgba(32, 12, 65, 0.95)';
+        ctx.strokeStyle = isFocused ? '#facc15' : st.color;
+        ctx.lineWidth = isFocused ? 4 : 3;
+        ctx.fillStyle = isFocused ? 'rgba(45, 18, 80, 0.95)' : st.eaten ? 'rgba(8, 4, 18, 0.95)' : 'rgba(28, 10, 55, 0.95)';
         ctx.beginPath();
         ctx.arc(st.x, st.y, st.radius, 0, Math.PI * 2);
         ctx.fill();
@@ -294,27 +292,27 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
         // Inner glowing core
         ctx.fillStyle = st.eaten ? '#22c55e' : st.color;
         ctx.beginPath();
-        ctx.arc(st.x, st.y, 9, 0, Math.PI * 2);
+        ctx.arc(st.x, st.y, 8, 0, Math.PI * 2);
         ctx.fill();
 
         // Star / Check Icon inside
         ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 10px "Press Start 2P", monospace';
+        ctx.font = 'bold 9.5px "Press Start 2P", monospace';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(st.eaten ? '✓' : '★', st.x, st.y);
 
         // Time Tag above
-        ctx.font = 'bold 9px "Press Start 2P", monospace';
+        ctx.font = 'bold 8px "Press Start 2P", monospace';
         ctx.fillStyle = st.color;
         const timeShort = st.time.split('-')[0].trim();
-        ctx.fillText(timeShort, st.x, st.y - (st.y > 200 ? -40 : 38));
+        ctx.fillText(timeShort, st.x, st.y - 32);
 
         // Event Title below
-        ctx.font = '8px "Press Start 2P", monospace';
+        ctx.font = '7.5px "Press Start 2P", monospace';
         ctx.fillStyle = '#ffffff';
-        const titleShort = st.title.length > 13 ? st.title.slice(0, 11) + '..' : st.title;
-        ctx.fillText(titleShort, st.x, st.y + (st.y > 200 ? -42 : 40));
+        const titleShort = st.title.length > 12 ? st.title.slice(0, 10) + '..' : st.title;
+        ctx.fillText(titleShort, st.x, st.y + 34);
 
         ctx.restore();
       });
@@ -343,22 +341,21 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
 
         // Dome Head
         ctx.beginPath();
-        ctx.arc(ghost.x, ghost.y - 4, 16, Math.PI, 0, false);
-        ctx.lineTo(ghost.x + 16, ghost.y + 12);
-        // Wavy skirt
-        const wave = Math.sin(frameCount * 0.25) * 3.5;
-        ctx.lineTo(ghost.x + 8, ghost.y + 9 + wave);
-        ctx.lineTo(ghost.x, ghost.y + 13);
-        ctx.lineTo(ghost.x - 8, ghost.y + 9 - wave);
-        ctx.lineTo(ghost.x - 16, ghost.y + 12);
+        ctx.arc(ghost.x, ghost.y - 4, 15, Math.PI, 0, false);
+        ctx.lineTo(ghost.x + 15, ghost.y + 11);
+        const wave = Math.sin(frameCount * 0.25) * 3;
+        ctx.lineTo(ghost.x + 8, ghost.y + 8 + wave);
+        ctx.lineTo(ghost.x, ghost.y + 12);
+        ctx.lineTo(ghost.x - 8, ghost.y + 8 - wave);
+        ctx.lineTo(ghost.x - 15, ghost.y + 11);
         ctx.closePath();
         ctx.fill();
 
         // Eyes
         ctx.fillStyle = '#ffffff';
         ctx.beginPath();
-        ctx.arc(ghost.x - 6, ghost.y - 6, 4.5, 0, Math.PI * 2);
-        ctx.arc(ghost.x + 6, ghost.y - 6, 4.5, 0, Math.PI * 2);
+        ctx.arc(ghost.x - 6, ghost.y - 6, 4, 0, Math.PI * 2);
+        ctx.arc(ghost.x + 6, ghost.y - 6, 4, 0, Math.PI * 2);
         ctx.fill();
 
         // Pupils
@@ -366,8 +363,8 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
         const px = Math.cos(ghost.eyeDir) * 2;
         const py = Math.sin(ghost.eyeDir) * 2;
         ctx.beginPath();
-        ctx.arc(ghost.x - 6 + px, ghost.y - 6 + py, 2.2, 0, Math.PI * 2);
-        ctx.arc(ghost.x + 6 + px, ghost.y - 6 + py, 2.2, 0, Math.PI * 2);
+        ctx.arc(ghost.x - 6 + px, ghost.y - 6 + py, 2, 0, Math.PI * 2);
+        ctx.arc(ghost.x + 6 + px, ghost.y - 6 + py, 2, 0, Math.PI * 2);
         ctx.fill();
 
         ctx.restore();
@@ -375,7 +372,7 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
 
       if (scaredGhostTimer > 0) setScaredGhostTimer(t => t - 1);
 
-      // 8. Update & Draw Moving Pac-Man
+      // 8. Update & Draw Moving Pac-Man (Circuit Navigator)
       const currentNode = g.trackNodes[p.nodeIndex];
       const nextNode = g.trackNodes[(p.nodeIndex + 1) % g.trackNodes.length];
 
@@ -395,8 +392,8 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
         }
       } else {
         p.x += Math.cos(p.direction) * p.speed;
-        if (p.x > canvas.width - 70) p.direction = Math.PI;
-        if (p.x < 70) p.direction = 0;
+        if (p.x > canvas.width - 60) p.direction = Math.PI;
+        if (p.x < 60) p.direction = 0;
       }
 
       // Mouth animation
@@ -405,7 +402,7 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
 
       // Pellet Collisions
       g.pellets.forEach(dot => {
-        if (!dot.eaten && Math.hypot(p.x - dot.x, p.y - dot.y) < 20) {
+        if (!dot.eaten && Math.hypot(p.x - dot.x, p.y - dot.y) < 18) {
           dot.eaten = true;
           setScore(s => s + 10);
           soundEngine.playBlip();
@@ -414,59 +411,60 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
 
       // Power Pellet Collisions
       g.powerPellets.forEach(pp => {
-        if (!pp.eaten && Math.hypot(p.x - pp.x, p.y - pp.y) < 24) {
+        if (!pp.eaten && Math.hypot(p.x - pp.x, p.y - pp.y) < 22) {
           pp.eaten = true;
           setScore(s => s + 50);
           setScaredGhostTimer(240);
           soundEngine.playFanfare();
-          g.scorePills.push({ x: pp.x, y: pp.y - 22, text: 'POWER! +50', alpha: 1 });
+          g.scorePills.push({ x: pp.x, y: pp.y - 20, text: 'POWER! +50', alpha: 1 });
         }
       });
 
-      // Cherry Fruit Collisions
+      // Fruit Collisions
       g.fruits.forEach(f => {
-        if (!f.eaten && Math.hypot(p.x - f.x, p.y - f.y) < 28) {
+        if (!f.eaten && Math.hypot(p.x - f.x, p.y - f.y) < 26) {
           f.eaten = true;
           setScore(s => s + 300);
           soundEngine.playFanfare();
-          g.scorePills.push({ x: f.x, y: f.y - 24, text: 'CHERRY! +300', alpha: 1 });
+          g.scorePills.push({ x: f.x, y: f.y - 20, text: 'BONUS! +300', alpha: 1 });
         }
       });
 
       // Event Station Collisions
       g.eventStations.forEach(st => {
-        if (Math.hypot(p.x - st.x, p.y - st.y) < 30) {
+        if (Math.hypot(p.x - st.x, p.y - st.y) < 28) {
           if (!st.eaten) {
             st.eaten = true;
             setActiveEvent(st);
             setScore(s => s + 200);
             soundEngine.playCoin();
 
-            g.scorePills.push({ x: st.x, y: st.y - 28, text: '+200 PTS', alpha: 1 });
+            setEatenEventIds(prev => new Set([...prev, st.id]));
+            g.scorePills.push({ x: st.x, y: st.y - 26, text: '+200 PTS', alpha: 1 });
 
-            // 28 fireworks particles
-            for (let i = 0; i < 28; i++) {
+            // 24 rainbow fireworks particles
+            for (let i = 0; i < 24; i++) {
               const angle = Math.random() * Math.PI * 2;
-              const spd = 2 + Math.random() * 5.5;
+              const spd = 2 + Math.random() * 5;
               g.particles.push({
                 x: st.x,
                 y: st.y,
                 vx: Math.cos(angle) * spd,
                 vy: Math.sin(angle) * spd,
                 color: st.color,
-                life: 38
+                life: 35
               });
             }
           }
         }
       });
 
-      // Draw Pac-Man
+      // Draw Pac-Man with Glowing Aura & Sub-Pixel Mouth
       ctx.save();
       ctx.translate(p.x, p.y);
       ctx.rotate(p.direction);
       ctx.shadowColor = '#facc15';
-      ctx.shadowBlur = 26;
+      ctx.shadowBlur = 24;
       ctx.fillStyle = '#facc15';
 
       ctx.beginPath();
@@ -478,7 +476,7 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
       // Eye
       ctx.fillStyle = '#000000';
       ctx.beginPath();
-      ctx.arc(-2, -11, 3.5, 0, Math.PI * 2);
+      ctx.arc(-2, -10, 3, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
 
@@ -488,16 +486,16 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
         pt.y += pt.vy;
         pt.life -= 1;
         ctx.fillStyle = pt.color;
-        ctx.fillRect(pt.x, pt.y, 3.5, 3.5);
+        ctx.fillRect(pt.x, pt.y, 3, 3);
         return pt.life > 0;
       });
 
-      // 10. Score Pills
+      // 10. Floating Score Pills
       g.scorePills = g.scorePills.filter(sp => {
-        sp.y -= 1.3;
+        sp.y -= 1.2;
         sp.alpha -= 0.025;
         ctx.save();
-        ctx.font = 'bold 9.5px "Press Start 2P", monospace';
+        ctx.font = 'bold 9px "Press Start 2P", monospace';
         ctx.fillStyle = `rgba(250, 204, 21, ${sp.alpha})`;
         ctx.textAlign = 'center';
         ctx.fillText(sp.text, sp.x, sp.y);
@@ -518,11 +516,15 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
     soundEngine.setMuted(next);
   };
 
+  const filteredTimelineEvents = activeFilterDay === 'ALL' 
+    ? allEvents 
+    : allEvents.filter(e => e.day === activeFilterDay);
+
   return (
-    <div className="relative w-full h-full flex flex-col bg-[#04010a] text-white select-none overflow-hidden font-sans">
+    <div className="relative w-full h-full flex flex-col bg-[#040108] text-white select-none overflow-hidden font-sans">
       
       {/* 1. TOP RETRO ARCADE MARQUEE */}
-      <div className="flex-shrink-0 flex items-center justify-between px-3 sm:px-6 py-2.5 bg-[#080214] border-b-2 border-yellow-500/60 shadow-[0_4px_25px_rgba(250,204,21,0.25)]">
+      <div className="flex-shrink-0 flex items-center justify-between px-3 sm:px-6 py-2 bg-[#070212] border-b-2 border-yellow-500/60 shadow-[0_4px_25px_rgba(250,204,21,0.25)]">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1.5">
             <span className="w-4 h-4 rounded-full bg-yellow-400 inline-block shadow-[0_0_10px_#facc15]" />
@@ -537,31 +539,36 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
           </div>
         </div>
 
-        {/* Day Switcher Pills */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          {[1, 2, 3].map(day => (
+        {/* Filter Pills: ALL (18) | DAY 1 (5) | DAY 2 (6) | DAY 3 (7) */}
+        <div className="flex items-center gap-1 sm:gap-2">
+          {[
+            { key: 'ALL', label: 'ALL 18 EVENTS' },
+            { key: 1, label: 'DAY 1' },
+            { key: 2, label: 'DAY 2' },
+            { key: 3, label: 'DAY 3' }
+          ].map(f => (
             <button
-              key={day}
+              key={f.key}
               onClick={() => {
                 soundEngine.playBlip();
-                setSelectedDay(day);
+                setActiveFilterDay(f.key);
               }}
-              className={`px-3 py-1.5 rounded-lg font-['Press_Start_2P'] text-[8px] sm:text-[9px] transition ${
-                selectedDay === day
+              className={`px-2.5 sm:px-3 py-1 rounded-lg font-['Press_Start_2P'] text-[8px] sm:text-[9px] transition ${
+                activeFilterDay === f.key
                   ? 'bg-yellow-400 text-black font-bold shadow-[0_0_15px_#facc15] scale-105'
                   : 'bg-black/60 text-gray-400 border border-gray-800 hover:text-white hover:border-gray-600'
               }`}
             >
-              DAY 0{day}
+              {f.label}
             </button>
           ))}
         </div>
 
-        {/* Action Controls */}
+        {/* Controls */}
         <div className="flex items-center gap-2 sm:gap-3">
           <button
             onClick={() => setIsAutoCruise(prev => !prev)}
-            className={`px-3 py-1.5 rounded-lg border font-['Press_Start_2P'] text-[8px] sm:text-[9px] transition flex items-center gap-1.5 ${
+            className={`px-2.5 py-1 rounded-lg border font-['Press_Start_2P'] text-[8px] sm:text-[9px] transition flex items-center gap-1.5 ${
               isAutoCruise
                 ? 'bg-emerald-500 text-black border-emerald-300 font-bold shadow-[0_0_10px_#10b981]'
                 : 'bg-gray-900 text-gray-300 border-gray-700'
@@ -575,13 +582,13 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
             onClick={toggleSound}
             className="p-1.5 rounded-lg bg-gray-900 border border-gray-700 hover:border-yellow-400 text-gray-300"
           >
-            {soundMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
+            {soundMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
           </button>
 
           {onClose && (
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg bg-red-950/80 border border-red-500 text-red-300 hover:bg-red-900 text-xs px-2.5 font-bold"
+              className="p-1.5 rounded-lg bg-red-950/80 border border-red-500 text-red-300 hover:bg-red-900 text-xs px-2 font-bold"
             >
               ✕
             </button>
@@ -589,17 +596,17 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
         </div>
       </div>
 
-      {/* 2. FULL-CABINET MULTI-LEVEL PAC-MAN MAZE CANVAS */}
-      <div className="relative flex-1 w-full bg-[#030108] min-h-[300px] overflow-hidden flex items-center justify-center p-1 sm:p-2">
+      {/* 2. FULL 18-EVENT MAZE CANVAS */}
+      <div className="relative flex-1 w-full bg-[#030107] min-h-[260px] overflow-hidden flex items-center justify-center p-1">
         <canvas
           ref={canvasRef}
           width={1000}
-          height={410}
-          className="w-full h-full max-h-[420px] object-contain drop-shadow-[0_0_20px_rgba(59,130,246,0.35)]"
+          height={380}
+          className="w-full h-full max-h-[380px] object-contain drop-shadow-[0_0_20px_rgba(59,130,246,0.35)]"
         />
 
-        {/* Mobile touch steering */}
-        <div className="absolute right-4 bottom-4 flex items-center gap-2 sm:hidden z-20">
+        {/* Mobile touch steer buttons */}
+        <div className="absolute right-3 bottom-3 flex items-center gap-1.5 sm:hidden z-20">
           <button
             onClick={() => {
               const p = gameRef.current.pacman;
@@ -607,13 +614,13 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
               p.direction = Math.PI;
               setIsAutoCruise(false);
             }}
-            className="w-10 h-10 rounded-xl bg-blue-900/90 border-2 border-blue-400 text-white font-bold text-sm shadow-[0_0_10px_#3b82f6] active:scale-95"
+            className="w-9 h-9 rounded-xl bg-blue-900/90 border-2 border-blue-400 text-white font-bold text-sm shadow-[0_0_10px_#3b82f6]"
           >
             ◀
           </button>
           <button
             onClick={() => setIsAutoCruise(prev => !prev)}
-            className="w-10 h-10 rounded-xl bg-yellow-400 text-black font-bold text-xs shadow-[0_0_10px_#facc15] active:scale-95"
+            className="w-9 h-9 rounded-xl bg-yellow-400 text-black font-bold text-xs shadow-[0_0_10px_#facc15]"
           >
             ▶▶
           </button>
@@ -624,30 +631,65 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
               p.direction = 0;
               setIsAutoCruise(false);
             }}
-            className="w-10 h-10 rounded-xl bg-blue-900/90 border-2 border-blue-400 text-white font-bold text-sm shadow-[0_0_10px_#3b82f6] active:scale-95"
+            className="w-9 h-9 rounded-xl bg-blue-900/90 border-2 border-blue-400 text-white font-bold text-sm shadow-[0_0_10px_#3b82f6]"
           >
             ▶
           </button>
         </div>
       </div>
 
-      {/* 3. LOWER RETRO ARCADE EVENT CONSOLE */}
+      {/* 3. ALL 18 EVENTS HORIZONTAL SCHEDULE SCROLLER */}
+      <div className="flex-shrink-0 px-3 py-1.5 bg-[#060210] border-t border-blue-900/40 overflow-x-auto flex items-center gap-2">
+        <span className="font-['Press_Start_2P'] text-[7.5px] text-gray-400 whitespace-nowrap pl-1">
+          SCHEDULE ({eatenEventIds.size}/{allEvents.length} CHOMPED):
+        </span>
+        <div className="flex items-center gap-1.5 overflow-x-auto py-0.5">
+          {filteredTimelineEvents.map((ev) => {
+            const isSelected = activeEvent?.id === ev.id;
+            const isEaten = eatenEventIds.has(ev.id);
+            const tagColor = ev.day === 1 ? 'border-amber-500/60 text-amber-300' : ev.day === 2 ? 'border-cyan-500/60 text-cyan-300' : 'border-pink-500/60 text-pink-300';
+
+            return (
+              <button
+                key={ev.id}
+                onClick={() => {
+                  soundEngine.playBlip();
+                  setActiveEvent(ev);
+                }}
+                className={`flex-shrink-0 flex items-center gap-1 px-2.5 py-1 rounded-md border font-['Press_Start_2P'] text-[7.5px] transition-all ${
+                  isSelected
+                    ? 'bg-yellow-400 text-black border-yellow-300 font-bold shadow-[0_0_10px_#facc15] scale-105'
+                    : isEaten
+                    ? 'bg-emerald-950/40 border-emerald-600/50 text-emerald-300'
+                    : `bg-black/50 ${tagColor} hover:border-white hover:text-white`
+                }`}
+              >
+                <span>{isEaten ? '✓' : '•'}</span>
+                <span className="truncate max-w-[100px]">{ev.title}</span>
+                <span className="text-[6.5px] opacity-75">D{ev.day}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 4. ACTIVE EVENT CONSOLE */}
       {activeEvent && (
-        <div className="flex-shrink-0 p-3 sm:p-4 bg-gradient-to-b from-[#080214] to-[#030108] border-t-2 border-yellow-500/50">
+        <div className="flex-shrink-0 p-3 sm:p-4 bg-gradient-to-b from-[#080214] to-[#030107] border-t-2 border-yellow-500/50">
           <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
             
             {/* Left: Event Details */}
             <div className="flex-1 w-full text-left">
               <div className="flex items-center gap-2 mb-1">
-                <span className="px-2 py-0.5 rounded font-['Press_Start_2P'] text-[8px] bg-yellow-400 text-black font-bold uppercase">
-                  {activeEvent.category}
+                <span className="px-2 py-0.5 rounded font-['Press_Start_2P'] text-[7.5px] bg-yellow-400 text-black font-bold uppercase">
+                  DAY {activeEvent.day} • {activeEvent.category}
                 </span>
                 <span className="flex items-center gap-1 text-xs text-yellow-300 font-semibold">
-                  <Clock size={12} className="text-yellow-400" />
+                  <Clock size={11} className="text-yellow-400" />
                   <span>{activeEvent.time}</span>
                 </span>
                 <span className="flex items-center gap-1 text-xs text-pink-400 font-semibold ml-2">
-                  <MapPin size={12} className="text-pink-400" />
+                  <MapPin size={11} className="text-pink-400" />
                   <span>{activeEvent.venue}</span>
                 </span>
               </div>
@@ -668,7 +710,7 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
                   href={activeEvent.registrationLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-black font-['Press_Start_2P'] text-[9px] font-bold shadow-[0_0_20px_rgba(250,204,21,0.6)] transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-black font-['Press_Start_2P'] text-[8.5px] font-bold shadow-[0_0_20px_rgba(250,204,21,0.6)] transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
                 >
                   <span>REGISTER ON UNSTOP</span>
                   <ExternalLink size={13} />
@@ -679,8 +721,8 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
         </div>
       )}
 
-      {/* 4. BOTTOM ACTION STRIP */}
-      <div className="flex-shrink-0 flex items-center justify-between px-3 sm:px-6 py-2 bg-[#05010c] border-t border-purple-900/60">
+      {/* 5. BOTTOM ACTION STRIP */}
+      <div className="flex-shrink-0 flex items-center justify-between px-3 sm:px-6 py-2 bg-[#05010a] border-t border-purple-900/60">
         <button
           onClick={onBackToMap}
           className="px-3 py-1.5 rounded-lg bg-gray-900 border border-gray-700 hover:border-gray-500 text-gray-300 font-['Press_Start_2P'] text-[8px] sm:text-[9px]"
@@ -689,7 +731,7 @@ export function PacmanScheduleMaze({ onAdvanceStage, onClose, onBackToMap }) {
         </button>
 
         <span className="hidden sm:inline font-['Press_Start_2P'] text-[8px] text-gray-400">
-          PAC-MAN CHOMPING FESTIVAL SCHEDULE • DAY {selectedDay}
+          PAC-MAN LIVE 18-EVENT MAZE • REVERIE 2K27
         </span>
 
         <button
