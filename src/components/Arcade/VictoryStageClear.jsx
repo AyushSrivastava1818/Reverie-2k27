@@ -1,155 +1,223 @@
 import React, { useEffect } from 'react';
-import { Trophy, Award, Sparkles, ExternalLink, ArrowRight, RotateCcw, Share2, Castle, CheckCircle2 } from 'lucide-react';
 import { soundEngine } from '../../game/systems/SoundEngine';
-import { achievementSystem } from '../../game/systems/AchievementSystem';
 import confetti from 'canvas-confetti';
 
-export function VictoryStageClear({ onRestartQuest, onEnterWorld, onOpenDirectory }) {
+export function VictoryStageClear({ onRestartQuest, onEnterWorld, onOpenDirectory, onClose, onBackToMap }) {
   useEffect(() => {
     soundEngine.playFanfare();
-    achievementSystem.recordStageClear();
-
-    // Trigger double celebratory confetti salvo
     try {
       confetti({
-        particleCount: 100,
-        spread: 100,
-        origin: { y: 0.4 },
-        colors: ['#f43f5e', '#06b6d4', '#eab308', '#a855f7', '#10b981']
+        particleCount: 150,
+        spread: 120,
+        origin: { y: 0.35 },
+        colors: ['#ef4444', '#3b82f6', '#facc15', '#10b981', '#ec4899', '#a855f7']
       });
-
-      setTimeout(() => {
-        confetti({
-          particleCount: 80,
-          spread: 120,
-          origin: { y: 0.3 },
-          colors: ['#fbbf24', '#f472b6', '#38bdf8']
-        });
-      }, 600);
     } catch (e) {}
   }, []);
 
   return (
-    <div className="relative w-full h-full flex flex-col justify-between p-3 sm:p-5 bg-gradient-to-b from-[#110526] via-[#1a083a] to-[#090215] text-white select-none overflow-y-auto">
+    <div className="relative w-full h-full flex flex-col justify-between p-3 sm:p-5 bg-gradient-to-b from-[#090518] via-[#0d0722] to-[#05020c] font-pixel text-white select-none overflow-y-auto">
       
-      {/* Top Banner (Matching Reference 22.11.18 (2).jpeg) */}
-      <div className="flex items-center justify-between gap-2 px-3 py-1.5 rounded-xl bg-[#250d4d] border border-yellow-400/80 shadow-[0_0_20px_rgba(250,204,21,0.4)]">
-        <div className="flex items-center gap-2">
-          <span className="px-2 py-0.5 rounded-md bg-yellow-400 text-black font-display text-[10px] font-black tracking-widest">
-            STAGE 05
+      {/* ------------------------------------------------------------- */}
+      {/* HEADER: STAGES CLEARED! SPONSORS REVEALED! (Ref: 22.11.16.jpeg)*/}
+      {/* ------------------------------------------------------------- */}
+      <div className="flex flex-col items-center text-center pt-1 pb-2 shrink-0">
+        <h1 className="font-pixel text-3xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-rose-400 to-cyan-400 tracking-wider drop-shadow-[0_0_20px_rgba(244,63,94,0.9)]">
+          STAGES CLEARED!
+        </h1>
+        <span className="font-pixel text-xs sm:text-base text-yellow-300 tracking-widest uppercase mt-1 font-black drop-shadow">
+          SPONSORS REVEALED!
+        </span>
+      </div>
+
+      {/* ------------------------------------------------------------- */}
+      {/* MAIN VIEW: SPONSOR FLAGPOLES (LEFT) & OUR SPONSORS CASTLE (RIGHT)*/}
+      {/* ------------------------------------------------------------- */}
+      <div className="flex-1 my-auto grid grid-cols-1 md:grid-cols-12 gap-5 max-w-5xl mx-auto w-full items-stretch py-2">
+        
+        {/* Left Box: SPONSOR FLAGPOLES with Mario Sliding Down */}
+        <div className="md:col-span-5 p-4 sm:p-5 rounded-2xl bg-[#140b2a] border-3 border-cyan-500/80 shadow-[0_0_25px_rgba(6,182,212,0.4)] flex flex-col justify-between">
+          <div className="w-full text-center pb-2 border-b-2 border-purple-800">
+            <span className="font-pixel text-xs sm:text-sm text-white font-black tracking-wider uppercase">
+              SPONSOR FLAGPOLES
+            </span>
+          </div>
+
+          {/* Flagpole Centerpiece */}
+          <div className="relative flex-1 my-4 flex items-center justify-center">
+            {/* Green Flagpole */}
+            <div className="relative w-5 h-72 sm:h-80 bg-gradient-to-r from-emerald-500 via-green-400 to-emerald-700 rounded-t-full border-2 border-emerald-300 flex flex-col justify-between items-center shadow-[0_0_15px_rgba(16,185,129,0.5)]">
+              {/* Golden Super Star on Top */}
+              <div className="w-12 h-12 -mt-7 text-3xl flex items-center justify-center animate-spin" style={{ animationDuration: '6s' }}>
+                ⭐
+              </div>
+
+              {/* Platinum Tier Marker */}
+              <div className="absolute top-16 -left-28 flex items-center gap-2">
+                <span className="px-2 py-0.5 rounded bg-white text-black text-[8px] font-black shadow">LG</span>
+                <span className="text-[10px] font-pixel text-slate-300 font-black">PLATINUM</span>
+                <span className="text-[10px] font-pixel text-cyan-300">+5000</span>
+              </div>
+
+              {/* Sliding Pixel Mario with Sparkles on Flagpole */}
+              <div className="absolute top-24 -left-7 flex items-center">
+                <svg width="40" height="48" viewBox="0 0 24 30" className="filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+                  <rect x="6" y="2" width="12" height="4" fill="#dc2626" />
+                  <rect x="4" y="4" width="16" height="3" fill="#dc2626" />
+                  <rect x="6" y="7" width="10" height="5" fill="#fde047" />
+                  <rect x="14" y="8" width="4" height="3" fill="#fde047" />
+                  <rect x="12" y="8" width="2" height="2" fill="#000000" />
+                  <rect x="6" y="9" width="3" height="4" fill="#582c03" />
+                  <rect x="11" y="10" width="7" height="2" fill="#582c03" />
+                  <rect x="7" y="13" width="10" height="6" fill="#dc2626" />
+                  <rect x="8" y="15" width="8" height="7" fill="#2563eb" />
+                  <rect x="2" y="22" width="6" height="4" rx="1.5" fill="#582c03" />
+                  <rect x="14" y="22" width="6" height="4" rx="1.5" fill="#582c03" />
+                </svg>
+                <span className="text-yellow-300 text-base animate-ping ml-1">✨</span>
+              </div>
+
+              {/* Gold Tier Marker */}
+              <div className="absolute top-44 -left-24 flex items-center gap-2">
+                <span className="text-[10px] font-pixel text-amber-300 font-black">GOLD</span>
+                <span className="text-[10px] font-pixel text-yellow-300">+2000</span>
+              </div>
+
+              {/* Silver Tier Marker */}
+              <div className="absolute top-64 -left-24 flex items-center gap-2">
+                <span className="text-[10px] font-pixel text-slate-400 font-black">SILVER</span>
+                <span className="text-[10px] font-pixel text-slate-300">+1000</span>
+              </div>
+
+              {/* Base block */}
+              <div className="w-16 h-6 bg-emerald-800 rounded-sm border-2 border-emerald-400 shadow" />
+            </div>
+          </div>
+        </div>
+
+        {/* Right Box: OUR SPONSORS / CASTLE + BONUS ITEMS */}
+        <div className="md:col-span-7 p-4 sm:p-5 rounded-2xl bg-[#140b2a] border-3 border-cyan-500/80 shadow-[0_0_25px_rgba(6,182,212,0.4)] flex flex-col justify-between">
+          <div className="w-full text-center pb-2 border-b-2 border-purple-800">
+            <span className="font-pixel text-xs sm:text-sm text-white font-black tracking-wider uppercase">
+              OUR SPONSORS / CASTLE
+            </span>
+          </div>
+
+          {/* Castle with Sponsor Flags & Speech Bubble */}
+          <div className="relative my-3 flex items-center justify-center">
+            {/* Pixel Castle Fortress */}
+            <div className="w-72 sm:w-96 h-44 sm:h-52 bg-[#94a3b8] border-3 border-zinc-700 rounded-t-xl flex flex-col justify-between p-3 relative shadow-2xl">
+              {/* Flags flying on towers with Sponsor Badges */}
+              <div className="absolute -top-8 left-4 right-4 flex items-center justify-between">
+                <div className="flex items-center gap-1">
+                  <span className="text-lg animate-pulse">🚩</span>
+                  <span className="px-1.5 py-0.5 rounded bg-white text-black text-[7px] font-bold border shadow">GOOGLE</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="text-lg animate-pulse">🚩</span>
+                  <span className="px-1.5 py-0.5 rounded bg-white text-black text-[7px] font-bold border shadow">REPLIT</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="text-lg animate-pulse">🚩</span>
+                  <span className="px-1.5 py-0.5 rounded bg-white text-black text-[7px] font-bold border shadow">SOLANA</span>
+                </div>
+              </div>
+
+              {/* Title Sponsor Plaque on Castle Front */}
+              <div className="self-center mt-2 px-5 py-1.5 bg-white rounded-lg border-2 border-black text-black text-xs font-pixel font-black shadow-md">
+                ★ REVERIE 2K27 CASTLE ★
+              </div>
+
+              {/* Castle Wooden Portcullis Gate */}
+              <div className="self-center w-20 h-22 bg-[#451a03] border-t-3 border-x-3 border-zinc-900 rounded-t-full shadow-inner flex items-center justify-center">
+                <span className="text-xs">🚪</span>
+              </div>
+            </div>
+
+            {/* Authentic Pixel Toad / Mascot on the Right with Speech Bubble */}
+            <div className="absolute right-2 bottom-1 flex flex-col items-center">
+              <div className="px-3 py-1 bg-white text-black text-[8px] sm:text-[9px] font-pixel font-black rounded-lg shadow-lg mb-1 border border-zinc-300">
+                THANK YOU, SPONSORS!
+              </div>
+              <svg width="40" height="46" viewBox="0 0 24 28" className="filter drop-shadow animate-bounce">
+                <ellipse cx="12" cy="9" rx="11" ry="8" fill="#ffffff" stroke="#e2e8f0" strokeWidth="1" />
+                <circle cx="12" cy="7" r="3.5" fill="#dc2626" />
+                <circle cx="4" cy="10" r="2.5" fill="#dc2626" />
+                <circle cx="20" cy="10" r="2.5" fill="#dc2626" />
+                <ellipse cx="12" cy="16" rx="6" ry="4" fill="#fde047" />
+                <rect x="9" y="15" width="1.5" height="2.5" fill="#000" />
+                <rect x="13.5" y="15" width="1.5" height="2.5" fill="#000" />
+                <rect x="7" y="20" width="10" height="6" rx="2" fill="#2563eb" />
+                <rect x="10" y="20" width="4" height="6" fill="#facc15" />
+                <rect x="6" y="25" width="4" height="3" rx="1" fill="#78350f" />
+                <rect x="14" y="25" width="4" height="3" rx="1" fill="#78350f" />
+              </svg>
+            </div>
+          </div>
+
+          {/* BONUS ITEMS: 8 Item Slots (Ref: 22.11.16.jpeg) */}
+          <div className="pt-3 border-t-2 border-purple-800">
+            <span className="text-[10px] font-pixel text-yellow-300 block text-center mb-2 font-bold">
+              BONUS ITEMS UNLOCKED:
+            </span>
+            <div className="grid grid-cols-4 sm:grid-cols-8 gap-2.5">
+              {[
+                { icon: '🪙', label: 'COIN' },
+                { icon: '⭐', label: 'STAR' },
+                { icon: '🍄', label: 'POWER' },
+                { icon: '🍄', label: '1UP' },
+                { icon: '🎟️', label: 'VIP PASS' },
+                { icon: '🏆', label: 'TROPHY' },
+                { icon: '🎮', label: 'ARCADE' },
+                { icon: '👑', label: 'ROYALTY' }
+              ].map((item, i) => (
+                <div key={i} className="p-2 rounded-xl bg-[#090314] border-2 border-cyan-400/70 flex flex-col items-center justify-center shadow">
+                  <span className="text-xl">{item.icon}</span>
+                  <span className="text-[7px] font-pixel text-slate-300 mt-1 truncate">{item.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ------------------------------------------------------------- */}
+      {/* BOTTOM CONSOLE: METAL FINISH, PREV, SCORES, CONTINUE          */}
+      {/* ------------------------------------------------------------- */}
+      <div className="flex items-center justify-between pt-3 border-t-2 border-purple-900/60 mt-1 shrink-0">
+        <div className="flex items-center gap-3">
+          <span className="text-[9px] sm:text-[10px] font-pixel text-red-500 font-black">
+            SPONSORS ACTIVE
           </span>
-          <h2 className="font-display text-xs sm:text-sm font-black text-yellow-300 tracking-wider">
-            ALL STAGES CLEARED • FESTIVAL ACCESS GRANTED
-          </h2>
-        </div>
-        <div className="flex items-center gap-1 text-emerald-400 text-xs font-mono font-bold">
-          <CheckCircle2 size={14} />
-          <span>QUEST 100% COMPLETE</span>
-        </div>
-      </div>
-
-      {/* Centerpiece: Pixel Castle & Flagpole Celebration */}
-      <div className="flex-1 my-3 flex flex-col items-center justify-center max-w-2xl mx-auto w-full text-center">
-        
-        {/* Flagpole & Castle Stage Art */}
-        <div className="relative w-64 h-44 sm:h-52 flex items-end justify-center mb-2">
-          
-          {/* Distant celebratory fireworks */}
-          <div className="absolute top-2 left-6 text-2xl animate-ping opacity-80">✨</div>
-          <div className="absolute top-6 right-8 text-2xl animate-ping opacity-80" style={{ animationDelay: '300ms' }}>🎆</div>
-          <div className="absolute top-1 left-32 text-xl animate-bounce text-yellow-300">⭐</div>
-
-          {/* Castle */}
-          <div className="relative z-10 w-44 h-36 bg-gradient-to-b from-[#2e145f] via-[#210d47] to-[#120629] border-2 border-yellow-400/80 rounded-t-2xl shadow-[0_0_30px_rgba(250,204,21,0.5)] flex flex-col items-center justify-between p-2">
-            {/* Castle Battlements */}
-            <div className="flex items-center gap-2 -mt-4">
-              <div className="w-5 h-4 bg-yellow-400 border border-amber-500 rounded-t-sm" />
-              <div className="w-5 h-4 bg-yellow-400 border border-amber-500 rounded-t-sm" />
-              <div className="w-5 h-4 bg-yellow-400 border border-amber-500 rounded-t-sm" />
-            </div>
-
-            {/* Castle Flag with Reverie 2K27 */}
-            <div className="flex flex-col items-center">
-              <span className="text-[10px] font-mono font-bold text-yellow-300">🏰 REVERIE</span>
-              <span className="text-[8px] font-mono text-purple-300">2K27 PIXELVERSE</span>
-            </div>
-
-            {/* Castle Arched Gate */}
-            <div className="w-14 h-16 rounded-t-full bg-black border-2 border-purple-500 flex items-center justify-center">
-              <span className="text-xl animate-pulse">👑</span>
-            </div>
-          </div>
-
-          {/* Flagpole on the Right */}
-          <div className="relative z-20 w-1.5 h-44 bg-zinc-400 -ml-2 rounded-t-full flex flex-col justify-between items-center">
-            {/* Golden Flagpole Ball */}
-            <div className="w-4 h-4 rounded-full bg-yellow-400 border border-amber-300 shadow-[0_0_10px_#facc15] -mt-2 shrink-0" />
-            
-            {/* Reverie Flag sliding down */}
-            <div className="absolute top-8 left-1.5 px-2 py-0.5 bg-pink-500 text-white font-mono text-[8px] font-black rounded-r shadow-md">
-              CLEAR!
-            </div>
-
-            {/* Mario at the bottom */}
-            <div className="text-3xl filter drop-shadow -mb-1 transform scale-x-[-1]">
-              🧑‍🔧
-            </div>
-          </div>
+          <span className="text-[9px] sm:text-[10px] font-pixel text-yellow-300 font-black">
+            VISIT STAGES
+          </span>
         </div>
 
-        {/* Victory Headline */}
-        <h3 className="font-display text-lg sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-pink-400 to-cyan-300 tracking-wider mb-1">
-          CONGRATULATIONS, CHAMPION!
-        </h3>
-        
-        <p className="text-xs sm:text-sm text-purple-200/90 max-w-md mx-auto mb-3">
-          You have conquered all stages of the Retro Arcade Festival Quest! Your VIP pass to IIIT Kota's REVERIE 2K27 is officially authorized.
-        </p>
+        <div className="flex items-center gap-3">
+          {onBackToMap && (
+            <button
+              onClick={onBackToMap}
+              className="px-4 py-2.5 rounded-xl bg-purple-950 hover:bg-purple-900 border-2 border-purple-400 text-yellow-300 font-pixel text-xs font-black uppercase shadow cursor-pointer active:translate-y-1"
+            >
+              ← WORLD MAP
+            </button>
+          )}
 
-        {/* Quest Rewards Summary Card */}
-        <div className="grid grid-cols-3 gap-2 w-full max-w-md p-2.5 rounded-xl bg-[#240e4e]/90 border border-yellow-400/60 shadow-lg mb-2">
-          <div className="flex flex-col items-center">
-            <span className="text-[8px] font-mono text-purple-300 uppercase font-bold">STAGES</span>
-            <span className="font-display text-base font-black text-emerald-400">5 / 5</span>
-          </div>
-          <div className="flex flex-col items-center border-x border-purple-700">
-            <span className="text-[8px] font-mono text-purple-300 uppercase font-bold">QUEST SCORE</span>
-            <span className="font-display text-base font-black text-yellow-300">12,500</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <span className="text-[8px] font-mono text-purple-300 uppercase font-bold">STATUS</span>
-            <span className="font-display text-xs font-black text-cyan-300 mt-1">VIP UNLOCKED</span>
-          </div>
+          <button
+            onClick={onRestartQuest}
+            className="px-5 py-2.5 rounded-xl bg-[#3f3f46] hover:bg-[#52525b] border-2 border-zinc-400 text-white font-pixel text-xs font-black uppercase shadow cursor-pointer active:translate-y-1"
+          >
+            PREV
+          </button>
+
+          <button
+            onClick={onOpenDirectory}
+            className="px-7 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 border-2 border-white text-black font-pixel text-xs font-black uppercase tracking-wider shadow-[0_4px_0_#065f46] hover:scale-105 active:translate-y-1 cursor-pointer"
+          >
+            CONTINUE
+          </button>
         </div>
-      </div>
-
-      {/* Action CTA Buttons */}
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-2 max-w-xl mx-auto w-full">
-        <a
-          href="https://unstop.com"
-          target="_blank"
-          rel="noreferrer"
-          className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 text-white font-display text-xs font-black tracking-widest uppercase border-2 border-pink-200 shadow-[0_4px_0_#831843,0_0_20px_rgba(244,63,94,0.6)] hover:scale-105 active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"
-        >
-          <span>REGISTER ON UNSTOP</span>
-          <ExternalLink size={14} />
-        </a>
-
-        <button
-          onClick={onOpenDirectory}
-          className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-display text-xs font-black tracking-widest uppercase border border-cyan-300 shadow hover:scale-105 active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"
-        >
-          <span>VIEW 18 EVENTS</span>
-          <ArrowRight size={14} />
-        </button>
-
-        <button
-          onClick={onRestartQuest}
-          className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-purple-900/80 hover:bg-purple-800 text-purple-200 font-display text-xs font-bold border border-purple-500 cursor-pointer flex items-center justify-center gap-1"
-        >
-          <RotateCcw size={14} />
-          <span>REPLAY QUEST</span>
-        </button>
       </div>
     </div>
   );

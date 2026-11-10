@@ -260,3 +260,4 @@ export function EventClawMachine({ onSelectEvent, onClose }) {
     </div>
   );
 }
+

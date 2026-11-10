@@ -43,6 +43,7 @@ export function App() {
   const [arcadeOpen, setArcadeOpen] = useState(false);
   const [arcadeAdventureOpen, setArcadeAdventureOpen] = useState(false);
   const [arcadeAdventureStage, setArcadeAdventureStage] = useState(1);
+  const [arcadeAdventureView, setArcadeAdventureView] = useState('world-map');
   const [kotaBotState, setKotaBotState] = useState({ open: false, zone: 'StartingKingdomScene', sceneName: 'Starting Kingdom' });
 
   // Proximity flags for mobile action button
@@ -55,9 +56,10 @@ export function App() {
     setDirectoryOpen(true);
   };
 
-  const handleOpenArcadeAdventure = (stage = 1) => {
+  const handleOpenArcadeAdventure = (stage = 1, view = 'world-map') => {
     soundEngine.playFanfare();
     setArcadeAdventureStage(stage || 1);
+    setArcadeAdventureView(view || 'world-map');
     setArcadeAdventureOpen(true);
   };
 
@@ -385,6 +387,7 @@ export function App() {
       {arcadeAdventureOpen && (
         <ArcadeAdventureModal
           initialStage={arcadeAdventureStage}
+          initialView={arcadeAdventureView}
           onClose={() => setArcadeAdventureOpen(false)}
           onSelectEvent={(ev) => {
             setArcadeAdventureOpen(false);

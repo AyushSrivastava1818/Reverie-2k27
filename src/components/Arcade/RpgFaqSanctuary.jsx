@@ -1,68 +1,52 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, MessageSquare, ChevronRight, Award, HelpCircle, CheckCircle2 } from 'lucide-react';
 import { soundEngine } from '../../game/systems/SoundEngine';
-import { achievementSystem } from '../../game/systems/AchievementSystem';
 
-const FAQ_ITEMS = [
+const RPG_FAQS = [
   {
     id: 1,
-    question: 'WHAT IS REVERIE 2K27?',
-    answer: 'Greetings Traveler! REVERIE 2K27 is the annual flagship techno-cultural festival of IIIT Kota. It is an immersive 3-day convergence of 18 premier competitions, national hackathons, robotic wars, cultural spectacles, and star pronites uniting 3,000+ collegiate innovators.'
+    question: "WHAT IS REVERIE 2K27?",
+    answer: "REVERIE 2K27 is the annual flagship techno-cultural festival of IIIT Kota! An immersive convergence of 18 premier competitions, national hackathons, robotic wars, cultural spectacles and star pronites uniting collegiate innovators nationwide."
   },
   {
     id: 2,
-    question: 'HOW DO I REGISTER FOR EVENTS?',
-    answer: 'Direct your parchment to Unstop! All flagship hackathons, coding contests, robo wars, and quizzes have active portals on Unstop. Simply select an event card in the Pixelverse or Event Directory to launch the direct registration link.'
+    question: "HOW DO I REGISTER?",
+    answer: "Direct your parchment to Unstop! All flagship hackathons, coding contests, robo wars, and quizzes have active portals on Unstop. Simply select any event card in the Pixelverse to open its registration portal."
   },
   {
     id: 3,
-    question: 'IS THERE AN ENTRY TICKET OR REGISTRATION FEE?',
-    answer: 'General campus entry to the festival zones and spectator exhibitions is FREE for verified students with valid college ID. Specific competitive tournaments (like HackTheChain or Esports) have dedicated team slot allocations on Unstop.'
+    question: "IS THERE A TICKET?",
+    answer: "General campus entry to festival exhibitions and spectator zones is 100% FREE for all verified students with valid college ID. Specific tournament slots (such as HackTheChain) have team registration allocations on Unstop."
   },
   {
     id: 4,
-    question: 'WHERE IS THE VENUE & HOW TO REACH?',
-    answer: 'The mystical grounds are located at Indian Institute of Information Technology Kota (IIIT Kota Permanent Campus), Ranpur, Kota, Rajasthan - 325003. Shuttle connections and transit assistance run from Kota Junction Railway Station.'
+    question: "WHERE IS THE VENUE?",
+    answer: "The mystical festival grounds are located at Indian Institute of Information Technology Kota (IIIT Kota Permanent Campus), Ranpur, Kota, Rajasthan - 325003. Transit assistance is coordinated from Kota Junction Railway Station."
   },
   {
     id: 5,
-    question: 'CAN STUDENTS FROM ANY COLLEGE PARTICIPATE?',
-    answer: 'Aye! Reverie welcomes undergraduate and postgraduate students from all recognized universities, colleges, and technical institutes across India. Inter-college teams are permitted for select hackathons and esports tournaments.'
-  },
-  {
-    id: 6,
-    question: 'WHAT ARE THE TOTAL CASH PRIZES & REWARDS?',
-    answer: 'A treasure hoard exceeding ₹2,50,000+ in hard cash bounties, developer grants, trophy shields, official certificates of excellence, and sponsor swag awaits the champions of the 5 kingdoms!'
-  },
-  {
-    id: 7,
-    question: 'HOW DO I CONTACT THE ORGANIZING COMMITTEE?',
-    answer: 'Reach out to the TechKnow Council and Reverie Secretariat! Connect with Student Convenor Shivang Singh (82798 16830), Virag Jain (63760 69193), or dispatch an electronic raven to reverie@iiitkota.ac.in.'
+    question: "WHAT ARE THE CASH PRIZES?",
+    answer: "A treasure hoard exceeding ₹2,50,000+ in cash bounties, developer grants, trophy shields, certificates of excellence, and sponsor swag awaits champions across all 5 living kingdoms!"
   }
 ];
 
-export function RpgFaqSanctuary({ onAdvanceStage }) {
-  const [activeQuestionId, setActiveQuestionId] = useState(1);
-  const [displayedText, setDisplayedText] = useState('');
+export function RpgFaqSanctuary({ onAdvanceStage, onClose, onBackToMap }) {
+  const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
+  const [displayedAnswer, setDisplayedAnswer] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [exploredIds, setExploredIds] = useState(new Set([1]));
 
-  const currentFaq = FAQ_ITEMS.find(f => f.id === activeQuestionId) || FAQ_ITEMS[0];
+  const currentFaq = RPG_FAQS[activeQuestionIndex] || RPG_FAQS[0];
 
-  // Typewriter effect
   useEffect(() => {
-    setDisplayedText('');
+    setDisplayedAnswer('');
     setIsTyping(true);
     let index = 0;
-    const fullText = currentFaq.answer;
+    const text = currentFaq.answer;
 
     const timer = setInterval(() => {
       index++;
-      if (index <= fullText.length) {
-        setDisplayedText(fullText.slice(0, index));
-        if (index % 5 === 0) {
-          soundEngine.playBlip();
-        }
+      if (index <= text.length) {
+        setDisplayedAnswer(text.slice(0, index));
+        if (index % 4 === 0) soundEngine.playBlip();
       } else {
         setIsTyping(false);
         clearInterval(timer);
@@ -70,164 +54,158 @@ export function RpgFaqSanctuary({ onAdvanceStage }) {
     }, 18);
 
     return () => clearInterval(timer);
-  }, [activeQuestionId]);
+  }, [activeQuestionIndex]);
 
-  const selectQuestion = (id) => {
+  const selectQuestion = (index) => {
     soundEngine.playBlip();
-    setActiveQuestionId(id);
-    setExploredIds(prev => new Set([...prev, id]));
-    achievementSystem.recordCoinReward(5);
+    setActiveQuestionIndex(index);
   };
 
-  const nextQuestion = () => {
-    const nextId = activeQuestionId >= FAQ_ITEMS.length ? 1 : activeQuestionId + 1;
-    selectQuestion(nextId);
+  const handleNextQuestion = () => {
+    soundEngine.playBlip();
+    setActiveQuestionIndex(i => (i + 1) % RPG_FAQS.length);
   };
 
   return (
-    <div className="relative w-full h-full flex flex-col justify-between p-2 sm:p-4 bg-gradient-to-b from-[#140828] via-[#0d051d] to-[#070210] text-white select-none overflow-y-auto">
+    <div className="relative w-full h-full flex flex-col items-center justify-between p-3 sm:p-6 bg-gradient-to-b from-[#140828] via-[#0d051c] to-[#06020e] font-pixel text-white select-none overflow-y-auto">
       
-      {/* Top Title Bar (Matching Reference 22.11.18.jpeg) */}
-      <div className="flex items-center justify-between gap-2 px-3 py-1.5 rounded-xl bg-[#1d0b38] border border-purple-500/60 shadow-md">
-        <div className="flex items-center gap-2">
-          <span className="px-2 py-0.5 rounded-md bg-purple-600 text-white font-display text-[10px] font-black tracking-widest">
-            STAGE 04
-          </span>
-          <h2 className="font-display text-xs sm:text-sm font-black text-white tracking-wider">
-            SAGE'S SANCTUARY: FESTIVAL FAQS
-          </h2>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <span className="font-mono text-[10px] text-yellow-300 font-bold">
-            EXPLORED: {exploredIds.size} / {FAQ_ITEMS.length}
-          </span>
-        </div>
-      </div>
-
-      {/* Main Sanctuary Chamber: Wizard on Left, Questions on Right */}
-      <div className="flex-1 my-2 grid grid-cols-1 md:grid-cols-12 gap-3 items-center max-w-4xl mx-auto w-full">
-        
-        {/* Left Column: Pixel Wizard / Game Master */}
-        <div className="md:col-span-5 flex flex-col items-center justify-center p-3 rounded-2xl bg-gradient-to-b from-[#230d45] to-[#120626] border-2 border-purple-400/60 shadow-lg relative overflow-hidden">
-          
-          {/* Pulsing magic ambient background */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-cyan-500/20 via-transparent to-transparent pointer-events-none animate-pulse" />
-
-          {/* Wizard Graphic & Orb */}
-          <div className="relative w-36 h-40 flex items-center justify-center my-1">
-            {/* Pulsing Glowing Crystal Orb on Staff */}
-            <div className="absolute top-2 right-4 w-7 h-7 rounded-full bg-cyan-400 shadow-[0_0_25px_#22d3ee] animate-ping opacity-75" />
-            <div className="absolute top-2 right-4 w-7 h-7 rounded-full bg-cyan-300 shadow-[0_0_20px_#22d3ee] flex items-center justify-center">
-              <Sparkles size={14} className="text-white animate-spin" />
-            </div>
-
-            {/* Wooden Staff */}
-            <div className="absolute top-6 right-7 w-1.5 h-32 bg-amber-800 rounded-sm shadow-md" />
-
-            {/* Wizard Avatar */}
-            <div className="text-6xl filter drop-shadow-[0_0_15px_rgba(168,85,247,0.7)] animate-bounce" style={{ animationDuration: '3s' }}>
-              🧙‍♂️
-            </div>
-          </div>
-
-          <div className="text-center mt-1">
-            <span className="font-display text-sm font-black text-purple-200 tracking-wider block">
-              THE GRAND SAGE
-            </span>
-            <span className="font-mono text-[9px] text-cyan-300 uppercase font-bold">
-              KEEPER OF REVERIE LORE
-            </span>
-          </div>
-        </div>
-
-        {/* Right Column: Question Selection Menu */}
-        <div className="md:col-span-7 flex flex-col justify-between space-y-1.5">
-          <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-[#1c0b38] border border-purple-500/40">
-            <HelpCircle size={14} className="text-yellow-400" />
-            <span className="font-display text-[10px] sm:text-xs font-black text-yellow-300 tracking-wider uppercase">
-              SELECT A QUESTION TO CONSULT THE SAGE:
-            </span>
-          </div>
-
-          <div className="space-y-1 max-h-52 overflow-y-auto pr-1">
-            {FAQ_ITEMS.map((faq) => {
-              const isSelected = activeQuestionId === faq.id;
-              const isExplored = exploredIds.has(faq.id);
-
-              return (
-                <button
-                  key={faq.id}
-                  onClick={() => selectQuestion(faq.id)}
-                  className={`w-full text-left p-2 rounded-xl transition-all flex items-center justify-between gap-2 cursor-pointer border ${
-                    isSelected
-                      ? 'bg-gradient-to-r from-purple-800 to-indigo-900 border-cyan-400 text-white shadow-[0_0_15px_rgba(6,182,212,0.4)] scale-101'
-                      : 'bg-[#15072c] border-purple-900/60 text-purple-200/90 hover:bg-[#200c3f] hover:border-purple-500'
-                  }`}
-                >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span className="font-mono text-[10px] text-cyan-400 font-bold shrink-0">
-                      #{faq.id}
-                    </span>
-                    <span className="font-display text-[10px] sm:text-[11px] font-bold truncate">
-                      {faq.question}
-                    </span>
-                  </div>
-
-                  {isExplored && (
-                    <CheckCircle2 size={12} className="text-emerald-400 shrink-0" />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom RPG Typewriter Speech Bubble Box (Matching Reference 22.11.18.jpeg) */}
-      <div className="relative max-w-4xl w-full mx-auto rounded-2xl bg-gradient-to-b from-[#1c0b38] via-[#120626] to-[#0a0316] border-2 border-purple-400/80 p-3 sm:p-4 shadow-2xl flex flex-col justify-between">
-        
-        {/* Speaker Name Tag */}
-        <div className="flex items-center justify-between border-b border-purple-800 pb-1.5 mb-2">
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full bg-pink-950 border border-pink-400 text-pink-300 font-display text-[10px] font-black tracking-widest uppercase">
-              SPEECH: GAME MASTER
-            </span>
-            <span className="font-mono text-[10px] text-yellow-300 font-bold">
-              TOPIC #{activeQuestionId}
-            </span>
-          </div>
-
-          {isTyping && (
-            <span className="font-mono text-[9px] text-cyan-300 animate-pulse font-bold">
-              ✦ SAGE IS SPEAKING...
-            </span>
+      {/* ------------------------------------------------------------- */}
+      {/* HUGE 3D PIXEL HEADLINE: FAQ (Ref: 22.11.18.jpeg)              */}
+      {/* ------------------------------------------------------------- */}
+      <div className="flex items-center justify-between w-full max-w-4xl pt-1 pb-2 shrink-0">
+        <div>
+          {onBackToMap && (
+            <button
+              onClick={onBackToMap}
+              className="px-3 py-1.5 rounded-xl bg-purple-950 border border-purple-400 text-yellow-300 text-[8px] sm:text-[9px] font-black cursor-pointer hover:bg-purple-900"
+            >
+              ← WORLD MAP
+            </button>
           )}
         </div>
-
-        {/* Typewriter Text Content */}
-        <p className="text-xs sm:text-sm text-slate-100 font-mono leading-relaxed min-h-[48px]">
-          "{displayedText}"
-          {isTyping && <span className="inline-block w-1.5 h-3 bg-cyan-400 ml-1 animate-pulse" />}
-        </p>
-
-        {/* Navigation Action Buttons */}
-        <div className="flex items-center justify-between pt-2 border-t border-purple-800/80 mt-2">
+        <h1 className="font-pixel text-5xl sm:text-7xl font-black text-[#22d3ee] tracking-widest drop-shadow-[5px_5px_0_#7c3aed]">
+          FAQ
+        </h1>
+        {onClose ? (
           <button
-            onClick={nextQuestion}
-            className="px-3 py-1.5 rounded-lg bg-purple-900 hover:bg-purple-800 text-purple-200 border border-purple-400 font-display text-xs font-bold tracking-wider uppercase flex items-center gap-1 cursor-pointer"
+            onClick={onClose}
+            className="px-3 py-1.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-[9px] font-black cursor-pointer"
           >
-            <span>NEXT QUESTION</span>
-            <ChevronRight size={14} />
+            ✕
           </button>
+        ) : <div className="w-10" />}
+      </div>
 
-          <button
-            onClick={onAdvanceStage}
-            className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-display text-xs font-black tracking-widest uppercase border-2 border-emerald-300 shadow-[0_4px_0_#065f46,0_0_15px_rgba(16,185,129,0.5)] hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-1.5"
-          >
-            <span>STAGE 05: CLAIM VICTORY 🏰</span>
-          </button>
+      {/* ------------------------------------------------------------- */}
+      {/* ORNATE GOLDEN PIXEL RPG DIALOGUE FRAME (Ref: 22.11.18.jpeg)    */}
+      {/* ------------------------------------------------------------- */}
+      <div className="relative w-full max-w-4xl bg-[#170a2c] rounded-2xl border-4 border-[#f59e0b] shadow-[0_0_50px_rgba(245,158,11,0.6)] p-5 sm:p-7 flex flex-col justify-between my-auto">
+        
+        {/* Top Half: Wizard (Left) & Question Menu (Right) */}
+        <div className="grid grid-cols-1 sm:grid-cols-12 gap-6 items-center mb-5">
+          
+          {/* Left: Game Master Pixel Wizard with Glowing Staff */}
+          <div className="sm:col-span-5 flex flex-col items-center justify-center p-4 rounded-2xl bg-[#230f42] border-3 border-[#fbbf24] shadow-inner">
+            {/* Title Badge: GAME MASTER */}
+            <div className="px-4 py-1.5 rounded-md bg-[#2e1065] border-2 border-pink-400 text-pink-300 text-[10px] font-black tracking-widest uppercase mb-3 shadow-[0_0_10px_rgba(244,114,182,0.5)]">
+              GAME MASTER
+            </div>
+
+            {/* Pixel Wizard Character (Authentic 16-bit RPG Sprite) */}
+            <div className="relative w-36 h-40 flex items-center justify-center">
+              <svg width="100" height="120" viewBox="0 0 54 66" className="filter drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
+                {/* Magic Staff with glowing Cyan Orb */}
+                <rect x="7" y="10" width="3" height="52" rx="1.5" fill="#78350f" stroke="#451a03" strokeWidth="0.5" />
+                <circle cx="8.5" cy="8" r="6" fill="#22d3ee" className="animate-pulse" />
+                <circle cx="8.5" cy="8" r="3" fill="#ffffff" />
+                <circle cx="8.5" cy="8" r="9" fill="none" stroke="#67e8f9" strokeWidth="1" strokeDasharray="3,3" className="animate-spin" />
+
+                {/* Sorcerer Pointed Hood */}
+                <polygon points="18,22 32,2 42,24" fill="#581c87" stroke="#3b0764" strokeWidth="1" />
+                <polygon points="26,6 30,2 34,7" fill="#6b21a8" />
+                <path d="M 17 22 Q 30 18 43 22 L 41 26 Q 30 22 19 26 Z" fill="#9333ea" />
+
+                {/* Face & Eyes */}
+                <rect x="23" y="22" width="14" height="10" rx="2" fill="#fed7aa" />
+                <rect x="25" y="24" width="3" height="2" fill="#1e1b4b" />
+                <rect x="32" y="24" width="3" height="2" fill="#1e1b4b" />
+                <rect x="29" y="26" width="2" height="3" fill="#fca5a5" />
+
+                {/* Long Flowing White Beard & Mustache */}
+                <polygon points="20,28 40,28 35,46 30,50 25,46" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="0.5" />
+                <polygon points="22,28 38,28 30,34" fill="#e2e8f0" />
+
+                {/* Royal Robes with Gold Trim */}
+                <polygon points="18,34 42,34 48,64 12,64" fill="#4c1d95" stroke="#2e1065" strokeWidth="1" />
+                <rect x="28" y="34" width="4" height="30" fill="#facc15" />
+                <polygon points="14,36 8,46 16,46" fill="#581c87" />
+                <circle cx="10" cy="46" r="3" fill="#fed7aa" />
+                <polygon points="44,36 50,46 42,46" fill="#581c87" />
+                <circle cx="48" cy="46" r="3" fill="#fed7aa" />
+              </svg>
+            </div>
+          </div>
+
+          {/* Right: Select A Question Menu */}
+          <div className="sm:col-span-7 flex flex-col justify-between space-y-2.5">
+            <span className="text-xs sm:text-sm text-yellow-300 font-black tracking-wider uppercase mb-1 drop-shadow">
+              SELECT A QUESTION:
+            </span>
+
+            <div className="space-y-2">
+              {RPG_FAQS.map((faq, idx) => {
+                const isSelected = activeQuestionIndex === idx;
+
+                return (
+                  <div
+                    key={faq.id}
+                    onClick={() => selectQuestion(idx)}
+                    className={`cursor-pointer p-2 rounded-lg transition-all text-[10px] sm:text-[11px] tracking-wider uppercase font-bold flex items-center gap-2 ${
+                      isSelected
+                        ? 'text-yellow-300 bg-yellow-400/10 border border-yellow-400/60 drop-shadow-[0_0_8px_#facc15]'
+                        : 'text-slate-300 hover:text-white hover:translate-x-1'
+                    }`}
+                  >
+                    {isSelected && <span className="text-yellow-400 text-xs">▶</span>}
+                    <span className="truncate">{faq.question}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
+
+        {/* Bottom Half: Typewriter Speech Bubble Box */}
+        <div className="relative w-full rounded-xl bg-[#090314] border-3 border-[#fbbf24] p-4 sm:p-5 min-h-[110px] flex flex-col justify-between shadow-inner">
+          <p className="text-[11px] sm:text-xs text-slate-100 font-pixel leading-relaxed">
+            "{displayedAnswer}"
+            {isTyping && <span className="inline-block w-2 h-4 bg-cyan-400 ml-1 animate-pulse" />}
+          </p>
+
+          {/* Bouncing down arrow indicator */}
+          <div className="self-end text-sm text-yellow-300 animate-bounce mt-2">
+            ▼
+          </div>
+        </div>
+      </div>
+
+      {/* ------------------------------------------------------------- */}
+      {/* BOTTOM CONSOLE: YELLOW SELECT & PINK NEXT (Ref: 22.11.18.jpeg) */}
+      {/* ------------------------------------------------------------- */}
+      <div className="flex items-center justify-center gap-5 py-3 shrink-0">
+        <button
+          onClick={handleNextQuestion}
+          className="px-8 py-3 rounded-xl bg-gradient-to-b from-[#facc15] to-[#ca8a04] border-3 border-[#fef08a] text-black font-pixel text-xs sm:text-sm font-black uppercase tracking-widest shadow-[0_5px_0_#78350f] hover:scale-105 active:translate-y-1 active:shadow-none cursor-pointer transition-transform"
+        >
+          SELECT
+        </button>
+
+        <button
+          onClick={onAdvanceStage}
+          className="px-10 py-3 rounded-xl bg-gradient-to-b from-[#ec4899] to-[#be185d] border-3 border-[#fbcfe8] text-white font-pixel text-xs sm:text-sm font-black uppercase tracking-widest shadow-[0_5px_0_#831843] hover:scale-105 active:translate-y-1 active:shadow-none cursor-pointer transition-transform"
+        >
+          NEXT
+        </button>
       </div>
     </div>
   );

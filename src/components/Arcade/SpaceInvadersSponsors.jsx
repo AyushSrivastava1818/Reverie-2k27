@@ -1,247 +1,339 @@
 import React, { useState } from 'react';
-import { Rocket, Shield, ExternalLink, Award, Sparkles, X, ChevronRight, Play } from 'lucide-react';
-import { pastSponsors, whySponsorUs } from '../../data/sponsors';
 import { soundEngine } from '../../game/systems/SoundEngine';
-import { achievementSystem } from '../../game/systems/AchievementSystem';
-import { SponsorGalaxy } from './SponsorGalaxy';
+import { pastSponsors } from '../../data/sponsors';
 
-export function SpaceInvadersSponsors({ onSelectSponsor, onOpenRewards }) {
-  const [selectedSponsor, setSelectedSponsor] = useState(pastSponsors[0] || null);
-  const [playShooterMode, setPlayShooterMode] = useState(false);
+export function SpaceInvadersSponsors({ onAdvanceStage, onClose, onBackToMap }) {
+  const [activeModalSponsor, setActiveModalSponsor] = useState(null);
 
-  // Categorize fleet
   const titleSponsor = pastSponsors[0] || {
-    name: 'REPLIT',
-    tier: 'TITLE SPONSOR & CLOUD PARTNER',
+    name: 'Google',
+    tier: 'Title Sponsor',
     logo: '/assets/sponsors/sponsor_1.png',
-    website: 'https://replit.com',
-    description: 'Cloud software creation platform powering next-gen AI workspaces and instant browser-based coding.'
+    website: 'https://google.com',
+    description: 'Building a brighter future together. Proud to support innovation, technology and developer excellence.'
   };
 
-  const goldFleet = pastSponsors.slice(1, 4);
-  const silverFleet = pastSponsors.slice(4, 8);
+  const goldSponsors = pastSponsors.slice(1, 4);
+  const silverSponsors = pastSponsors.slice(4, 8);
 
-  const handleShipClick = (sponsor) => {
+  const handleShipClick = (sp) => {
     soundEngine.playLaser();
-    achievementSystem.recordCoinReward(5);
-    setSelectedSponsor(sponsor);
+    setActiveModalSponsor(sp);
   };
-
-  if (playShooterMode) {
-    return (
-      <div className="w-full h-full flex flex-col items-center">
-        <div className="w-full flex items-center justify-between px-4 py-1.5 bg-[#09031a] border-b border-purple-500/40">
-          <button
-            onClick={() => setPlayShooterMode(false)}
-            className="px-3 py-1 rounded-lg bg-purple-900/80 hover:bg-purple-800 text-purple-200 border border-purple-400 text-xs font-mono font-bold flex items-center gap-1 cursor-pointer"
-          >
-            ← BACK TO GALAXY FLEET
-          </button>
-          <span className="font-display text-xs text-yellow-300 font-bold">
-            STAGE 02: 90s SPACE SHOOTER COMBAT
-          </span>
-        </div>
-        <div className="flex-1 w-full overflow-hidden">
-          <SponsorGalaxy 
-            onClose={() => setPlayShooterMode(false)} 
-            onSelectSponsor={onSelectSponsor}
-            onOpenRewards={onOpenRewards}
-          />
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="relative w-full h-full flex flex-col justify-between p-2 sm:p-4 bg-[#050212] select-none overflow-y-auto">
+    <div className="relative w-full h-full flex flex-col justify-between p-3 sm:p-5 bg-gradient-to-b from-[#060214] via-[#0b0321] to-[#04010d] font-pixel text-white select-none overflow-y-auto">
       
-      {/* Deep Space Starfield & Celestial Bodies */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-950/40 via-[#060216] to-[#03010b] pointer-events-none" />
-      
-      {/* Distant Planet Earth in background */}
-      <div className="absolute top-10 right-8 w-24 h-24 rounded-full bg-gradient-to-tr from-cyan-600 via-blue-700 to-indigo-900 opacity-30 shadow-[0_0_40px_rgba(6,182,212,0.4)] pointer-events-none" />
-
-      {/* Top Title HUD */}
-      <div className="relative z-10 flex items-center justify-between gap-2 px-3 py-1.5 rounded-xl bg-[#12072c]/90 border border-pink-500/60 shadow-md">
+      {/* ------------------------------------------------------------- */}
+      {/* TOP HEADER: STAGE 02 - SPACE INVADERS | PARTNERS: 08          */}
+      {/* ------------------------------------------------------------- */}
+      <div className="flex items-center justify-between pb-2 border-b-2 border-purple-900/60 shrink-0">
         <div className="flex items-center gap-2">
-          <span className="px-2 py-0.5 rounded-md bg-pink-500 text-white font-display text-[10px] font-black tracking-widest">
-            STAGE 02
+          {onBackToMap && (
+            <button
+              onClick={onBackToMap}
+              className="px-2.5 py-1 rounded bg-purple-950 border border-purple-400 text-yellow-300 text-[8px] sm:text-[9px] font-black cursor-pointer hover:bg-purple-900"
+            >
+              ← WORLD MAP
+            </button>
+          )}
+          <span className="text-[10px] sm:text-xs text-cyan-400 font-black tracking-widest uppercase">
+            STAGE 02 — SPACE INVADERS
           </span>
-          <h2 className="font-display text-xs sm:text-sm font-black text-white tracking-wider">
-            SPACE INVADERS: OUR GALAXY OF PARTNERS
-          </h2>
         </div>
 
-        <button
-          onClick={() => {
-            soundEngine.playJump();
-            setPlayShooterMode(true);
-          }}
-          className="px-3 py-1 rounded-lg bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 text-white font-display text-[10px] font-black tracking-wider uppercase border border-pink-200 hover:scale-105 active:scale-95 cursor-pointer shadow-lg flex items-center gap-1.5"
-        >
-          <Rocket size={12} className="text-white animate-pulse" />
-          <span>PLAY SPACE SHOOTER</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] sm:text-xs text-purple-300 font-bold uppercase">
+            PARTNERS: 08
+          </span>
+          <span className="text-sm">👾</span>
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="ml-2 px-2 py-0.5 rounded bg-red-600 hover:bg-red-500 text-white text-[9px] font-black cursor-pointer"
+            >
+              ✕
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Main Fleet Formation Area */}
-      <div className="relative z-10 flex-1 my-3 flex flex-col items-center justify-center gap-4 max-w-4xl mx-auto w-full">
+      {/* ------------------------------------------------------------- */}
+      {/* 3D TITLE & RETRO SPACE INVADERS ALIENS                         */}
+      {/* ------------------------------------------------------------- */}
+      <div className="relative my-2 flex items-center justify-between max-w-4xl mx-auto w-full shrink-0">
+        {/* Magenta Alien Invader (Left) */}
+        <div className="text-3xl sm:text-5xl filter drop-shadow-[0_0_15px_#ec4899] animate-bounce">
+          👾
+        </div>
+
+        {/* Center 3D Pixel Headline */}
+        <div className="text-center px-2">
+          <h2 className="font-pixel text-xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-300 tracking-wider drop-shadow-[0_2px_0_#000]">
+            OUR GALAXY OF PARTNERS
+          </h2>
+          <p className="text-[9px] sm:text-[11px] text-purple-200/90 font-sans font-semibold tracking-wider mt-1 max-w-lg mx-auto">
+            Every great mission needs powerful allies. Meet the partners powering our journey.
+          </p>
+        </div>
+
+        {/* Green Alien Invader (Right) */}
+        <div className="text-3xl sm:text-5xl filter drop-shadow-[0_0_15px_#10b981] animate-bounce" style={{ animationDelay: '200ms' }}>
+          👾
+        </div>
+      </div>
+
+      {/* ------------------------------------------------------------- */}
+      {/* COSMIC FLEET FORMATION WITH EARTH AND PLANETS                 */}
+      {/* ------------------------------------------------------------- */}
+      <div className="relative flex-1 my-auto flex flex-col items-center justify-center max-w-5xl mx-auto w-full py-2">
         
-        {/* Tier 1: Central Title Sponsor Mothership */}
-        <div className="flex flex-col items-center">
-          <span className="text-[9px] font-mono font-black text-yellow-300 tracking-widest uppercase mb-1 flex items-center gap-1">
-            👑 TITLE SPONSOR MOTHERSHIP 👑
+        {/* Planet Earth on the Left (with Continents & Glow) */}
+        <div className="absolute top-4 left-2 sm:left-6 w-24 h-24 sm:w-36 sm:h-36 rounded-full bg-gradient-to-tr from-[#1d4ed8] via-[#0284c7] to-[#10b981] opacity-80 shadow-[0_0_40px_rgba(6,182,212,0.7)] pointer-events-none flex items-center justify-center overflow-hidden">
+          <div className="w-16 h-8 bg-emerald-400/50 rounded-full blur-[2px] -rotate-12" />
+        </div>
+
+        {/* Purple Ringed Planet Saturn on the Right */}
+        <div className="absolute top-6 right-2 sm:right-8 w-20 h-20 sm:w-32 sm:h-32 rounded-full bg-gradient-to-tr from-[#701a75] via-[#a21caf] to-[#c026d3] opacity-75 shadow-[0_0_35px_rgba(192,38,211,0.6)] pointer-events-none flex items-center justify-center">
+          <div className="w-32 sm:w-48 h-3 border-t-3 border-[#f0abfc] -rotate-12 rounded-full blur-[0.5px]" />
+        </div>
+
+        {/* 1. TITLE SPONSOR MOTHERSHIP (HUGE & IMPOSING) */}
+        <div className="relative z-10 flex flex-col items-center mb-5">
+          <span className="text-[10px] sm:text-xs text-yellow-300 font-black tracking-widest uppercase mb-1.5 flex items-center gap-1.5 drop-shadow">
+            ★ TITLE SPONSOR ★
           </span>
 
           <div
             onClick={() => handleShipClick(titleSponsor)}
-            className={`group relative cursor-pointer transition-all duration-300 p-3 sm:p-4 rounded-2xl bg-gradient-to-b from-[#1b0a38] via-[#240e4c] to-[#120626] border-2 ${
-              selectedSponsor?.name === titleSponsor.name ? 'border-yellow-400 shadow-[0_0_30px_rgba(250,204,21,0.6)] scale-105' : 'border-purple-500/80 hover:border-yellow-300 hover:scale-102'
-            } flex items-center gap-4 max-w-md w-full`}
+            className="cursor-pointer group transition-transform hover:scale-105 active:scale-95 flex flex-col items-center"
           >
-            {/* Mothership Cockpit / Logo Badge (High Legibility Crisp White Background) */}
-            <div className="w-20 h-14 rounded-xl bg-white p-1.5 flex items-center justify-center shadow-lg shrink-0 border-2 border-yellow-300">
-              {titleSponsor.logo ? (
-                <img 
-                  src={titleSponsor.logo} 
-                  alt={titleSponsor.name} 
-                  className="max-h-full max-w-full object-contain"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                  }}
-                />
-              ) : null}
-              <span className="font-display font-black text-zinc-900 text-xs">
-                {titleSponsor.name}
-              </span>
-            </div>
+            {/* Giant Mothership Cruiser Hull */}
+            <div className="relative w-80 sm:w-[480px] h-28 sm:h-36 flex items-center justify-center">
+              {/* Pulsing Tractor Beam Glow underneath */}
+              <div className="absolute bottom-0 w-44 h-8 bg-gradient-to-t from-yellow-400/90 to-transparent blur-md rounded-full animate-pulse" />
 
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-1 text-[9px] font-mono text-yellow-300 font-bold uppercase">
-                <Shield size={12} className="text-yellow-400" />
-                <span>COMMAND CRUISER</span>
+              <svg width="100%" height="100%" viewBox="0 0 320 110" className="filter drop-shadow-[0_0_30px_rgba(59,130,246,0.9)]">
+                {/* Main Saucer Wings */}
+                <ellipse cx="160" cy="55" rx="150" ry="28" fill="#1e1b4b" stroke="#38bdf8" strokeWidth="3" />
+                <ellipse cx="160" cy="50" rx="135" ry="20" fill="#312e81" />
+                {/* Navigation Lights */}
+                <circle cx="25" cy="55" r="5" fill="#f43f5e" />
+                <circle cx="295" cy="55" r="5" fill="#f43f5e" />
+                <circle cx="70" cy="68" r="4" fill="#eab308" />
+                <circle cx="250" cy="68" r="4" fill="#eab308" />
+                {/* Rocket Engines firing */}
+                <ellipse cx="120" cy="80" rx="12" ry="5" fill="#f97316" />
+                <ellipse cx="200" cy="80" rx="12" ry="5" fill="#f97316" />
+                {/* Center Dome Cockpit Base */}
+                <ellipse cx="160" cy="40" rx="75" ry="26" fill="#0f172a" stroke="#facc15" strokeWidth="2.5" />
+              </svg>
+
+              {/* High-Legibility White Logo Cockpit Badge in Center */}
+              <div className="absolute top-3 sm:top-4 w-44 sm:w-60 h-14 sm:h-18 bg-white rounded-xl border-3 border-yellow-300 shadow-[0_4px_12px_rgba(0,0,0,0.5)] flex items-center justify-center p-2 z-20">
+                {titleSponsor.logo ? (
+                  <img src={titleSponsor.logo} alt={titleSponsor.name} className="max-h-full max-w-full object-contain" />
+                ) : (
+                  <span className="text-black font-black text-sm">{titleSponsor.name}</span>
+                )}
               </div>
-              <h3 className="font-display text-sm sm:text-base font-black text-white truncate">
-                {titleSponsor.name}
-              </h3>
-              <p className="text-[10px] font-mono text-purple-200/80 truncate">
-                {titleSponsor.tier}
-              </p>
-            </div>
-
-            {/* Glowing Twin Neon Thrusters */}
-            <div className="flex flex-col gap-1 shrink-0">
-              <span className="w-2 h-4 rounded-full bg-cyan-400 shadow-[0_0_10px_#22d3ee] animate-pulse" />
-              <span className="w-2 h-4 rounded-full bg-cyan-400 shadow-[0_0_10px_#22d3ee] animate-pulse" />
             </div>
           </div>
         </div>
 
-        {/* Tier 2: Gold Fleet (3 Corvettes) */}
-        <div className="w-full flex flex-col items-center">
-          <span className="text-[8px] font-mono font-bold text-amber-300 tracking-widest uppercase mb-1">
-            ⚡ GOLD FLEET SQUADRON ⚡
+        {/* 2. GOLD SPONSORS (3 Ships) */}
+        <div className="relative z-10 w-full flex flex-col items-center mb-4">
+          <span className="text-[9px] sm:text-[10px] text-amber-300 font-bold tracking-widest uppercase mb-1.5">
+            GOLD SPONSORS
           </span>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 w-full">
-            {goldFleet.map((sp) => {
-              const isSelected = selectedSponsor?.name === sp.name;
-              return (
-                <div
-                  key={sp.name}
-                  onClick={() => handleShipClick(sp)}
-                  className={`cursor-pointer p-2.5 rounded-xl bg-[#14082c] border ${
-                    isSelected ? 'border-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.5)] scale-102' : 'border-purple-600/60 hover:border-amber-300 hover:scale-102'
-                  } flex items-center gap-2.5 transition-all`}
-                >
-                  <div className="w-12 h-10 rounded-lg bg-white p-1 flex items-center justify-center shrink-0 border border-amber-300">
+
+          <div className="grid grid-cols-3 gap-4 sm:gap-8 w-full max-w-3xl">
+            {goldSponsors.map((sp) => (
+              <div
+                key={sp.name}
+                onClick={() => handleShipClick(sp)}
+                className="cursor-pointer group flex flex-col items-center transition-transform hover:scale-105 active:scale-95"
+              >
+                <div className="relative w-36 sm:w-52 h-18 sm:h-22 flex items-center justify-center">
+                  <svg width="100%" height="100%" viewBox="0 0 160 70" className="filter drop-shadow-[0_0_15px_rgba(168,85,247,0.8)]">
+                    <polygon points="10,40 80,12 150,40 125,58 35,58" fill="#2e1065" stroke="#c084fc" strokeWidth="2.5" />
+                    <ellipse cx="80" cy="38" rx="42" ry="16" fill="#1e1b4b" stroke="#eab308" strokeWidth="2" />
+                    <circle cx="20" cy="44" r="3" fill="#22d3ee" />
+                    <circle cx="140" cy="44" r="3" fill="#22d3ee" />
+                  </svg>
+
+                  {/* Cockpit Badge */}
+                  <div className="absolute top-2.5 w-24 sm:w-36 h-9 sm:h-11 bg-white rounded-lg border-2 border-amber-300 p-1 flex items-center justify-center shadow">
                     {sp.logo ? (
                       <img src={sp.logo} alt={sp.name} className="max-h-full max-w-full object-contain" />
                     ) : (
-                      <span className="text-[9px] font-black text-black">{sp.name.slice(0, 3)}</span>
+                      <span className="text-black text-[10px] font-black truncate">{sp.name}</span>
                     )}
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <h4 className="font-display text-xs font-black text-white truncate">{sp.name}</h4>
-                    <span className="text-[8px] font-mono text-amber-200/80 truncate block">{sp.tier}</span>
-                  </div>
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Tier 3: Silver Fleet (4 Interceptors) */}
-        <div className="w-full flex flex-col items-center">
-          <span className="text-[8px] font-mono font-bold text-slate-400 tracking-widest uppercase mb-1">
-            🛡️ SILVER PATROL INTERCEPTORS 🛡️
+        {/* 3. SILVER SPONSORS (4 Ships) */}
+        <div className="relative z-10 w-full flex flex-col items-center">
+          <span className="text-[9px] sm:text-[10px] text-cyan-300 font-bold tracking-widest uppercase mb-1.5">
+            SILVER SPONSORS
           </span>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full">
-            {silverFleet.map((sp) => {
-              const isSelected = selectedSponsor?.name === sp.name;
-              return (
-                <div
-                  key={sp.name}
-                  onClick={() => handleShipClick(sp)}
-                  className={`cursor-pointer p-2 rounded-lg bg-[#0e0520] border ${
-                    isSelected ? 'border-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.4)]' : 'border-purple-800/60 hover:border-cyan-300'
-                  } flex items-center gap-2 transition-all`}
-                >
-                  <div className="w-8 h-8 rounded bg-white p-0.5 flex items-center justify-center shrink-0">
-                    <img src={sp.logo} alt={sp.name} className="max-h-full max-w-full object-contain" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h5 className="font-display text-[10px] font-bold text-slate-200 truncate">{sp.name}</h5>
-                    <span className="text-[7px] font-mono text-slate-400 truncate block">{sp.tier}</span>
+
+          <div className="grid grid-cols-4 gap-3 sm:gap-6 w-full max-w-4xl">
+            {silverSponsors.map((sp) => (
+              <div
+                key={sp.name}
+                onClick={() => handleShipClick(sp)}
+                className="cursor-pointer group flex flex-col items-center transition-transform hover:scale-105 active:scale-95"
+              >
+                <div className="relative w-28 sm:w-40 h-14 sm:h-18 flex items-center justify-center">
+                  <svg width="100%" height="100%" viewBox="0 0 130 55" className="filter drop-shadow-[0_0_10px_rgba(6,182,212,0.7)]">
+                    <polygon points="10,32 65,10 120,32 100,48 30,48" fill="#0f172a" stroke="#38bdf8" strokeWidth="2" />
+                    <circle cx="20" cy="36" r="2.5" fill="#f43f5e" />
+                    <circle cx="110" cy="36" r="2.5" fill="#f43f5e" />
+                  </svg>
+                  <div className="absolute top-2 w-20 sm:w-28 h-7 sm:h-9 bg-white rounded-lg border border-cyan-400 p-1 flex items-center justify-center shadow">
+                    {sp.logo ? (
+                      <img src={sp.logo} alt={sp.name} className="max-h-full max-w-full object-contain" />
+                    ) : (
+                      <span className="text-black text-[9px] font-black truncate">{sp.name}</span>
+                    )}
                   </div>
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
+        </div>
+
+        {/* Action Hint */}
+        <div className="mt-4 text-center">
+          <span className="text-[9px] sm:text-[10px] text-yellow-300 font-bold tracking-wider uppercase animate-pulse">
+            ★ SELECT A SPACESHIP TO DISCOVER MORE ★
+          </span>
         </div>
       </div>
 
-      {/* Selected Sponsor Astronaut Mission Briefing Card (Matching Reference 22.11.18 (1).jpeg) */}
-      {selectedSponsor && (
-        <div className="relative z-10 max-w-3xl w-full mx-auto rounded-2xl bg-gradient-to-r from-[#180a36] via-[#1a0c3d] to-[#12062b] border-2 border-purple-400/80 p-3 sm:p-4 shadow-2xl flex flex-col sm:flex-row items-center gap-4">
-          
-          {/* Astronaut Mascot Visual */}
-          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-b from-cyan-900 to-indigo-950 border-2 border-cyan-400/80 flex items-center justify-center shrink-0 shadow-[0_0_20px_rgba(6,182,212,0.4)] text-3xl">
-            👨‍🚀
+      {/* ------------------------------------------------------------- */}
+      {/* BOTTOM PROGRESS BAR & NEXT STAGE BUTTON                       */}
+      {/* ------------------------------------------------------------- */}
+      <div className="flex items-center justify-between pt-3 border-t-2 border-purple-900/60 mt-1 shrink-0">
+        <div className="flex items-center gap-3">
+          <span className="text-[8px] sm:text-[9px] text-slate-300 font-bold uppercase">
+            MISSION PROGRESS
+          </span>
+          {/* Progress bar blocks */}
+          <div className="flex items-center gap-1">
+            <span className="w-5 h-3 bg-yellow-400 rounded-sm" />
+            <span className="w-5 h-3 bg-yellow-400 rounded-sm" />
+            <span className="w-5 h-3 bg-zinc-700 rounded-sm" />
+            <span className="w-5 h-3 bg-zinc-700 rounded-sm" />
+            <span className="w-5 h-3 bg-zinc-700 rounded-sm" />
+            <span className="w-5 h-3 bg-zinc-700 rounded-sm" />
           </div>
+          <span className="text-[9px] text-cyan-300 font-black">02 / 06</span>
+        </div>
 
-          {/* Mission Briefing Details */}
-          <div className="flex-1 min-w-0 text-center sm:text-left">
-            <div className="flex items-center justify-center sm:justify-start gap-2 mb-1">
-              <span className="px-2 py-0.5 rounded bg-pink-950 border border-pink-400 text-pink-300 font-mono text-[9px] font-bold uppercase">
-                SPONSOR BRIEFING
+        <button
+          onClick={onAdvanceStage}
+          className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-500 border-2 border-white text-black font-pixel text-xs font-black uppercase tracking-wider shadow-[0_4px_0_#78350f] hover:scale-105 active:translate-y-1 active:shadow-none cursor-pointer flex items-center gap-1.5"
+        >
+          <span>NEXT STAGE</span>
+          <span>➔</span>
+        </button>
+      </div>
+
+      {/* ------------------------------------------------------------- */}
+      {/* POPUP: ASTRONAUT SPONSOR DETAILS (Ref: 22.11.18(1) Right)     */}
+      {/* ------------------------------------------------------------- */}
+      {activeModalSponsor && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 animate-in fade-in zoom-in-95 duration-200">
+          <div className="relative w-full max-w-xl bg-gradient-to-b from-[#180a36] via-[#100526] to-[#080214] rounded-2xl border-4 border-purple-500 shadow-[0_0_50px_rgba(168,85,247,0.8)] p-4 sm:p-6 flex flex-col">
+            
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-3 border-b-2 border-purple-800 mb-4">
+              <span className="font-pixel text-xs sm:text-sm font-black text-yellow-300 tracking-wider">
+                ★ SPONSOR DETAILS ★
               </span>
-              <span className="font-mono text-[10px] text-yellow-300 font-bold">
-                {selectedSponsor.tier}
-              </span>
+              <button
+                onClick={() => setActiveModalSponsor(null)}
+                className="w-8 h-8 rounded-lg bg-purple-900 border border-purple-400 text-white font-pixel text-xs font-black flex items-center justify-center cursor-pointer hover:bg-purple-800"
+              >
+                ✕
+              </button>
             </div>
 
-            <h3 className="font-display text-base sm:text-lg font-black text-white tracking-wider">
-              {selectedSponsor.name}
-            </h3>
+            {/* Main Sponsor Card with White Badge */}
+            <div className="w-full bg-white rounded-xl p-3 flex items-center justify-center h-22 mb-3 shadow-lg">
+              {activeModalSponsor.logo ? (
+                <img src={activeModalSponsor.logo} alt={activeModalSponsor.name} className="max-h-full max-w-full object-contain" />
+              ) : (
+                <span className="text-black font-pixel text-base font-black">{activeModalSponsor.name}</span>
+              )}
+            </div>
 
-            <p className="text-[11px] text-purple-200/90 leading-relaxed line-clamp-2 mt-0.5">
-              {selectedSponsor.description || 'Proud technology and ecosystem partner powering REVERIE 2K27 festival universe.'}
-            </p>
-          </div>
+            {/* Astronaut Mascot & Briefing */}
+            <div className="flex items-start gap-4 my-2">
+              <div className="flex-1">
+                <h4 className="font-pixel text-xs sm:text-sm text-cyan-300 font-bold mb-1">
+                  Building a brighter future together.
+                </h4>
+                <p className="text-[11px] text-slate-200 font-sans font-semibold leading-relaxed mb-3">
+                  {activeModalSponsor.description || 'Proud to empower innovation, technology and creative excellence at REVERIE 2K27.'}
+                </p>
 
-          {/* Action CTAs */}
-          <div className="flex flex-col gap-2 shrink-0 w-full sm:w-auto">
-            {selectedSponsor.website && (
-              <a
-                href={selectedSponsor.website}
-                target="_blank"
-                rel="noreferrer"
-                className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-display text-xs font-black tracking-wider uppercase border border-cyan-300 shadow hover:scale-105 active:scale-95 text-center flex items-center justify-center gap-1.5"
+                <div className="space-y-1.5 text-[9px] font-pixel text-purple-300 border-t border-purple-800 pt-2">
+                  <div className="flex items-center gap-1.5">
+                    <span>📅</span>
+                    <span>Our Partnership Since 2024</span>
+                  </div>
+                  {activeModalSponsor.website && (
+                    <div className="flex items-center gap-1.5">
+                      <span>🌐</span>
+                      <a href={activeModalSponsor.website} target="_blank" rel="noreferrer" className="text-cyan-400 underline">
+                        Visit: {activeModalSponsor.website}
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Authentic Pixel Astronaut Mascot Visual (Thumbs Up) */}
+              <div className="w-24 h-32 flex flex-col items-center justify-end shrink-0">
+                <svg width="72" height="96" viewBox="0 0 48 64" className="filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)]">
+                  <circle cx="24" cy="18" r="14" fill="#f8fafc" stroke="#475569" strokeWidth="2" />
+                  <ellipse cx="24" cy="18" rx="10" ry="7" fill="#0284c7" stroke="#38bdf8" strokeWidth="1.5" />
+                  <ellipse cx="22" cy="16" rx="4" ry="2" fill="#bae6fd" />
+                  <rect x="14" y="32" width="20" height="18" rx="3" fill="#f1f5f9" stroke="#475569" strokeWidth="1.5" />
+                  <rect x="18" y="35" width="12" height="8" rx="1" fill="#0284c7" />
+                  <circle cx="21" cy="38" r="1" fill="#ef4444" />
+                  <circle cx="24" cy="38" r="1" fill="#facc15" />
+                  <circle cx="27" cy="38" r="1" fill="#22c55e" />
+                  <rect x="6" y="33" width="8" height="6" rx="2" fill="#e2e8f0" stroke="#475569" strokeWidth="1" />
+                  <circle cx="5" cy="33" r="3.5" fill="#f8fafc" stroke="#475569" strokeWidth="1" />
+                  <rect x="4" y="27" width="2.5" height="6" rx="1" fill="#f8fafc" stroke="#475569" strokeWidth="1" />
+                  <rect x="34" y="33" width="8" height="6" rx="2" fill="#e2e8f0" stroke="#475569" strokeWidth="1" />
+                  <circle cx="43" cy="38" r="3.5" fill="#f8fafc" stroke="#475569" strokeWidth="1" />
+                  <rect x="15" y="49" width="7" height="10" fill="#cbd5e1" stroke="#475569" strokeWidth="1" />
+                  <rect x="26" y="49" width="7" height="10" fill="#cbd5e1" stroke="#475569" strokeWidth="1" />
+                  <rect x="13" y="56" width="9" height="5" rx="2" fill="#475569" />
+                  <rect x="26" y="56" width="9" height="5" rx="2" fill="#475569" />
+                </svg>
+                <div className="w-20 h-4 bg-zinc-700 border-t border-zinc-500 rounded-full blur-[0.5px] mt-0.5" />
+              </div>
+            </div>
+
+            {/* Yellow Close Button */}
+            <div className="flex justify-center pt-3 border-t border-purple-800 mt-2">
+              <button
+                onClick={() => setActiveModalSponsor(null)}
+                className="px-8 py-2.5 rounded-xl bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-500 border-2 border-white text-black font-pixel text-xs font-black uppercase tracking-wider shadow-[0_4px_0_#78350f] hover:scale-105 active:translate-y-1 cursor-pointer"
               >
-                <span>VISIT PORTAL</span>
-                <ExternalLink size={12} />
-              </a>
-            )}
+                CLOSE
+              </button>
+            </div>
           </div>
         </div>
       )}
